@@ -7,9 +7,10 @@ class TranslatePageController {
   final AppColors appColors = AppColors();
   /// textField controller
   TextEditingController textEditingController = TextEditingController();
-
+  /// keyboard node
+  final FocusNode focusNode = FocusNode();
 
   void closePage({required BuildContext context}){
-    Navigator.pop(context);
+    focusNode.unfocus();
   }
 }

@@ -1,4 +1,7 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
 import 'package:flutter_translator_app/src/core/constants/app_colors.dart';
 import 'package:flutter_translator_app/src/presentation/pages/translate_page/translate_page_controller.dart';
 import 'package:flutter_translator_app/src/presentation/providers/translate_page_provider.dart';
@@ -8,12 +11,40 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-class TranslatePage extends StatelessWidget {
+class TranslatePage extends StatefulWidget {
   const TranslatePage({Key? key}) : super(key: key);
 
   @override
+  State<TranslatePage> createState() => _TranslatePageState();
+}
+
+class _TranslatePageState extends State<TranslatePage> {
+  late StreamSubscription<bool> keyboardSubscription;
+  final TranslatePageController translatePageController = TranslatePageController();
+
+  @override
+  void initState() {
+    var keyboardVisibilityController = KeyboardVisibilityController();
+
+    // Subscribe
+    keyboardSubscription = keyboardVisibilityController.onChange.listen((bool visible) {
+      if(!visible){
+        translatePageController.focusNode.unfocus();
+        if(translatePageController.textEditingController.text.isEmpty){
+          Navigator.pop(context);
+        }
+      }
+    });
+    super.initState();
+  }
+  @override
+  void dispose() {
+    keyboardSubscription.cancel();
+    super.dispose();
+  }
+  @override
   Widget build(BuildContext context) {
-    final TranslatePageController translatePageController = TranslatePageController();
+
     /// mediaQuery
     final ScreenUtil screenUtil = ScreenUtil();
     return Consumer<TranslatePageProvider>(
@@ -23,9 +54,9 @@ class TranslatePage extends StatelessWidget {
           appBar: PreferredSize(
             preferredSize: Size(screenUtil.screenWidth, 170.w),
             child: _appBar(
-              context: context,
-              appColors: translatePageController.appColors,
-              translatePageController: translatePageController
+                context: context,
+                appColors: translatePageController.appColors,
+                translatePageController: translatePageController
             ),
           ),
           body: SizedBox(
@@ -44,41 +75,42 @@ class TranslatePage extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         Padding(
-                          padding: EdgeInsets.only(left: 60.w, right: 60.w, top: 38.h, bottom: 40.h),
-                          child: StatefulBuilder(
-                            builder: (context, setState) => TextField(
-                              controller: translatePageController.textEditingController,
-                              autofocus: true,
-                              maxLines: null,
-                              minLines: 1,
-                              onChanged: (text){
-                                setState((){
-                                  translatePageProvider.originalText = text;
-                                });
-                              },
-                              enableSuggestions: true,
-                              decoration: InputDecoration(
-                                border: InputBorder.none,
-                                hintText: 'Enter Text',
-                                hintStyle: TextStyle(
-                                    color: translatePageController.appColors.colorText1.withOpacity(0.7),
+                            padding: EdgeInsets.only(left: 60.w, right: 60.w, top: 38.h, bottom: 40.h),
+                            child: StatefulBuilder(
+                              builder: (context, setState) => TextField(
+                                controller: translatePageController.textEditingController,
+                                focusNode: translatePageController.focusNode,
+                                autofocus: true,
+                                maxLines: null,
+                                minLines: 1,
+                                onChanged: (text){
+                                  setState((){
+                                    translatePageProvider.originalText = text;
+                                  });
+                                },
+                                enableSuggestions: true,
+                                decoration: InputDecoration(
+                                  border: InputBorder.none,
+                                  hintText: 'Enter Text',
+                                  hintStyle: TextStyle(
+                                      color: translatePageController.appColors.colorText1.withOpacity(0.7),
+                                      fontSize: 80.sp
+                                  ),
+                                ),
+                                style: TextStyle(
+                                    color: translatePageController.appColors.colorText1,
                                     fontSize: 80.sp
                                 ),
                               ),
-                              style: TextStyle(
-                                  color: translatePageController.appColors.colorText1,
-                                  fontSize: 80.sp
-                              ),
-                            ),
-                          )
+                            )
                         ),
                         if(translatePageProvider.originalText.trim().isNotEmpty)
                           Container(
                             height: 5.h,
                             width: 350.w,
                             decoration: BoxDecoration(
-                              color: Colors.blue,
-                              borderRadius: BorderRadius.circular(80)
+                                color: Colors.blue,
+                                borderRadius: BorderRadius.circular(80)
                             ),
                           ),
                         Align(
@@ -96,7 +128,7 @@ class TranslatePage extends StatelessWidget {
                           ),
                         )
 
-                       ],
+                      ],
                     ),
                   ),
                 ),

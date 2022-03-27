@@ -23,6 +23,7 @@ class HomePage extends StatelessWidget {
       builder: (_, homeProvider, __){
         return Scaffold(
           backgroundColor: _homePageController.appColors.backgroundColor,
+          resizeToAvoidBottomInset: false,
           appBar: PreferredSize(
             preferredSize: Size(screenUtil.screenWidth, 170.w),
             child: _appBar(appColors: _homePageController.appColors, homeProvider: homeProvider),

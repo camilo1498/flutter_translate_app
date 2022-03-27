@@ -2,7 +2,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_translator_app/src/core/constants/app_colors.dart';
 import 'package:flutter_translator_app/src/presentation/pages/translate_page/translate_page.dart';
-import 'package:flutter_translator_app/src/presentation/widgets/animations/fade_page_route.dart';
+import 'package:flutter_translator_app/src/presentation/widgets/animations/page_transitions/fade_page_route.dart';
 
 import '../../widgets/animations/panel.dart';
 
