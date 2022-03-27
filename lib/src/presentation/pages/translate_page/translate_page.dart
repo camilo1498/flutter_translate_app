@@ -299,6 +299,14 @@ class _TranslatePageState extends State<TranslatePage> {
                 setState(() {
                   translatePageProvider.closePage = true;
                 });
+                if(translatePageProvider.originalText.isNotEmpty){
+                  setState(() {
+                    translatePageProvider.closePage = true;
+                    translatePageProvider.translatedText = '';
+                    translatePageProvider.originalText = '';
+                  });
+                  Navigator.pop(context);
+                }
               } else{
                 Navigator.pop(context);
               }

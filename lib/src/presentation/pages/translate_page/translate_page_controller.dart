@@ -46,7 +46,7 @@ class TranslatePageController {
 
   /// close page
   void closePage({required BuildContext context}){
-    Navigator.pop(context);
+    focusNode.unfocus();
   }
 
   /// get data from clipboard
