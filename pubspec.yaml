@@ -1,9 +1,9 @@
 name: flutter_translator_app
-description: A new Flutter project.
-
+description: This app is a clone of google translate using their api keys
+repository: https://github.com/camilo1498/flutter_translate_app
+homepage: https://github.com/camilo1498
 publish_to: 'none'
-
-version: 1.0.0+1
+version: 1.0.5+1
 
 environment:
   sdk: ">=2.16.1 <3.0.0"
