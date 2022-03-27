@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_translator_app/src/core/constants/app_colors.dart';
 import 'package:flutter_translator_app/src/presentation/pages/history_page/history_page.dart';
 import 'package:flutter_translator_app/src/presentation/pages/home_page/home_page_controller.dart';
+import 'package:flutter_translator_app/src/presentation/pages/select_language_page/select_language_page.dart';
 import 'package:flutter_translator_app/src/presentation/providers/home_page_provider.dart';
+import 'package:flutter_translator_app/src/presentation/providers/select_language_provider.dart';
 import 'package:flutter_translator_app/src/presentation/widgets/animations/animated_onTap_button.dart';
 import 'package:flutter_translator_app/src/presentation/widgets/animations/panel.dart';
 import 'package:flutter_translator_app/src/presentation/widgets/language_button.dart';
@@ -19,8 +21,8 @@ class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
 
-    return Consumer<HomePageProvider>(
-      builder: (_, homeProvider, __){
+    return Consumer2<HomePageProvider, SelectLanguageProvider>(
+      builder: (_, homeProvider, languageProvider, __){
         return Scaffold(
           backgroundColor: _homePageController.appColors.backgroundColor,
           resizeToAvoidBottomInset: false,
@@ -41,31 +43,44 @@ class HomePage extends StatelessWidget {
                     children: [
                       Row(
                         mainAxisSize: MainAxisSize.max,
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        mainAxisAlignment: MainAxisAlignment.center,
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
                           LanguageButton(
-                              text: 'Spanish',
+                              text: languageProvider.fromLang.name.toString().split(' ')[0],
                               appColors: _homePageController.appColors,
                               onTap: (){
                                 /// select translate "from"
+                                _homePageController.goToSelectLanguage(
+                                    context: context,
+                                    languageType: SelectLanguageType.from
+                                );
                               }
                           ),
-                          AnimatedOnTapButton(
-                            onTap: (){
-                              /// switch both languages
-                            },
-                            child: Icon(
-                              Icons.compare_arrows,
-                              color: _homePageController.appColors.iconColor2,
-                              size: 60.w,
+                          Padding(
+                            padding: EdgeInsets.symmetric(horizontal: 25.w),
+                            child: AnimatedOnTapButton(
+                              onTap: () => _homePageController.changeLanguageOrder(selectLanguage: languageProvider),
+                              child: SizedBox(
+                                width: 100.w,
+                                height: 100.w,
+                                child: Icon(
+                                  Icons.compare_arrows,
+                                  color: _homePageController.appColors.iconColor2,
+                                  size: 70.w,
+                                ),
+                              ),
                             ),
                           ),
                           LanguageButton(
-                              text: 'English',
+                              text: languageProvider.toLang.name.toString().split(' ')[0],
                               appColors: _homePageController.appColors,
                               onTap: (){
                                 /// select translate "to"
+                                _homePageController.goToSelectLanguage(
+                                    context: context,
+                                    languageType: SelectLanguageType.to
+                                );
                               }
                           ),
                         ],

@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_translator_app/src/presentation/pages/home_page/home_page.dart';
 import 'package:flutter_translator_app/src/presentation/providers/home_page_provider.dart';
+import 'package:flutter_translator_app/src/presentation/providers/select_language_provider.dart';
 import 'package:flutter_translator_app/src/presentation/providers/translate_page_provider.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
@@ -26,7 +27,8 @@ void main() {
     MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => HomePageProvider()),
-        ChangeNotifierProvider(create: (_) => TranslatePageProvider())
+        ChangeNotifierProvider(create: (_) => TranslatePageProvider()),
+        ChangeNotifierProvider(create: (_) => SelectLanguageProvider())
       ],
       child: const MyApp(),
     )

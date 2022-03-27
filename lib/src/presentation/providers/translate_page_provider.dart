@@ -16,6 +16,18 @@ class TranslatePageProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  bool _closePage = true;
+  bool get closePage => _closePage;
+  set closePage(bool close){
+    _closePage = close;
+    notifyListeners();
+  }
 
+  bool _clipBoardHasData = false;
 
+  bool get clipBoardHasData => _clipBoardHasData;
+  set clipBoardHasData (bool data){
+    _clipBoardHasData = data;
+    notifyListeners();
+  }
 }

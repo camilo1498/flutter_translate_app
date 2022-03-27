@@ -17,9 +17,12 @@ class HistoryPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: _historyPageController.appColors.backgroundColor,
       appBar: PreferredSize(
         preferredSize: Size(screenUtil.screenWidth, 170.w),
-        child: historyAppbar(onTap: (){}),
+        child: historyAppbar(onTap: (){
+          Navigator.pop(context);
+        }),
       ),
       body: historyBody(),
     );
