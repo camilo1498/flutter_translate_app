@@ -46,11 +46,11 @@ class TranslatePageController {
 
   /// close page
   void closePage({required BuildContext context}){
-    focusNode.unfocus();
+    Navigator.pop(context);
   }
 
   /// get data from clipboard
-  getClipBoardData({required TranslatePageProvider translatePageProvider}) async{
+  validateClipBoardData({required TranslatePageProvider translatePageProvider}) async{
     await Clipboard.getData(Clipboard.kTextPlain).then((value){
       if(value!.text!.isNotEmpty){
         translatePageProvider.clipBoardHasData = true;
@@ -60,9 +60,21 @@ class TranslatePageController {
     });
   }
 
+  pasteClipBoardData({required TranslatePageProvider translatePageProvider}) async{
+    await Clipboard.getData(Clipboard.kTextPlain).then((value){
+      translatePageProvider.originalText = value!.text.toString();
+      textEditingController.text = value.text.toString();
+      textEditingController.selection = TextSelection.fromPosition(TextPosition(offset: textEditingController.text.length));
+    });
+  }
+
   /// set data to clipboard
-  setClipBoardData({required String text}) {
-    Clipboard.setData(ClipboardData(text: text));
+  setClipBoardData({required String text}) async{
+     await Clipboard.setData(ClipboardData(text: text));
+  }
+
+  translateFrom(){
+
   }
 
 }

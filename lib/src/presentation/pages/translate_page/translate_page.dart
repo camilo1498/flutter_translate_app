@@ -26,14 +26,16 @@ class _TranslatePageState extends State<TranslatePage> {
   @override
   void initState() {
     var keyboardVisibilityController = KeyboardVisibilityController();
-
+    translatePageController.validateClipBoardData(
+        translatePageProvider: Provider.of<TranslatePageProvider>(context, listen: false)
+    );
     // Subscribe
     keyboardSubscription = keyboardVisibilityController.onChange.listen((bool visible) {
       if(!visible){
         translatePageController.focusNode.unfocus();
         if(
         translatePageController.textEditingController.text.isEmpty
-         && Provider.of<TranslatePageProvider>(context, listen: false).closePage){
+            && Provider.of<TranslatePageProvider>(context, listen: false).closePage){
           Navigator.pop(context);
         }
       } else{
@@ -89,6 +91,13 @@ class _TranslatePageState extends State<TranslatePage> {
                         mainAxisAlignment: MainAxisAlignment.start,
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
+                          if(translatePageController.textEditingController.text.isNotEmpty)
+                            _currentLanguageToolbar(
+                              color: translatePageController.appColors.colorText1,
+                                language: languageProvider.fromLang.name.toString().split(' ')[0],
+                                onTapCopy: () => translatePageController.setClipBoardData(text: translatePageProvider.originalText),
+                                onTapSpeech: (){}
+                            ),
                           Padding(
                               padding: EdgeInsets.only(left: 60.w, right: 60.w, top: 38.h, bottom: 40.h),
                               child: TextField(
@@ -118,33 +127,90 @@ class _TranslatePageState extends State<TranslatePage> {
                                 ),
                                 style: TextStyle(
                                     color: translatePageController.appColors.colorText1,
-                                    fontSize: 80.sp
+                                    fontSize: 60.sp
                                 ),
                               )
                           ),
+                          if(translatePageProvider.clipBoardHasData && translatePageController.textEditingController.text.isEmpty || translatePageProvider.originalText.isEmpty)
+                            Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                65.verticalSpace,
+                                Align(
+                                  alignment: Alignment.centerLeft,
+                                  child: Padding(
+                                    padding: EdgeInsets.symmetric(horizontal: 80.w),
+                                    child: AnimatedOnTapButton(
+                                      onTap: () => translatePageController.pasteClipBoardData(translatePageProvider: translatePageProvider),
+                                      child: Container(
+                                        width: 280.w,
+                                        height: 95.h,
+                                        alignment: Alignment.center,
+                                        decoration: BoxDecoration(
+                                            color: translatePageController.appColors.buttonColor2,
+                                            borderRadius: BorderRadius.circular(25)
+                                        ),
+                                        padding: EdgeInsets.symmetric(horizontal: 15.w, vertical: 10.h),
+                                        child: Row(
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                            Icon(
+                                              Icons.paste,
+                                              color: translatePageController.appColors.colorText3,
+                                              size: 50.w,
+                                            ),
+                                            15.horizontalSpace,
+                                            Text(
+                                              'Paste',
+                                              style: TextStyle(
+                                                  fontSize: 40.sp,
+                                                  fontWeight: FontWeight.w600,
+                                                  letterSpacing: 0.3,
+                                                  color: translatePageController.appColors.colorText3
+                                              ),
+                                            )
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                )
+                              ],
+                            ),
                           if(translatePageProvider.originalText.trim().isNotEmpty)
-                            Container(
-                              height: 5.h,
-                              width: 350.w,
-                              decoration: BoxDecoration(
-                                  color: Colors.blue,
-                                  borderRadius: BorderRadius.circular(80)
-                              ),
-                            ),
-                          Align(
-                            alignment: Alignment.bottomLeft,
-                            child: Padding(
-                              padding: EdgeInsets.only(left: 60.w, right: 60.w, top: 38.h, bottom: 40.h),
-                              child: Text(
-                                translatePageProvider.originalText,
-                                textAlign: TextAlign.left,
-                                style: TextStyle(
-                                    color: translatePageController.appColors.colorText3,
-                                    fontSize: 80.sp
+                            Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Container(
+                                  height: 5.h,
+                                  width: 350.w,
+                                  decoration: BoxDecoration(
+                                      color: Colors.blue,
+                                      borderRadius: BorderRadius.circular(80)
+                                  ),
                                 ),
-                              ),
-                            ),
-                          )
+                                _currentLanguageToolbar(
+                                  color: Colors.blue[200]!,
+                                    language: languageProvider.toLang.name.toString().split(' ')[0],
+                                    onTapCopy: () => translatePageController.setClipBoardData(text: translatePageProvider.translatedText),
+                                    onTapSpeech: (){}
+                                ),
+                                Align(
+                                  alignment: Alignment.bottomLeft,
+                                  child: Padding(
+                                    padding: EdgeInsets.only(left: 60.w, right: 60.w, top: 38.h, bottom: 40.h),
+                                    child: Text(
+                                      translatePageProvider.originalText,
+                                      textAlign: TextAlign.left,
+                                      style: TextStyle(
+                                          color: Colors.blue[200]!,
+                                          fontSize: 60.sp
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            )
 
                         ],
                       ),
@@ -230,6 +296,9 @@ class _TranslatePageState extends State<TranslatePage> {
             onTap: () {
               if(translatePageProvider.closePage){
                 translatePageController.closePage(context: context);
+                setState(() {
+                  translatePageProvider.closePage = true;
+                });
               } else{
                 Navigator.pop(context);
               }
@@ -260,6 +329,60 @@ class _TranslatePageState extends State<TranslatePage> {
           ),
         ],
       ),
+    );
+  }
+
+  Widget _currentLanguageToolbar({
+    required String language,
+    required Function() onTapCopy,
+    required Function() onTapSpeech,
+    required Color color
+  }){
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        30.verticalSpace,
+        Padding(
+          padding: EdgeInsets.symmetric(horizontal: 60.w),
+          child: Row(
+            mainAxisSize: MainAxisSize.max,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                language,
+                textAlign: TextAlign.left,
+                style: TextStyle(
+                    color: color,
+                    fontSize: 50.sp
+                ),
+              ),
+              Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  AnimatedOnTapButton(
+                    onTap: onTapCopy,
+                    child: Icon(
+                      Icons.copy,
+                      color: color,
+                      size: 65.w,
+                    ),
+                  ),
+                  60.horizontalSpace,
+                  AnimatedOnTapButton(
+                    onTap: onTapSpeech,
+                    child: Icon(
+                      Icons.volume_up_outlined,
+                      color: color,
+                      size: 65.w,
+                    ),
+                  ),
+                ],
+              )
+            ],
+          ),
+        ),
+      ],
     );
   }
 }
