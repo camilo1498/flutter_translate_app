@@ -16,15 +16,21 @@ class HistoryPage extends StatelessWidget {
   final ScreenUtil screenUtil = ScreenUtil();
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: _historyPageController.appColors.backgroundColor,
-      appBar: PreferredSize(
-        preferredSize: Size(screenUtil.screenWidth, 170.w),
-        child: historyAppbar(onTap: (){
-          Navigator.pop(context);
-        }),
+    return NotificationListener<OverscrollIndicatorNotification>(
+      onNotification: (overscroll){
+        overscroll.disallowIndicator();
+        return false;
+      },
+      child: Scaffold(
+        backgroundColor: _historyPageController.appColors.backgroundColor,
+        appBar: PreferredSize(
+          preferredSize: Size(screenUtil.screenWidth, 170.w),
+          child: historyAppbar(onTap: (){
+            Navigator.pop(context);
+          }),
+        ),
+        body: historyBody(),
       ),
-      body: historyBody(),
     );
   }
 

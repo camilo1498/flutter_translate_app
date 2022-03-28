@@ -1,3 +1,5 @@
+// ignore_for_file: must_be_immutable
+
 import 'package:flutter/material.dart';
 import 'package:flutter_translator_app/src/data/models/language.dart';
 import 'package:flutter_translator_app/src/presentation/pages/select_language_page/select_language_controller.dart';
@@ -9,9 +11,11 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 enum SelectLanguageType {from, to}
 class SelectLanguagePage extends StatefulWidget {
   SelectLanguageType selectLanguagePage = SelectLanguageType.from;
+  Function()? onChange;
   SelectLanguagePage({
   Key? key,
-    required this.selectLanguagePage
+    required this.selectLanguagePage,
+    this.onChange
 }) : super(key: key);
 
   @override
@@ -160,6 +164,7 @@ class _SelectLanguagePageState extends State<SelectLanguagePage> {
                                           selectLanguage.toLang = _from;
                                         } else{
                                           selectLanguage.toLang = snapshot.data![index];
+                                          widget.onChange!();
                                         }
                                       }
                                     });

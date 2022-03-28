@@ -8,8 +8,11 @@ import 'package:flutter_translator_app/src/presentation/providers/select_languag
 import 'package:flutter_translator_app/src/presentation/providers/translate_page_provider.dart';
 import 'package:flutter_translator_app/src/presentation/widgets/animations/page_transitions/axis_page_transition.dart';
 import 'package:flutter_translator_app/src/presentation/widgets/animations/page_transitions/fade_page_route.dart';
+import 'package:translator/translator.dart';
 
 class TranslatePageController {
+  /// translator instance
+  final translator = GoogleTranslator();
   /// app color instance
   final AppColors appColors = AppColors();
   /// textField controller
@@ -27,21 +30,35 @@ class TranslatePageController {
   }
 
   /// go to translation page
-  void goToSelectLanguage({required BuildContext context, required SelectLanguageType languageType}){
+  void goToSelectLanguage({required BuildContext context, required SelectLanguageType languageType, required SelectLanguageProvider selectLanguage, required TranslatePageProvider translateProvider, required StateSetter setState}){
     Navigator.of(context).push(
         AxisPageTransition(
-            child: SelectLanguagePage(selectLanguagePage: languageType),
+            child: SelectLanguagePage(
+              selectLanguagePage: languageType,
+              onChange: (){
+                translateFrom(
+                  selectLanguageProvider: selectLanguage,
+                  translatePageProvider: translateProvider,
+                  setState: setState
+                );
+              },
+            ),
             direction:
             AxisDirection
                 .left));
   }
 
   /// change select language order
-  void changeLanguageOrder({required SelectLanguageProvider selectLanguage}){
+  void changeLanguageOrder({required SelectLanguageProvider selectLanguage, required TranslatePageProvider translateProvider}){
     var _from = selectLanguage.fromLang;
     var _to = selectLanguage.toLang;
+    var _originalText = translateProvider.originalText;
+    var _translatedText = translateProvider.translatedText;
+    textEditingController.text = _translatedText;
     selectLanguage.fromLang = _to;
     selectLanguage.toLang = _from;
+    translateProvider.originalText = _translatedText;
+    translateProvider.translatedText = _originalText;
   }
 
   /// close page
@@ -73,8 +90,17 @@ class TranslatePageController {
      await Clipboard.setData(ClipboardData(text: text));
   }
 
-  translateFrom(){
-
+  translateFrom({required TranslatePageProvider translatePageProvider, required StateSetter setState, required SelectLanguageProvider selectLanguageProvider}) async{
+    if(textEditingController.text.isNotEmpty){
+      await translator.translate(
+          translatePageProvider.originalText,
+          to: selectLanguageProvider.toLang.code.toString().split('-')[0]
+      ).then((value) {
+        setState(() {
+          translatePageProvider.translatedText = value.text;
+        });
+      });
+    }
   }
 
 }

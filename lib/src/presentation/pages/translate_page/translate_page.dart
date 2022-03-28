@@ -111,9 +111,14 @@ class _TranslatePageState extends State<TranslatePage> {
                                     translatePageProvider.closePage = true;
                                   });
                                 },
-                                onChanged: (text){
+                                onChanged: (text) async{
                                   setState((){
                                     translatePageProvider.originalText = text;
+                                    translatePageController.translateFrom(
+                                        translatePageProvider: translatePageProvider,
+                                        setState: setState,
+                                        selectLanguageProvider: languageProvider
+                                    );
                                   });
                                 },
                                 enableSuggestions: true,
@@ -200,7 +205,7 @@ class _TranslatePageState extends State<TranslatePage> {
                                   child: Padding(
                                     padding: EdgeInsets.only(left: 60.w, right: 60.w, top: 38.h, bottom: 40.h),
                                     child: Text(
-                                      translatePageProvider.originalText,
+                                      translatePageProvider.translatedText,
                                       textAlign: TextAlign.left,
                                       style: TextStyle(
                                           color: Colors.blue[200]!,
@@ -232,14 +237,17 @@ class _TranslatePageState extends State<TranslatePage> {
                               /// select translate "from"
                               translatePageController.goToSelectLanguage(
                                   context: context,
-                                  languageType: SelectLanguageType.from
+                                  languageType: SelectLanguageType.from,
+                                setState: setState,
+                                translateProvider: translatePageProvider,
+                                selectLanguage: languageProvider
                               );
                             }
                         ),
                         Padding(
                           padding: EdgeInsets.symmetric(horizontal: 25.w),
                           child: AnimatedOnTapButton(
-                            onTap: () => translatePageController.changeLanguageOrder(selectLanguage: languageProvider),
+                            onTap: () => translatePageController.changeLanguageOrder(selectLanguage: languageProvider, translateProvider:  translatePageProvider),
                             child: SizedBox(
                               width: 100.w,
                               height: 100.w,
@@ -259,7 +267,10 @@ class _TranslatePageState extends State<TranslatePage> {
                               /// select translate "to"
                               translatePageController.goToSelectLanguage(
                                   context: context,
-                                  languageType: SelectLanguageType.to
+                                  languageType: SelectLanguageType.to,
+                                  setState: setState,
+                                  translateProvider: translatePageProvider,
+                                  selectLanguage: languageProvider
                               );
                             }
                         ),
