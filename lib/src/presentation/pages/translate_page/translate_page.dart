@@ -3,6 +3,9 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
 import 'package:flutter_translator_app/src/core/constants/app_colors.dart';
+import 'package:flutter_translator_app/src/core/constants/languages.dart';
+import 'package:flutter_translator_app/src/data/models/language.dart';
+import 'package:flutter_translator_app/src/data/models/translate.dart';
 import 'package:flutter_translator_app/src/presentation/pages/select_language_page/select_language_page.dart';
 import 'package:flutter_translator_app/src/presentation/pages/translate_page/translate_page_controller.dart';
 import 'package:flutter_translator_app/src/presentation/providers/select_language_provider.dart';
@@ -22,10 +25,13 @@ class TranslatePage extends StatefulWidget {
 class _TranslatePageState extends State<TranslatePage> {
   late StreamSubscription<bool> keyboardSubscription;
   final TranslatePageController translatePageController = TranslatePageController();
+  /// mediaQuery
+  final ScreenUtil screenUtil = ScreenUtil();
 
   @override
   void initState() {
     var keyboardVisibilityController = KeyboardVisibilityController();
+
     translatePageController.validateClipBoardData(
         translatePageProvider: Provider.of<TranslatePageProvider>(context, listen: false)
     );
@@ -51,9 +57,6 @@ class _TranslatePageState extends State<TranslatePage> {
   }
   @override
   Widget build(BuildContext context) {
-
-    /// mediaQuery
-    final ScreenUtil screenUtil = ScreenUtil();
     return Consumer2<TranslatePageProvider, SelectLanguageProvider>(
       builder: (_, translatePageProvider, languageProvider, __){
         return WillPopScope(
@@ -93,11 +96,12 @@ class _TranslatePageState extends State<TranslatePage> {
                         children: [
                           if(translatePageController.textEditingController.text.isNotEmpty)
                             _currentLanguageToolbar(
-                              color: translatePageController.appColors.colorText1,
+                                color: translatePageController.appColors.colorText1,
                                 language: languageProvider.fromLang.name.toString().split(' ')[0],
                                 onTapCopy: () => translatePageController.setClipBoardData(text: translatePageProvider.originalText),
                                 onTapSpeech: (){}
                             ),
+                          /// text field
                           Padding(
                               padding: EdgeInsets.only(left: 60.w, right: 60.w, top: 38.h, bottom: 40.h),
                               child: TextField(
@@ -114,11 +118,23 @@ class _TranslatePageState extends State<TranslatePage> {
                                 onChanged: (text) async{
                                   setState((){
                                     translatePageProvider.originalText = text;
-                                    translatePageController.translateFrom(
-                                        translatePageProvider: translatePageProvider,
-                                        setState: setState,
-                                        selectLanguageProvider: languageProvider
-                                    );
+                                    translatePageProvider.getTranslation(
+                                        from: languageProvider.fromLang.code!.split('-')[0],
+                                        to: languageProvider.toLang.code!.split('-')[0],
+                                        text: text
+                                    ).then((value){
+                                      translatePageProvider.translatedText = value.text!;
+                                      translatePageProvider.translate = Translate.fromJson(value.toJson());
+                                      var _from = LanguagesList().languageList.where((element)
+                                      => element['code'].toString().split('-').contains(translatePageProvider.translate!.sourceLanguage));
+                                      late Language _fromLanguage;
+                                      for(var t in _from){
+                                        _fromLanguage = Language.fromJson(t);
+                                      }
+                                      if(value.isCorrect!){
+                                        languageProvider.detectedLang = _fromLanguage;
+                                      }
+                                    });
                                   });
                                 },
                                 enableSuggestions: true,
@@ -136,6 +152,7 @@ class _TranslatePageState extends State<TranslatePage> {
                                 ),
                               )
                           ),
+                          /// clipboard button
                           if(translatePageProvider.clipBoardHasData && translatePageController.textEditingController.text.isEmpty || translatePageProvider.originalText.isEmpty)
                             Column(
                               mainAxisSize: MainAxisSize.min,
@@ -182,10 +199,35 @@ class _TranslatePageState extends State<TranslatePage> {
                                 )
                               ],
                             ),
+                          /// translation data
                           if(translatePageProvider.originalText.trim().isNotEmpty)
                             Column(
                               mainAxisSize: MainAxisSize.min,
                               children: [
+                                /// show detect language
+                                if(translatePageProvider.translate != null)
+                                  if(translatePageProvider.translate!.sourceLanguage != languageProvider.fromLang.code!.split('-')[0] && translatePageProvider.translate!.sourceLanguage != '')
+                                    _correctionContainer(
+                                      onTap: () => translatePageController
+                                          .changeToDetectLanguage(selectLanguage: languageProvider, translateProvider:  translatePageProvider),
+                                      title: 'Translate from',
+                                      text: LanguagesList().languageList.where((element)
+                                      => element['code'].toString().split('-').contains(translatePageProvider.translate!.sourceLanguage)).map((e) => e['name']).toString(),
+                                    ),
+                                /// show correction text
+                                if(translatePageProvider.translate != null)
+                                  if(!translatePageProvider.translate!.isCorrect!)
+                                    _correctionContainer(
+                                      onTap: () {
+                                        setState(() {
+                                          translatePageController
+                                              .textCorrection(selectLanguage: languageProvider, translateProvider:  translatePageProvider);
+                                        });
+                                      },
+                                      title: 'Did do you mean',
+                                      text: translatePageProvider.translate!.text!,
+                                    ),
+                                /// separated line
                                 Container(
                                   height: 5.h,
                                   width: 350.w,
@@ -195,22 +237,37 @@ class _TranslatePageState extends State<TranslatePage> {
                                   ),
                                 ),
                                 _currentLanguageToolbar(
-                                  color: Colors.blue[200]!,
+                                    color: Colors.blue[200]!,
                                     language: languageProvider.toLang.name.toString().split(' ')[0],
                                     onTapCopy: () => translatePageController.setClipBoardData(text: translatePageProvider.translatedText),
                                     onTapSpeech: (){}
                                 ),
+                                /// result translation text
                                 Align(
                                   alignment: Alignment.bottomLeft,
                                   child: Padding(
                                     padding: EdgeInsets.only(left: 60.w, right: 60.w, top: 38.h, bottom: 40.h),
-                                    child: Text(
-                                      translatePageProvider.translatedText,
-                                      textAlign: TextAlign.left,
-                                      style: TextStyle(
-                                          color: Colors.blue[200]!,
-                                          fontSize: 60.sp
-                                      ),
+                                    child: Column(
+                                      mainAxisSize: MainAxisSize.min,
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          translatePageProvider.translatedText,
+                                          textAlign: TextAlign.left,
+                                          style: TextStyle(
+                                              color: Colors.blue[200]!,
+                                              fontSize: 60.sp
+                                          ),
+                                        ),
+                                        20.verticalSpace,
+                                        /// pronunciation container
+                                        if(translatePageProvider.translate != null)
+                                          if(translatePageProvider.translate!.source!.pronunciation!.isNotEmpty)
+                                            _pronunciation(
+                                                translatePageProvider: translatePageProvider,
+                                                textColor: Colors.blue[200]!
+                                            ),
+                                      ],
                                     ),
                                   ),
                                 ),
@@ -222,6 +279,8 @@ class _TranslatePageState extends State<TranslatePage> {
                     ),
                   ),
                   25.verticalSpace,
+
+                  /// change language buttons
                   Align(
                     alignment: Alignment.bottomCenter,
                     child: Row(
@@ -238,9 +297,9 @@ class _TranslatePageState extends State<TranslatePage> {
                               translatePageController.goToSelectLanguage(
                                   context: context,
                                   languageType: SelectLanguageType.from,
-                                setState: setState,
-                                translateProvider: translatePageProvider,
-                                selectLanguage: languageProvider
+                                  setState: setState,
+                                  translateProvider: translatePageProvider,
+                                  selectLanguage: languageProvider
                               );
                             }
                         ),
@@ -402,6 +461,97 @@ class _TranslatePageState extends State<TranslatePage> {
           ),
         ),
       ],
+    );
+  }
+
+  Widget _correctionContainer({
+    required String title,
+    required String text,
+    required Function() onTap,
+  }){
+    return Padding(
+      padding: EdgeInsets.only(right: 50.w, left: 50.w, bottom: 60.h),
+      child: AnimatedOnTapButton(
+        onTap: onTap,
+        child: Container(
+          height: 160.h,
+          width: screenUtil.screenWidth,
+          padding: EdgeInsets.symmetric(horizontal: 40.w),
+          decoration: BoxDecoration(
+              color: translatePageController.appColors.containerColor,
+              borderRadius: BorderRadius.circular(15),
+              boxShadow: [
+                BoxShadow(
+                    color: Colors.black38.withOpacity(0.1),
+                    spreadRadius: 1,
+                    blurRadius: 5,
+                    blurStyle: BlurStyle.inner,
+                    offset: const Offset(0, 1.5)
+                )
+              ]
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.max,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Column(
+                mainAxisSize: MainAxisSize.min,
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    textAlign: TextAlign.left,
+                    style: TextStyle(
+                        color: translatePageController.appColors.colorText2,
+                        fontSize: 40.sp
+                    ),
+                  ),
+                  5.verticalSpace,
+                  Text(
+                    text,
+                    textAlign: TextAlign.left,
+                    style: TextStyle(
+                        color: Colors.blue[200]!,
+                        fontSize: 45.sp,
+                        fontWeight: FontWeight.w500
+                    ),
+                  ),
+                ],
+              ),
+              SizedBox(
+                width: 100.w,
+                height: 100.w,
+                child: Icon(
+                  Icons.arrow_forward,
+                  color: Colors.blue[200]!,
+                  size: 70.w,
+                ),
+              )
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _pronunciation({required TranslatePageProvider translatePageProvider, required Color textColor}){
+    return SizedBox(
+      width: screenUtil.screenWidth,
+      height: 60.h,
+      child: SingleChildScrollView(
+        scrollDirection: Axis.horizontal,
+        child: Text(
+          translatePageProvider.translate!.source!.pronunciation![0],
+          style: TextStyle(
+              color: textColor,
+              fontSize: 40.sp,
+              wordSpacing: 0.1,
+              letterSpacing: 0.5
+          ),
+        ),
+      ),
     );
   }
 }

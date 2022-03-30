@@ -28,4 +28,11 @@ class SelectLanguageProvider extends ChangeNotifier {
     _toLang = lang;
     notifyListeners();
   }
+
+  Language _detectedLang = Language();
+  Language get detectedLang => _detectedLang;
+  set detectedLang(Language lang){
+    _detectedLang= lang;
+    notifyListeners();
+  }
 }

@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import 'package:flutter_translator_app/src/core/constants/app_colors.dart';
+import 'package:flutter_translator_app/src/core/constants/languages.dart';
+import 'package:flutter_translator_app/src/data/models/language.dart';
 import 'package:flutter_translator_app/src/presentation/pages/history_page/history_page.dart';
 import 'package:flutter_translator_app/src/presentation/pages/select_language_page/select_language_page.dart';
 import 'package:flutter_translator_app/src/presentation/providers/select_language_provider.dart';
@@ -49,7 +51,7 @@ class TranslatePageController {
   }
 
   /// change select language order
-  void changeLanguageOrder({required SelectLanguageProvider selectLanguage, required TranslatePageProvider translateProvider}){
+  void changeLanguageOrder({required SelectLanguageProvider selectLanguage, required TranslatePageProvider translateProvider, }){
     var _from = selectLanguage.fromLang;
     var _to = selectLanguage.toLang;
     var _originalText = translateProvider.originalText;
@@ -59,6 +61,33 @@ class TranslatePageController {
     selectLanguage.toLang = _from;
     translateProvider.originalText = _translatedText;
     translateProvider.translatedText = _originalText;
+    textEditingController.selection = TextSelection.fromPosition(TextPosition(offset: textEditingController.text.length));
+
+  }
+
+  /// auto detect lang
+  void changeToDetectLanguage({required SelectLanguageProvider selectLanguage, required TranslatePageProvider translateProvider}){
+    var _from = selectLanguage.fromLang;
+    var _to = selectLanguage.detectedLang;
+    var _originalText = translateProvider.originalText;
+    var _translatedText = translateProvider.translatedText;
+    textEditingController.text = _translatedText;
+    selectLanguage.fromLang = _to;
+    selectLanguage.toLang = _from;
+    translateProvider.originalText = _translatedText;
+    translateProvider.translatedText = _originalText;
+    translateProvider.getTranslation(from: _to.code!.split('-')[0], to: _from.code!.split('-')[0], text: _translatedText);
+    textEditingController.selection = TextSelection.fromPosition(TextPosition(offset: textEditingController.text.length));
+  }
+
+  Future<void> textCorrection({required SelectLanguageProvider selectLanguage, required TranslatePageProvider translateProvider}) async{
+    var _from = selectLanguage.fromLang;
+    var _to = selectLanguage.toLang;
+    textEditingController.text = translateProvider.translate!.text!;
+    translateProvider.originalText = translateProvider.translate!.text!;
+    await translateProvider.getTranslation(from: _to.code!.split('-')[0], to: _from.code!.split('-')[0], text: translateProvider.translate!.text!);
+    textEditingController.selection = TextSelection.fromPosition(TextPosition(offset: textEditingController.text.length));
+    return;
   }
 
   /// close page

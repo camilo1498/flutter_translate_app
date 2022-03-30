@@ -20,6 +20,7 @@ dependencies:
   intl: ^0.17.0
   flutter_screenutil: ^5.3.1
   flutter_keyboard_visibility: ^5.2.0
+  dio: ^4.0.5
 
 dev_dependencies:
   flutter_test:

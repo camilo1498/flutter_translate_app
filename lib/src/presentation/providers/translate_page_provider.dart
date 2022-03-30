@@ -1,6 +1,17 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_translator_app/src/data/models/api_response.dart';
+import 'package:flutter_translator_app/src/data/models/translate.dart';
 
 class TranslatePageProvider extends ChangeNotifier {
+  /// endpoint
+  final String url = 'https://translate-google-api.herokuapp.com/api/translate';
+
+  /// loading
+  bool _loading = false;
+
+  /// Dio instance
+  final Dio dio = Dio();
 
   String _originalText = '';
   String get originalText => _originalText;
@@ -30,4 +41,51 @@ class TranslatePageProvider extends ChangeNotifier {
     _clipBoardHasData = data;
     notifyListeners();
   }
+
+  Translate? _translate;
+  Translate? get translate => _translate;
+  set translate(Translate? data){
+    _translate = data;
+    notifyListeners();
+  }
+
+  Future<Translate> getTranslation({required String from, required String to, required String text}) async{
+    try{
+      _loading = true;
+      notifyListeners();
+      if(text.trim() != ''){
+        Response response = await dio.get(
+            url,
+            queryParameters: <String, dynamic>{
+              'from': from,
+              'to': to,
+              "text": text
+            },
+            options: Options(
+                headers: {
+                  'Connection': 'keep-alive',
+                  'Content-Type': 'application/json'
+                }
+            )
+        );
+        ApiResponse apiResponse = ApiResponse.fromJson(response.data);
+        if(apiResponse.success == true){
+          print(apiResponse.data!.toJson());
+          return Translate.fromJson(apiResponse.data!.toJson());
+        } else{
+          return Translate();
+        }
+      }
+      return Translate();
+
+    } on DioError catch(err){
+      ApiResponse response = ApiResponse.fromJson(err.response!.data);
+      print(response.message);
+      return Translate();
+    } finally{
+      _loading = false;
+      notifyListeners();
+    }
+  }
+
 }
