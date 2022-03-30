@@ -1,22 +1,20 @@
-import 'package:flutter_translator_app/src/data/models/content.dart';
-
 class Synonym {
 
-  String? type;
-  List<Content>? content;
+  String? id;
+  List<String>? words;
 
   Synonym({
-    this.type,
-    this.content,
+    this.id,
+    this.words,
   });
 
   factory Synonym.fromJson(Map<String, dynamic> json) => Synonym(
-    type: json["type"],
-    content: List<Content>.from(json["content"].map((x) => Content.fromJson(x))),
+    id: json["id"],
+    words: List<String>.from(json["words"].map((x) => x)),
   );
 
   Map<String, dynamic> toJson() => {
-    "type": type,
-    "content": List<dynamic>.from(content!.map((x) => x.toJson())),
+    "id": id,
+    "words": List<dynamic>.from(words!.map((x) => x)),
   };
 }

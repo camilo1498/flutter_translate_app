@@ -5,6 +5,7 @@ import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
 import 'package:flutter_translator_app/src/core/constants/app_colors.dart';
 import 'package:flutter_translator_app/src/core/constants/languages.dart';
 import 'package:flutter_translator_app/src/data/models/language.dart';
+import 'package:flutter_translator_app/src/data/models/synonym.dart';
 import 'package:flutter_translator_app/src/data/models/translate.dart';
 import 'package:flutter_translator_app/src/presentation/pages/select_language_page/select_language_page.dart';
 import 'package:flutter_translator_app/src/presentation/pages/translate_page/translate_page_controller.dart';
@@ -289,7 +290,7 @@ class _TranslatePageState extends State<TranslatePage> {
                                                     borderRadius: BorderRadius.circular(10),
                                                     border: Border.all(
                                                         width: 3.w,
-                                                        color: Colors.blue[400]!
+                                                        color: Colors.blue[900]!,
                                                     )
                                                 ),
                                                 child: Column(
@@ -322,7 +323,7 @@ class _TranslatePageState extends State<TranslatePage> {
                                                                 translatePageProvider.translate!.translations![index].type.toString(),
                                                                 textAlign: TextAlign.left,
                                                                 style: TextStyle(
-                                                                    color: Colors.blue[400]!,
+                                                                    color: Colors.lightBlueAccent[100],
                                                                     fontSize: 38.sp,
                                                                     fontWeight: FontWeight.w500
                                                                 ),
@@ -384,7 +385,7 @@ class _TranslatePageState extends State<TranslatePage> {
                                                     borderRadius: BorderRadius.circular(10),
                                                     border: Border.all(
                                                         width: 3.w,
-                                                        color: Colors.blue[400]!
+                                                        color: Colors.blue[900]!
                                                     )
                                                 ),
                                                 child: Column(
@@ -415,7 +416,7 @@ class _TranslatePageState extends State<TranslatePage> {
                                                                 translatePageProvider.translate!.source!.definitions![index].type!,
                                                                 textAlign: TextAlign.left,
                                                                 style: TextStyle(
-                                                                    color: Colors.blue[400]!,
+                                                                    color: Colors.lightBlueAccent[100],
                                                                     fontSize: 38.sp,
                                                                     fontWeight: FontWeight.w500
                                                                 ),
@@ -439,7 +440,7 @@ class _TranslatePageState extends State<TranslatePage> {
                                                                             height: 60.w,
                                                                             alignment: Alignment.center,
                                                                             decoration: BoxDecoration(
-                                                                              color: Colors.blue[400]!,
+                                                                              color: Colors.blue[900]!,
                                                                               shape: BoxShape.circle
                                                                             ),
                                                                             child: Text(
@@ -467,15 +468,76 @@ class _TranslatePageState extends State<TranslatePage> {
                                                                                 ),
                                                                                 15.verticalSpace,
                                                                                 Text(
-                                                                                  '"${translatePageProvider.translate!.source!.definitions![index].definitions![defIndex].example!}"',
+                                                                                  translatePageProvider.translate!.source!.definitions![index].definitions![defIndex].example != null
+                                                                                      ? '"${translatePageProvider.translate!.source!.definitions![index].definitions![defIndex].example!}"'
+                                                                                      : '',
                                                                                   style: TextStyle(
                                                                                       color: translatePageController.appColors.colorText2,
-                                                                                      fontSize: 34.sp,
+                                                                                      fontSize: 37.sp,
                                                                                       fontWeight: FontWeight.w500
                                                                                   ),
                                                                                 ),
-                                                                                // if(translatePageProvider.translate!.source!.synonyms != null)
-                                                                                //   if()
+                                                                                40.verticalSpace,
+                                                                                if(translatePageProvider.translate!.source!.synonyms != null)
+                                                                                  ListView.builder(
+                                                                                    shrinkWrap: true,
+                                                                                    itemCount: translatePageProvider.translate!.source!.synonyms!.length,
+                                                                                    physics: const NeverScrollableScrollPhysics(),
+                                                                                    itemBuilder: (context, synIndex){
+                                                                                      List<Synonym> listSynonym= [];
+                                                                                      if(translatePageProvider.translate!.source!.synonyms![synIndex].isNotEmpty){
+                                                                                        for(int i=0; i< translatePageProvider.translate!.source!.synonyms![synIndex].length; i++){
+                                                                                          listSynonym.add(
+                                                                                            Synonym(
+                                                                                              id: translatePageProvider.translate!.source!.synonyms![synIndex][i].id,
+                                                                                              words: translatePageProvider.translate!.source!.synonyms![synIndex][i].words
+                                                                                            )
+                                                                                          );
+                                                                                        }
+
+                                                                                        return ListView.builder(
+                                                                                          shrinkWrap: true,
+                                                                                          itemCount: translatePageProvider.translate!.source!.synonyms![synIndex].length,
+                                                                                          physics: const NeverScrollableScrollPhysics(),
+                                                                                          itemBuilder: (context, subSymIndex){
+                                                                                            if(translatePageProvider.translate!.source!.synonyms![synIndex][subSymIndex].id
+                                                                                                == translatePageProvider.translate!.source!.definitions![index].definitions![defIndex].id){
+                                                                                              return Wrap(
+                                                                                                children: [
+                                                                                                  ...translatePageProvider.translate!.source!.synonyms![synIndex][subSymIndex].words!.map((item){
+                                                                                                    return Padding(
+                                                                                                      padding: EdgeInsets.symmetric(vertical: 10.h, horizontal: 15.w),
+                                                                                                      child: Container(
+                                                                                                        padding: EdgeInsets.symmetric(vertical: 15.h, horizontal: 35.w),
+                                                                                                        decoration:  BoxDecoration(
+                                                                                                          border: Border.all(
+                                                                                                            color: translatePageController.appColors.iconColor2,
+                                                                                                          ),
+                                                                                                          borderRadius: BorderRadius.circular(20)
+                                                                                                        ),
+                                                                                                        child: Text(
+                                                                                                          item,
+                                                                                                          style: TextStyle(
+                                                                                                              color: Colors.lightBlueAccent[100],
+                                                                                                              fontSize: 34.sp,
+                                                                                                              fontWeight: FontWeight.w600
+                                                                                                          ),
+                                                                                                        ),
+                                                                                                      ),
+                                                                                                    );
+                                                                                                  })
+                                                                                                ],
+                                                                                              );
+                                                                                            } else{
+                                                                                              return Container();
+                                                                                            }
+                                                                                          },
+                                                                                        );
+                                                                                      } else{
+                                                                                        return Container();
+                                                                                      }
+                                                                                    },
+                                                                                  )
                                                                               ],
                                                                             ),
                                                                           ),
