@@ -77,9 +77,6 @@ class TranslatePageProvider extends ChangeNotifier {
         );
         ApiResponse apiResponse = ApiResponse.fromJson(response.data);
         if(apiResponse.success == true){
-          print('========================');
-          print(apiResponse.data!.toJson());
-          print('========================');
           return Translate.fromJson(apiResponse.data!.toJson());
         } else{
           return Translate();
