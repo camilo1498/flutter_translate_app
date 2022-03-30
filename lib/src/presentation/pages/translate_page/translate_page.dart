@@ -38,6 +38,9 @@ class _TranslatePageState extends State<TranslatePage> {
     // Subscribe
     keyboardSubscription = keyboardVisibilityController.onChange.listen((bool visible) {
       if(!visible){
+        setState(() {
+          Provider.of<TranslatePageProvider>(context, listen: false).showKeyBoard = false;
+        });
         translatePageController.focusNode.unfocus();
         if(
         translatePageController.textEditingController.text.isEmpty
@@ -46,6 +49,9 @@ class _TranslatePageState extends State<TranslatePage> {
         }
       } else{
         Provider.of<TranslatePageProvider>(context, listen: false).closePage = true;
+        setState(() {
+          Provider.of<TranslatePageProvider>(context, listen: false).showKeyBoard = true;
+        });
       }
     });
     super.initState();
@@ -59,285 +65,506 @@ class _TranslatePageState extends State<TranslatePage> {
   Widget build(BuildContext context) {
     return Consumer2<TranslatePageProvider, SelectLanguageProvider>(
       builder: (_, translatePageProvider, languageProvider, __){
-        return WillPopScope(
-          onWillPop: () async{
-            setState(() {
-              translatePageProvider.closePage = true;
-              translatePageProvider.translatedText = '';
-              translatePageProvider.originalText = '';
-            });
-            return true;
+        return NotificationListener<OverscrollIndicatorNotification>(
+          onNotification: (overscroll){
+            overscroll.disallowIndicator();
+            return false;
           },
-          child: Scaffold(
-            backgroundColor: translatePageController.appColors.backgroundColor,
-            appBar: PreferredSize(
-              preferredSize: Size(screenUtil.screenWidth, 170.w),
-              child: _appBar(
-                  context: context,
-                  translatePageProvider: translatePageProvider,
-                  appColors: translatePageController.appColors,
-                  translatePageController: translatePageController
+          child: WillPopScope(
+            onWillPop: () async{
+              setState(() {
+                translatePageProvider.closePage = true;
+                translatePageProvider.translatedText = '';
+                translatePageProvider.originalText = '';
+              });
+              return true;
+            },
+            child: Scaffold(
+              backgroundColor: translatePageController.appColors.backgroundColor,
+              appBar: PreferredSize(
+                preferredSize: Size(screenUtil.screenWidth, 170.w),
+                child: _appBar(
+                    context: context,
+                    translatePageProvider: translatePageProvider,
+                    appColors: translatePageController.appColors,
+                    translatePageController: translatePageController
+                ),
               ),
-            ),
-            body: SizedBox(
-              height: screenUtil.screenHeight,
-              width: screenUtil.screenWidth,
-              child: Column(
-                mainAxisSize: MainAxisSize.max,
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  Expanded(
-                    child: SingleChildScrollView(
-                      scrollDirection: Axis.vertical,
-                      child: Column(
-                        mainAxisSize: MainAxisSize.max,
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          if(translatePageController.textEditingController.text.isNotEmpty)
-                            _currentLanguageToolbar(
-                                color: translatePageController.appColors.colorText1,
-                                language: languageProvider.fromLang.name.toString().split(' ')[0],
-                                onTapCopy: () => translatePageController.setClipBoardData(text: translatePageProvider.originalText),
-                                onTapSpeech: (){}
-                            ),
-                          /// text field
-                          Padding(
-                              padding: EdgeInsets.only(left: 60.w, right: 60.w, top: 38.h, bottom: 40.h),
-                              child: TextField(
-                                controller: translatePageController.textEditingController,
-                                focusNode: translatePageController.focusNode,
-                                autofocus: true,
-                                maxLines: null,
-                                minLines: 1,
-                                onTap: (){
-                                  setState(() {
-                                    translatePageProvider.closePage = true;
-                                  });
-                                },
-                                onChanged: (text) async{
-                                  setState((){
-                                    translatePageProvider.originalText = text;
-                                    translatePageProvider.getTranslation(
-                                        from: languageProvider.fromLang.code!.split('-')[0],
-                                        to: languageProvider.toLang.code!.split('-')[0],
-                                        text: text
-                                    ).then((value){
-                                      translatePageProvider.translatedText = value.text!;
-                                      translatePageProvider.translate = Translate.fromJson(value.toJson());
-                                      var _from = LanguagesList().languageList.where((element)
-                                      => element['code'].toString().split('-').contains(translatePageProvider.translate!.sourceLanguage));
-                                      late Language _fromLanguage;
-                                      for(var t in _from){
-                                        _fromLanguage = Language.fromJson(t);
-                                      }
-                                      if(value.isCorrect!){
-                                        languageProvider.detectedLang = _fromLanguage;
-                                      }
+              body: SizedBox(
+                height: screenUtil.screenHeight,
+                width: screenUtil.screenWidth,
+                child: Column(
+                  mainAxisSize: MainAxisSize.max,
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    Expanded(
+                      child: SingleChildScrollView(
+                        scrollDirection: Axis.vertical,
+                        child: Column(
+                          mainAxisSize: MainAxisSize.max,
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            if(translatePageController.textEditingController.text.isNotEmpty)
+                              _currentLanguageToolbar(
+                                  color: translatePageController.appColors.colorText1,
+                                  language: languageProvider.fromLang.name.toString().split(' ')[0],
+                                  onTapCopy: () => translatePageController.setClipBoardData(text: translatePageProvider.originalText),
+                                  onTapSpeech: (){}
+                              ),
+                            /// text field
+                            Padding(
+                                padding: EdgeInsets.only(left: 60.w, right: 60.w, top: 38.h, bottom: 40.h),
+                                child: TextField(
+                                  controller: translatePageController.textEditingController,
+                                  focusNode: translatePageController.focusNode,
+                                  autofocus: true,
+                                  maxLines: null,
+                                  minLines: 1,
+                                  onTap: (){
+                                    setState(() {
+                                      translatePageProvider.closePage = true;
                                     });
-                                  });
-                                },
-                                enableSuggestions: true,
-                                decoration: InputDecoration(
-                                  border: InputBorder.none,
-                                  hintText: 'Enter Text',
-                                  hintStyle: TextStyle(
-                                      color: translatePageController.appColors.colorText1.withOpacity(0.7),
-                                      fontSize: 80.sp
+                                  },
+                                  onChanged: (text) async{
+                                    setState((){
+                                      translatePageProvider.originalText = text;
+                                      translatePageProvider.getTranslation(
+                                          from: languageProvider.fromLang.code!.split('-')[0],
+                                          to: languageProvider.toLang.code!.split('-')[0],
+                                          text: text
+                                      ).then((value){
+                                        translatePageProvider.translatedText = value.text!;
+                                        translatePageProvider.translate = Translate.fromJson(value.toJson());
+                                        var _from = LanguagesList().languageList.where((element)
+                                        => element['code'].toString().split('-').contains(translatePageProvider.translate!.sourceLanguage));
+                                        late Language _fromLanguage;
+                                        for(var t in _from){
+                                          _fromLanguage = Language.fromJson(t);
+                                        }
+                                        if(value.isCorrect!){
+                                          languageProvider.detectedLang = _fromLanguage;
+                                        }
+                                      });
+                                    });
+                                  },
+                                  enableSuggestions: true,
+                                  decoration: InputDecoration(
+                                    border: InputBorder.none,
+                                    hintText: 'Enter Text',
+                                    hintStyle: TextStyle(
+                                        color: translatePageController.appColors.colorText1.withOpacity(0.7),
+                                        fontSize: 80.sp
+                                    ),
                                   ),
-                                ),
-                                style: TextStyle(
-                                    color: translatePageController.appColors.colorText1,
-                                    fontSize: 60.sp
-                                ),
-                              )
-                          ),
-                          /// clipboard button
-                          if(translatePageProvider.clipBoardHasData && translatePageController.textEditingController.text.isEmpty || translatePageProvider.originalText.isEmpty)
-                            Column(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                65.verticalSpace,
-                                Align(
-                                  alignment: Alignment.centerLeft,
-                                  child: Padding(
-                                    padding: EdgeInsets.symmetric(horizontal: 80.w),
-                                    child: AnimatedOnTapButton(
-                                      onTap: () => translatePageController.pasteClipBoardData(translatePageProvider: translatePageProvider),
-                                      child: Container(
-                                        width: 280.w,
-                                        height: 95.h,
-                                        alignment: Alignment.center,
-                                        decoration: BoxDecoration(
-                                            color: translatePageController.appColors.buttonColor2,
-                                            borderRadius: BorderRadius.circular(25)
-                                        ),
-                                        padding: EdgeInsets.symmetric(horizontal: 15.w, vertical: 10.h),
-                                        child: Row(
-                                          mainAxisSize: MainAxisSize.min,
-                                          children: [
-                                            Icon(
-                                              Icons.paste,
-                                              color: translatePageController.appColors.colorText3,
-                                              size: 50.w,
-                                            ),
-                                            15.horizontalSpace,
-                                            Text(
-                                              'Paste',
-                                              style: TextStyle(
-                                                  fontSize: 40.sp,
-                                                  fontWeight: FontWeight.w600,
-                                                  letterSpacing: 0.3,
-                                                  color: translatePageController.appColors.colorText3
+                                  style: TextStyle(
+                                      color: translatePageController.appColors.colorText1,
+                                      fontSize: 60.sp
+                                  ),
+                                )
+                            ),
+                            /// clipboard button
+                            if(translatePageProvider.clipBoardHasData && translatePageController.textEditingController.text.isEmpty || translatePageProvider.originalText.isEmpty)
+                              Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  65.verticalSpace,
+                                  Align(
+                                    alignment: Alignment.centerLeft,
+                                    child: Padding(
+                                      padding: EdgeInsets.symmetric(horizontal: 80.w),
+                                      child: AnimatedOnTapButton(
+                                        onTap: () => translatePageController.pasteClipBoardData(translatePageProvider: translatePageProvider),
+                                        child: Container(
+                                          width: 280.w,
+                                          height: 95.h,
+                                          alignment: Alignment.center,
+                                          decoration: BoxDecoration(
+                                              color: translatePageController.appColors.buttonColor2,
+                                              borderRadius: BorderRadius.circular(25)
+                                          ),
+                                          padding: EdgeInsets.symmetric(horizontal: 15.w, vertical: 10.h),
+                                          child: Row(
+                                            mainAxisSize: MainAxisSize.min,
+                                            children: [
+                                              Icon(
+                                                Icons.paste,
+                                                color: translatePageController.appColors.colorText3,
+                                                size: 50.w,
                                               ),
-                                            )
-                                          ],
+                                              15.horizontalSpace,
+                                              Text(
+                                                'Paste',
+                                                style: TextStyle(
+                                                    fontSize: 40.sp,
+                                                    fontWeight: FontWeight.w600,
+                                                    letterSpacing: 0.3,
+                                                    color: translatePageController.appColors.colorText3
+                                                ),
+                                              )
+                                            ],
+                                          ),
                                         ),
                                       ),
                                     ),
-                                  ),
-                                )
-                              ],
-                            ),
-                          /// translation data
-                          if(translatePageProvider.originalText.trim().isNotEmpty)
-                            Column(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                /// show detect language
-                                if(translatePageProvider.translate != null)
-                                  if(translatePageProvider.translate!.sourceLanguage != languageProvider.fromLang.code!.split('-')[0] && translatePageProvider.translate!.sourceLanguage != '')
-                                    _correctionContainer(
-                                      onTap: () => translatePageController
-                                          .changeToDetectLanguage(selectLanguage: languageProvider, translateProvider:  translatePageProvider),
-                                      title: 'Translate from',
-                                      text: LanguagesList().languageList.where((element)
-                                      => element['code'].toString().split('-').contains(translatePageProvider.translate!.sourceLanguage)).map((e) => e['name']).toString(),
+                                  )
+                                ],
+                              ),
+                            /// translation data
+                            if(translatePageProvider.originalText.trim().isNotEmpty)
+                              Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  /// show detect language
+                                  if(translatePageProvider.translate != null)
+                                    if(translatePageProvider.translate!.sourceLanguage != languageProvider.fromLang.code!.split('-')[0] && translatePageProvider.translate!.sourceLanguage != '')
+                                      _correctionContainer(
+                                        onTap: () => translatePageController
+                                            .changeToDetectLanguage(selectLanguage: languageProvider, translateProvider:  translatePageProvider),
+                                        title: 'Translate from',
+                                        text: LanguagesList().languageList.where((element)
+                                        => element['code'].toString().split('-').contains(translatePageProvider.translate!.sourceLanguage)).map((e) => e['name']).toString(),
+                                      ),
+                                  /// show correction text
+                                  if(translatePageProvider.translate != null)
+                                    if(!translatePageProvider.translate!.isCorrect!)
+                                      _correctionContainer(
+                                        onTap: () {
+                                          setState(() {
+                                            translatePageController
+                                                .textCorrection(selectLanguage: languageProvider, translateProvider:  translatePageProvider);
+                                          });
+                                        },
+                                        title: 'Did do you mean',
+                                        text: translatePageProvider.translate!.text!,
+                                      ),
+                                  /// separated line
+                                  Container(
+                                    height: 5.h,
+                                    width: 350.w,
+                                    decoration: BoxDecoration(
+                                        color: Colors.blue,
+                                        borderRadius: BorderRadius.circular(80)
                                     ),
-                                /// show correction text
-                                if(translatePageProvider.translate != null)
-                                  if(!translatePageProvider.translate!.isCorrect!)
-                                    _correctionContainer(
-                                      onTap: () {
-                                        setState(() {
-                                          translatePageController
-                                              .textCorrection(selectLanguage: languageProvider, translateProvider:  translatePageProvider);
-                                        });
-                                      },
-                                      title: 'Did do you mean',
-                                      text: translatePageProvider.translate!.text!,
-                                    ),
-                                /// separated line
-                                Container(
-                                  height: 5.h,
-                                  width: 350.w,
-                                  decoration: BoxDecoration(
-                                      color: Colors.blue,
-                                      borderRadius: BorderRadius.circular(80)
                                   ),
-                                ),
-                                _currentLanguageToolbar(
-                                    color: Colors.blue[200]!,
-                                    language: languageProvider.toLang.name.toString().split(' ')[0],
-                                    onTapCopy: () => translatePageController.setClipBoardData(text: translatePageProvider.translatedText),
-                                    onTapSpeech: (){}
-                                ),
-                                /// result translation text
-                                Align(
-                                  alignment: Alignment.bottomLeft,
-                                  child: Padding(
-                                    padding: EdgeInsets.only(left: 60.w, right: 60.w, top: 38.h, bottom: 40.h),
-                                    child: Column(
-                                      mainAxisSize: MainAxisSize.min,
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      children: [
-                                        Text(
-                                          translatePageProvider.translatedText,
-                                          textAlign: TextAlign.left,
-                                          style: TextStyle(
-                                              color: Colors.blue[200]!,
-                                              fontSize: 60.sp
-                                          ),
-                                        ),
-                                        20.verticalSpace,
-                                        /// pronunciation container
-                                        if(translatePageProvider.translate != null)
-                                          if(translatePageProvider.translate!.source!.pronunciation!.isNotEmpty)
-                                            _pronunciation(
-                                                translatePageProvider: translatePageProvider,
-                                                textColor: Colors.blue[200]!
+                                  _currentLanguageToolbar(
+                                      color: Colors.blue[200]!,
+                                      language: languageProvider.toLang.name.toString().split(' ')[0],
+                                      onTapCopy: () => translatePageController.setClipBoardData(text: translatePageProvider.translatedText),
+                                      onTapSpeech: (){}
+                                  ),
+                                  /// result translation text
+                                  Align(
+                                    alignment: Alignment.bottomLeft,
+                                    child: Padding(
+                                      padding: EdgeInsets.only(left: 50.w, right: 50.w, top: 38.h, bottom: 40.h),
+                                      child: Column(
+                                        mainAxisSize: MainAxisSize.min,
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            translatePageProvider.translatedText,
+                                            textAlign: TextAlign.left,
+                                            style: TextStyle(
+                                                color: Colors.blue[200]!,
+                                                fontSize: 60.sp
                                             ),
-                                      ],
+                                          ),
+                                          20.verticalSpace,
+                                          /// pronunciation container
+                                          if(translatePageProvider.translate != null)
+                                            if(translatePageProvider.translate!.source!.pronunciation!.isNotEmpty)
+                                              _pronunciation(
+                                                  translatePageProvider: translatePageProvider,
+                                                  textColor: Colors.blue[200]!
+                                              ),
+                                          100.verticalSpace,
+                                          /// other translations
+                                          if(translatePageProvider.translate != null)
+                                            if(translatePageProvider.translate!.translations != null)
+                                              Container(
+                                                padding: EdgeInsets.symmetric(horizontal: 30.w, vertical: 40.h),
+                                                width: screenUtil.screenWidth,
+                                                decoration: BoxDecoration(
+                                                    borderRadius: BorderRadius.circular(10),
+                                                    border: Border.all(
+                                                        width: 3.w,
+                                                        color: Colors.blue[400]!
+                                                    )
+                                                ),
+                                                child: Column(
+                                                  mainAxisSize: MainAxisSize.min,
+                                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                                  children: [
+                                                    /// translations
+                                                    Text(
+                                                      'Other translations',
+                                                      textAlign: TextAlign.left,
+                                                      style: TextStyle(
+                                                          color: translatePageController.appColors.colorText1,
+                                                          fontSize: 50.sp,
+                                                        fontWeight: FontWeight.w500
+                                                      ),
+                                                    ),
+                                                    30.verticalSpace,
+                                                    ListView.builder(
+                                                      shrinkWrap: true,
+                                                      itemCount: translatePageProvider.translate!.translations!.length,
+                                                      physics: const NeverScrollableScrollPhysics(),
+                                                      itemBuilder: (context, index){
+                                                        return Padding(
+                                                          padding: EdgeInsets.symmetric(vertical: 40.h),
+                                                          child: Column(
+                                                            mainAxisSize: MainAxisSize.min,
+                                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                                            children: [
+                                                              Text(
+                                                                translatePageProvider.translate!.translations![index].type.toString(),
+                                                                textAlign: TextAlign.left,
+                                                                style: TextStyle(
+                                                                    color: Colors.blue[400]!,
+                                                                    fontSize: 38.sp,
+                                                                    fontWeight: FontWeight.w500
+                                                                ),
+                                                              ),
+                                                              10.verticalSpace,
+                                                              if(translatePageProvider.translate!.translations![index].translations != null)
+                                                                ListView.builder(
+                                                                  itemCount: translatePageProvider.translate!.translations![index].translations!.length,
+                                                                  physics: const NeverScrollableScrollPhysics(),
+                                                                  shrinkWrap: true,
+                                                                  itemBuilder: (context, subIndex){
+                                                                    return Padding(
+                                                                      padding: EdgeInsets.symmetric(vertical: 30.h),
+                                                                      child: Row(
+                                                                        mainAxisSize: MainAxisSize.max,
+                                                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                                        children: [
+                                                                          Text(
+                                                                            translatePageProvider.translate!.translations![index].translations![subIndex].word.toString(),
+                                                                            style: TextStyle(
+                                                                                color: translatePageController.appColors.colorText2,
+                                                                                fontSize: 40.sp,
+                                                                                fontWeight: FontWeight.w600
+                                                                            ),
+                                                                          ),
+                                                                          if(translatePageProvider.translate!.translations![index].translations![subIndex].translations != null)
+                                                                            SizedBox(
+                                                                              width: (screenUtil.screenWidth / 2) - 90.w,
+                                                                              child: Text(
+                                                                                translatePageProvider.translate!.translations![index].translations![subIndex].translations!.toString(),
+                                                                                style: TextStyle(
+                                                                                    color: translatePageController.appColors.colorText2,
+                                                                                    fontSize: 35.sp,
+                                                                                    fontWeight: FontWeight.w400
+                                                                                ),
+                                                                              )
+                                                                            )
+                                                                        ],
+                                                                      ),
+                                                                    );
+                                                                  },
+                                                                )
+                                                            ],
+                                                          ),
+                                                        );
+                                                      },
+                                                    )
+                                                  ],
+                                                ),
+                                              ),
+                                          30.verticalSpace,
+                                          if(translatePageProvider.translate != null)
+                                            if(translatePageProvider.translate!.source!.definitions != null)
+                                              Container(
+                                                padding: EdgeInsets.symmetric(horizontal: 30.w, vertical: 40.h),
+                                                width: screenUtil.screenWidth,
+                                                decoration: BoxDecoration(
+                                                    borderRadius: BorderRadius.circular(10),
+                                                    border: Border.all(
+                                                        width: 3.w,
+                                                        color: Colors.blue[400]!
+                                                    )
+                                                ),
+                                                child: Column(
+                                                  mainAxisSize: MainAxisSize.min,
+                                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                                  children: [
+                                                    Text(
+                                                      'Definitions',
+                                                      textAlign: TextAlign.left,
+                                                      style: TextStyle(
+                                                          color: translatePageController.appColors.colorText1,
+                                                          fontSize: 50.sp,
+                                                          fontWeight: FontWeight.w500
+                                                      ),
+                                                    ),
+                                                    ListView.builder(
+                                                      shrinkWrap: true,
+                                                      itemCount: translatePageProvider.translate!.source!.definitions!.length,
+                                                      physics: const NeverScrollableScrollPhysics(),
+                                                      itemBuilder: (context, index){
+                                                        return Padding(
+                                                          padding: EdgeInsets.symmetric(vertical: 40.h),
+                                                          child: Column(
+                                                            mainAxisSize: MainAxisSize.min,
+                                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                                            children: [
+                                                              Text(
+                                                                translatePageProvider.translate!.source!.definitions![index].type!,
+                                                                textAlign: TextAlign.left,
+                                                                style: TextStyle(
+                                                                    color: Colors.blue[400]!,
+                                                                    fontSize: 38.sp,
+                                                                    fontWeight: FontWeight.w500
+                                                                ),
+                                                              ),
+                                                              10.verticalSpace,
+                                                              if(translatePageProvider.translate!.source!.definitions![index].definitions != null)
+                                                                ListView.builder(
+                                                                  shrinkWrap: true,
+                                                                  itemCount: translatePageProvider.translate!.source!.definitions![index].definitions!.length,
+                                                                  physics: const NeverScrollableScrollPhysics(),
+                                                                  itemBuilder: (context, defIndex){
+                                                                    return Padding(
+                                                                      padding: EdgeInsets.symmetric(vertical: 30.h),
+                                                                      child: Row(
+                                                                        mainAxisSize: MainAxisSize.max,
+                                                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                                        children: [
+                                                                          Container(
+                                                                            width: 60.w,
+                                                                            height: 60.w,
+                                                                            alignment: Alignment.center,
+                                                                            decoration: BoxDecoration(
+                                                                              color: Colors.blue[400]!,
+                                                                              shape: BoxShape.circle
+                                                                            ),
+                                                                            child: Text(
+                                                                              (defIndex+1).toString(),
+                                                                              style: TextStyle(
+                                                                                  color: translatePageController.appColors.colorText1,
+                                                                                  fontSize: 25.sp,
+                                                                                  fontWeight: FontWeight.w600
+                                                                              ),
+                                                                            ),
+                                                                          ),
+                                                                          30.horizontalSpace,
+                                                                          Expanded(
+                                                                            child: Column(
+                                                                              mainAxisSize: MainAxisSize.min,
+                                                                              crossAxisAlignment: CrossAxisAlignment.start,
+                                                                              children: [
+                                                                                Text(
+                                                                                  translatePageProvider.translate!.source!.definitions![index].definitions![defIndex].definition!,
+                                                                                  style: TextStyle(
+                                                                                      color: translatePageController.appColors.colorText2,
+                                                                                      fontSize: 38.sp,
+                                                                                      fontWeight: FontWeight.w600
+                                                                                  ),
+                                                                                ),
+                                                                                15.verticalSpace,
+                                                                                Text(
+                                                                                  '"${translatePageProvider.translate!.source!.definitions![index].definitions![defIndex].example!}"',
+                                                                                  style: TextStyle(
+                                                                                      color: translatePageController.appColors.colorText2,
+                                                                                      fontSize: 34.sp,
+                                                                                      fontWeight: FontWeight.w500
+                                                                                  ),
+                                                                                ),
+                                                                                // if(translatePageProvider.translate!.source!.synonyms != null)
+                                                                                //   if()
+                                                                              ],
+                                                                            ),
+                                                                          ),
+                                                                        ],
+                                                                      ),
+                                                                    );
+                                                                  },
+                                                                )
+                                                            ],
+                                                          ),
+                                                        );
+                                                      },
+                                                    )
+                                                  ],
+                                                ),
+                                              )
+                                        ],
+                                      ),
                                     ),
                                   ),
-                                ),
-                              ],
-                            )
+                                ],
+                              )
 
-                        ],
+                          ],
+                        ),
                       ),
                     ),
-                  ),
-                  25.verticalSpace,
+                    25.verticalSpace,
 
-                  /// change language buttons
-                  Align(
-                    alignment: Alignment.bottomCenter,
-                    child: Row(
-                      mainAxisSize: MainAxisSize.max,
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        LanguageButton(
-                            text: languageProvider.fromLang.name.toString().split(' ')[0],
-                            appColors: translatePageController.appColors,
-                            onTap: (){
-                              translatePageProvider.closePage = false;
-                              /// select translate "from"
-                              translatePageController.goToSelectLanguage(
-                                  context: context,
-                                  languageType: SelectLanguageType.from,
-                                  setState: setState,
-                                  translateProvider: translatePageProvider,
-                                  selectLanguage: languageProvider
-                              );
-                            }
-                        ),
-                        Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 25.w),
-                          child: AnimatedOnTapButton(
-                            onTap: () => translatePageController.changeLanguageOrder(selectLanguage: languageProvider, translateProvider:  translatePageProvider),
-                            child: SizedBox(
-                              width: 100.w,
-                              height: 100.w,
-                              child: Icon(
-                                Icons.compare_arrows,
-                                color: translatePageController.appColors.iconColor2,
-                                size: 70.w,
+                    /// change language buttons
+                    if(translatePageProvider.showKeyBoard)
+                      Align(
+                      alignment: Alignment.bottomCenter,
+                      child: Row(
+                        mainAxisSize: MainAxisSize.max,
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          LanguageButton(
+                              text: languageProvider.fromLang.name.toString().split(' ')[0],
+                              appColors: translatePageController.appColors,
+                              onTap: (){
+                                translatePageProvider.closePage = false;
+                                /// select translate "from"
+                                translatePageController.goToSelectLanguage(
+                                    context: context,
+                                    languageType: SelectLanguageType.from,
+                                    setState: setState,
+                                    translateProvider: translatePageProvider,
+                                    selectLanguage: languageProvider
+                                );
+                              }
+                          ),
+                          Padding(
+                            padding: EdgeInsets.symmetric(horizontal: 25.w),
+                            child: AnimatedOnTapButton(
+                              onTap: () => translatePageController.changeLanguageOrder(selectLanguage: languageProvider, translateProvider:  translatePageProvider),
+                              child: SizedBox(
+                                width: 100.w,
+                                height: 100.w,
+                                child: Icon(
+                                  Icons.compare_arrows,
+                                  color: translatePageController.appColors.iconColor2,
+                                  size: 70.w,
+                                ),
                               ),
                             ),
                           ),
-                        ),
-                        LanguageButton(
-                            text: languageProvider.toLang.name.toString().split(' ')[0],
-                            appColors: translatePageController.appColors,
-                            onTap: (){
-                              translatePageProvider.closePage = false;
-                              /// select translate "to"
-                              translatePageController.goToSelectLanguage(
-                                  context: context,
-                                  languageType: SelectLanguageType.to,
-                                  setState: setState,
-                                  translateProvider: translatePageProvider,
-                                  selectLanguage: languageProvider
-                              );
-                            }
-                        ),
-                      ],
+                          LanguageButton(
+                              text: languageProvider.toLang.name.toString().split(' ')[0],
+                              appColors: translatePageController.appColors,
+                              onTap: (){
+                                translatePageProvider.closePage = false;
+                                /// select translate "to"
+                                translatePageController.goToSelectLanguage(
+                                    context: context,
+                                    languageType: SelectLanguageType.to,
+                                    setState: setState,
+                                    translateProvider: translatePageProvider,
+                                    selectLanguage: languageProvider
+                                );
+                              }
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
-                  25.verticalSpace
-                ],
+                    25.verticalSpace
+                  ],
+                ),
               ),
             ),
           ),

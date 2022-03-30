@@ -1,20 +1,22 @@
-class TranslationClass {
+import 'package:flutter_translator_app/src/data/models/translation_data.dart';
+
+class Translation {
 
   String? type;
-  List<List<dynamic>>? translations;
+  List<TranslationData>? translations;
 
-  TranslationClass({
+  Translation({
     this.type,
     this.translations,
   });
 
-  factory TranslationClass.fromJson(Map<String, dynamic> json) => TranslationClass(
+   factory Translation.fromJson(Map<String, dynamic> json) => Translation(
     type: json["type"],
-    translations: List<List<dynamic>>.from(json["translations"].map((x) => List<dynamic>.from(x.map((x) => x)))),
+    translations: List<TranslationData>.from(json["translations"].map((x) => TranslationData.fromJson(x))),
   );
 
   Map<String, dynamic> toJson() => {
     "type": type,
-    "translations": List<dynamic>.from(translations!.map((x) => List<dynamic>.from(x.map((x) => x)))),
+    "translations": List<dynamic>.from(translations!.map((x) => x.toJson())),
   };
 }

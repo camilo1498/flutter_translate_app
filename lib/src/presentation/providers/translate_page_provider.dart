@@ -34,6 +34,13 @@ class TranslatePageProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  bool _showKeyBoard = true;
+  bool get showKeyBoard => _showKeyBoard;
+  set showKeyBoard(bool show){
+    _showKeyBoard = show;
+    notifyListeners();
+  }
+
   bool _clipBoardHasData = false;
 
   bool get clipBoardHasData => _clipBoardHasData;
@@ -70,7 +77,9 @@ class TranslatePageProvider extends ChangeNotifier {
         );
         ApiResponse apiResponse = ApiResponse.fromJson(response.data);
         if(apiResponse.success == true){
+          print('========================');
           print(apiResponse.data!.toJson());
+          print('========================');
           return Translate.fromJson(apiResponse.data!.toJson());
         } else{
           return Translate();

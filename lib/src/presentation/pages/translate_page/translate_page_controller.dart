@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import 'package:flutter_translator_app/src/core/constants/app_colors.dart';
-import 'package:flutter_translator_app/src/core/constants/languages.dart';
-import 'package:flutter_translator_app/src/data/models/language.dart';
 import 'package:flutter_translator_app/src/presentation/pages/history_page/history_page.dart';
 import 'package:flutter_translator_app/src/presentation/pages/select_language_page/select_language_page.dart';
 import 'package:flutter_translator_app/src/presentation/providers/select_language_provider.dart';

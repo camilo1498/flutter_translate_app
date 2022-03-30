@@ -14,7 +14,7 @@ class Translate {
   String? translationLanguage;
   bool? isCorrect;
   Source? source;
-  List<TranslationClass>? translations;
+  List<Translation>? translations;
   Translate({
     this.text,
     this.originalText,
@@ -32,7 +32,7 @@ class Translate {
     translationLanguage: json["translationLanguage"],
     isCorrect: json["isCorrect"],
     source: Source.fromJson(json["source"] ?? {}),
-    translations: List<TranslationClass>.from(json["translations"].map((x) => TranslationClass.fromJson(x))),
+    translations: List<Translation>.from(json["translations"].map((x) => Translation.fromJson(x))),
   );
 
   Map<String, dynamic> toJson() => {

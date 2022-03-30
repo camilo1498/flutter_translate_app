@@ -1,10 +1,13 @@
 import 'package:flutter_translator_app/src/data/models/source_definitions.dart';
+import 'package:flutter_translator_app/src/data/models/synonym.dart';
 
 class Source {
-  List<dynamic>? synonyms;
-  List<dynamic>? pronunciation;
+
+  List<Synonym>? synonyms;
+  List<String>? pronunciation;
   List<SourceDefinition>? definitions;
-  List<dynamic>? examples;
+  List<String>? examples;
+
   Source({
     this.synonyms,
     this.pronunciation,
@@ -12,17 +15,15 @@ class Source {
     this.examples,
   });
 
-
-
   factory Source.fromJson(Map<String, dynamic> json) => Source(
-    synonyms: List<dynamic>.from(json["synonyms"].map((x) => x)),
-    pronunciation: List<dynamic>.from(json["pronunciation"].map((x) => x)),
+    synonyms: List<Synonym>.from(json["synonyms"].map((x) => Synonym.fromJson(x))),
+    pronunciation: List<String>.from(json["pronunciation"].map((x) => x)),
     definitions: List<SourceDefinition>.from(json["definitions"].map((x) => SourceDefinition.fromJson(x))),
-    examples: List<dynamic>.from(json["examples"].map((x) => x)),
+    examples: List<String>.from(json["examples"].map((x) => x)),
   );
 
   Map<String, dynamic> toJson() => {
-    "synonyms": List<dynamic>.from(synonyms!.map((x) => x)),
+    "synonyms": List<dynamic>.from(synonyms!.map((x) => x.toJson())),
     "pronunciation": List<dynamic>.from(pronunciation!.map((x) => x)),
     "definitions": List<dynamic>.from(definitions!.map((x) => x.toJson())),
     "examples": List<dynamic>.from(examples!.map((x) => x)),
