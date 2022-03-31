@@ -295,6 +295,7 @@ class _TranslatePageState extends State<TranslatePage> {
                                           /// other translations
                                           if(translatePageProvider.translate != null)
                                             if(translatePageProvider.translate!.translations != null
+                                                && translatePageProvider.translate!.translations!.isNotEmpty
                                                 && translatePageProvider.translate!.isCorrect == true
                                                 && translatePageProvider.translate!.sourceLanguage == languageProvider.fromLang.code!.split('-')[0]
                                                 && translatePageProvider.translate!.sourceLanguage != ''
@@ -408,6 +409,7 @@ class _TranslatePageState extends State<TranslatePage> {
                                           30.verticalSpace,
                                           if(translatePageProvider.translate != null)
                                             if(translatePageProvider.translate!.source!.definitions != null
+                                                && translatePageProvider.translate!.source!.definitions!.isNotEmpty
                                                 && translatePageProvider.translate!.isCorrect == true
                                                 && translatePageProvider.translate!.sourceLanguage == languageProvider.fromLang.code!.split('-')[0]
                                                 && translatePageProvider.translate!.sourceLanguage != '')
