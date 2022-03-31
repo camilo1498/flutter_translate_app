@@ -11,11 +11,11 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 enum SelectLanguageType {from, to}
 class SelectLanguagePage extends StatefulWidget {
   SelectLanguageType selectLanguagePage = SelectLanguageType.from;
-  Function()? onChange;
+  Function() onChange;
   SelectLanguagePage({
   Key? key,
     required this.selectLanguagePage,
-    this.onChange
+     required this.onChange
 }) : super(key: key);
 
   @override
@@ -164,7 +164,7 @@ class _SelectLanguagePageState extends State<SelectLanguagePage> {
                                           selectLanguage.toLang = _from;
                                         } else{
                                           selectLanguage.toLang = snapshot.data![index];
-                                          widget.onChange!();
+                                          widget.onChange();
                                         }
                                       }
                                     });

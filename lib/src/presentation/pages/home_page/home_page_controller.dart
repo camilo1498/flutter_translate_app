@@ -31,7 +31,7 @@ class HomePageController{
   void goToSelectLanguage({required BuildContext context, required SelectLanguageType languageType}){
     Navigator.of(context).push(
         AxisPageTransition(
-            child: SelectLanguagePage(selectLanguagePage: languageType),
+            child: SelectLanguagePage(selectLanguagePage: languageType,onChange: (){}),
             direction:
             AxisDirection
                 .left));
