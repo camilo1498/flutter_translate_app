@@ -7,17 +7,14 @@ import 'package:intl/intl.dart';
 
 class HistoryPage extends StatelessWidget {
   final ScrollController? listController;
-  HistoryPage({
-    Key? key,
-    this.listController
-  }) : super(key: key);
+  HistoryPage({Key? key, this.listController}) : super(key: key);
   final HistoryPageController _historyPageController = HistoryPageController();
   DateFormat dateFormat = DateFormat("yyyy-MM-dd HH:mm:ss");
   final ScreenUtil screenUtil = ScreenUtil();
   @override
   Widget build(BuildContext context) {
     return NotificationListener<OverscrollIndicatorNotification>(
-      onNotification: (overscroll){
+      onNotification: (overscroll) {
         overscroll.disallowIndicator();
         return false;
       },
@@ -25,7 +22,7 @@ class HistoryPage extends StatelessWidget {
         backgroundColor: _historyPageController.appColors.backgroundColor,
         appBar: PreferredSize(
           preferredSize: Size(screenUtil.screenWidth, 170.w),
-          child: historyAppbar(onTap: (){
+          child: historyAppbar(onTap: () {
             Navigator.pop(context);
           }),
         ),
@@ -38,13 +35,10 @@ class HistoryPage extends StatelessWidget {
     return AppBar(
       backgroundColor: Colors.transparent,
       elevation: 0,
-      title: Text(
-        'History',
-        style: TextStyle(
-            color: _historyPageController.appColors.colorText1,
-            fontSize: 60.sp
-        )
-      ),
+      title: Text('History',
+          style: TextStyle(
+              color: _historyPageController.appColors.colorText1,
+              fontSize: 60.sp)),
       leading: Padding(
         padding: EdgeInsets.only(left: 10.w),
         child: AnimatedOnTapButton(
@@ -60,9 +54,8 @@ class HistoryPage extends StatelessWidget {
         Padding(
           padding: EdgeInsets.only(right: 30.w),
           child: AnimatedOnTapButton(
-            onTap: (){
+            onTap: () {
               /// open setting page
-
             },
             child: Icon(
               Icons.more_vert,
@@ -75,7 +68,7 @@ class HistoryPage extends StatelessWidget {
     );
   }
 
-  Widget historyBody(){
+  Widget historyBody() {
     return Material(
       color: Colors.transparent,
       child: Padding(
@@ -85,8 +78,7 @@ class HistoryPage extends StatelessWidget {
           reverse: true,
           controller: listController,
           groupBy: (element) => element['date'],
-          groupComparator: (value1,
-              value2) => value2.compareTo(value1),
+          groupComparator: (value1, value2) => value2.compareTo(value1),
           itemComparator: (item1, item2) =>
               item1['date'].compareTo(item2['date']),
           order: GroupedListOrder.ASC,
@@ -95,19 +87,14 @@ class HistoryPage extends StatelessWidget {
             DateTime _date = DateTime.parse(dateFormat.parse(value).toString());
             return Padding(
               padding: const EdgeInsets.only(
-                  left: 20,
-                  right: 20,
-                  top: 30,
-                  bottom: 5
-              ),
+                  left: 20, right: 20, top: 30, bottom: 5),
               child: Text(
-                '${_historyPageController.months[_date.month -1]} ${_date.day} ${_date.year}',
+                '${_historyPageController.months[_date.month - 1]} ${_date.day} ${_date.year}',
                 textAlign: TextAlign.left,
                 style: TextStyle(
                     fontSize: 12,
                     color: Colors.blue.withOpacity(0.7),
-                    fontWeight: FontWeight.bold
-                ),
+                    fontWeight: FontWeight.bold),
               ),
             );
           },
@@ -122,24 +109,26 @@ class HistoryPage extends StatelessWidget {
                       element['originalText'],
                       textAlign: TextAlign.left,
                       style: TextStyle(
-
                           color: _historyPageController.appColors.colorText1,
-                          fontWeight: FontWeight.w500
-                      ),
+                          fontWeight: FontWeight.w500),
                     ),
-                    const SizedBox(height: 5,),
+                    const SizedBox(
+                      height: 5,
+                    ),
                     Text(
                       element['translatedText'],
                       textAlign: TextAlign.left,
                       style: TextStyle(
-                          color: _historyPageController.appColors.colorText2.withOpacity(0.7),
-                          fontWeight: FontWeight.w500
-                      ),
+                          color: _historyPageController.appColors.colorText2
+                              .withOpacity(0.7),
+                          fontWeight: FontWeight.w500),
                     )
                   ],
                 ),
                 trailing: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 15,),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 15,
+                  ),
                   child: Icon(
                     element['isFavorite'] ? Icons.star : Icons.star_border,
                     color: _historyPageController.appColors.iconColor2,

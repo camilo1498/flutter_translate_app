@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 
 class FadePageRoute<T> extends PageRoute<T> {
@@ -37,10 +36,10 @@ class FadePageRoute<T> extends PageRoute<T> {
 
   @override
   Widget buildPage(
-      BuildContext context,
-      Animation<double> animation,
-      Animation<double> secondaryAnimation,
-      ) {
+    BuildContext context,
+    Animation<double> animation,
+    Animation<double> secondaryAnimation,
+  ) {
     final Widget result = builder(context);
     return Semantics(
       scopesRoute: true,
@@ -62,13 +61,14 @@ class FadePageRoute<T> extends PageRoute<T> {
 class _FadeInPageTransition extends StatelessWidget {
   _FadeInPageTransition({
     Key? key,
-    required Animation<double>routeAnimation, // The route's linear 0.0 - 1.0 animation.
+    required Animation<double>
+        routeAnimation, // The route's linear 0.0 - 1.0 animation.
     required this.child,
   })  : _opacityAnimation = routeAnimation.drive(_easeInTween),
         super(key: key);
 
   static final Animatable<double> _easeInTween =
-  CurveTween(curve: Curves.easeIn);
+      CurveTween(curve: Curves.easeIn);
 
   final Animation<double> _opacityAnimation;
   final Widget child;

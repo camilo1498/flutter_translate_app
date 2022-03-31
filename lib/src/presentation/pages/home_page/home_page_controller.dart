@@ -1,4 +1,3 @@
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_translator_app/src/core/constants/app_colors.dart';
 import 'package:flutter_translator_app/src/presentation/pages/select_language_page/select_language_page.dart';
@@ -9,47 +8,52 @@ import 'package:flutter_translator_app/src/presentation/widgets/animations/page_
 
 import '../../widgets/animations/panel.dart';
 
-class HomePageController{
+class HomePageController {
   /// panel controller
   PanelController panelController = PanelController();
+
   /// listview controller
   ScrollController listController = ScrollController();
+
   /// app color instance
   final AppColors appColors = AppColors();
+
   /// opacity
   final double blockedOpacity = 1.0;
 
-
   /// go to translation page
-  void goToTranslationPage({required BuildContext context}){
-    Navigator.push(context, FadePageRoute(
-      builder: (context) => const TranslatePage(),
-    ));
+  void goToTranslationPage({required BuildContext context}) {
+    Navigator.push(
+        context,
+        FadePageRoute(
+          builder: (context) => const TranslatePage(),
+        ));
   }
 
   /// go to translation page
-  void goToSelectLanguage({required BuildContext context, required SelectLanguageType languageType}){
-    Navigator.of(context).push(
-        AxisPageTransition(
-            child: SelectLanguagePage(selectLanguagePage: languageType,onChange: (){}),
-            direction:
-            AxisDirection
-                .left));
+  void goToSelectLanguage(
+      {required BuildContext context,
+      required SelectLanguageType languageType}) {
+    Navigator.of(context).push(AxisPageTransition(
+        child: SelectLanguagePage(
+            selectLanguagePage: languageType, onChange: () {}),
+        direction: AxisDirection.left));
   }
 
   /// change select language order
-  void changeLanguageOrder({required SelectLanguageProvider selectLanguage}){
+  void changeLanguageOrder({required SelectLanguageProvider selectLanguage}) {
     var _from = selectLanguage.fromLang;
     var _to = selectLanguage.toLang;
     selectLanguage.fromLang = _to;
     selectLanguage.toLang = _from;
   }
+
   /// panel functions
-  openPanel() async{
+  openPanel() async {
     await panelController.open();
   }
-  Future closePanel() async{
+
+  Future closePanel() async {
     await panelController.close();
   }
-
 }

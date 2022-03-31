@@ -26,22 +26,24 @@ class Translate {
   });
 
   factory Translate.fromJson(Map<String, dynamic> json) => Translate(
-    text: json["text"],
-    originalText: json["originalText"],
-    sourceLanguage: json["sourceLanguage"],
-    translationLanguage: json["translationLanguage"],
-    isCorrect: json["isCorrect"],
-    source: Source.fromJson(json["source"] ?? {}),
-    translations: List<Translation>.from(json["translations"].map((x) => Translation.fromJson(x))),
-  );
+        text: json["text"],
+        originalText: json["originalText"],
+        sourceLanguage: json["sourceLanguage"],
+        translationLanguage: json["translationLanguage"],
+        isCorrect: json["isCorrect"],
+        source: Source.fromJson(json["source"] ?? {}),
+        translations: List<Translation>.from(
+            json["translations"].map((x) => Translation.fromJson(x))),
+      );
 
   Map<String, dynamic> toJson() => {
-    "text": text,
-    "originalText": originalText,
-    "sourceLanguage": sourceLanguage,
-    "translationLanguage": translationLanguage,
-    "isCorrect": isCorrect,
-    "source": source!.toJson(),
-    "translations": List<dynamic>.from(translations!.map((x) => x.toJson())),
-  };
+        "text": text,
+        "originalText": originalText,
+        "sourceLanguage": sourceLanguage,
+        "translationLanguage": translationLanguage,
+        "isCorrect": isCorrect,
+        "source": source!.toJson(),
+        "translations":
+            List<dynamic>.from(translations!.map((x) => x.toJson())),
+      };
 }

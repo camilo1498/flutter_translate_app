@@ -8,39 +8,40 @@ import 'package:flutter_translator_app/src/presentation/widgets/animations/anima
 import 'package:provider/provider.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-enum SelectLanguageType {from, to}
+enum SelectLanguageType { from, to }
+
 class SelectLanguagePage extends StatefulWidget {
   SelectLanguageType selectLanguagePage = SelectLanguageType.from;
   Function() onChange;
-  SelectLanguagePage({
-  Key? key,
-    required this.selectLanguagePage,
-     required this.onChange
-}) : super(key: key);
+  SelectLanguagePage(
+      {Key? key, required this.selectLanguagePage, required this.onChange})
+      : super(key: key);
 
   @override
   State<SelectLanguagePage> createState() => _SelectLanguagePageState();
 }
 
 class _SelectLanguagePageState extends State<SelectLanguagePage> {
-  final SelectLanguageController _selectLanguageController = SelectLanguageController();
+  final SelectLanguageController _selectLanguageController =
+      SelectLanguageController();
 
   final ScreenUtil screenUtil = ScreenUtil();
 
   @override
   Widget build(BuildContext context) {
     return NotificationListener<OverscrollIndicatorNotification>(
-      onNotification: (overscroll){
+      onNotification: (overscroll) {
         overscroll.disallowIndicator();
         return false;
       },
       child: Consumer<SelectLanguageProvider>(
-        builder: (_, selectLanguage, __){
+        builder: (_, selectLanguage, __) {
           return Scaffold(
-            backgroundColor: _selectLanguageController.appColors.backgroundColor,
+            backgroundColor:
+                _selectLanguageController.appColors.backgroundColor,
             appBar: PreferredSize(
               preferredSize: Size(screenUtil.screenWidth, 170.w),
-              child: _appBar(onTap: (){
+              child: _appBar(onTap: () {
                 Navigator.pop(context);
               }),
             ),
@@ -54,23 +55,22 @@ class _SelectLanguagePageState extends State<SelectLanguagePage> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     30.verticalSpace,
-                    if(widget.selectLanguagePage == SelectLanguageType.from && selectLanguage.fromLang.code! != 'detect')
+                    if (widget.selectLanguagePage == SelectLanguageType.from &&
+                        selectLanguage.fromLang.code! != 'detect')
                       ListTile(
                         contentPadding: EdgeInsets.symmetric(vertical: 5.h),
-                        onTap: (){
+                        onTap: () {
                           setState(() {
                             selectLanguage.fromLang = Language(
-                              code: 'detect',
-                              name: 'Detect language'
-                            );
+                                code: 'detect', name: 'Detect language');
                           });
                         },
                         title: Text(
                           'Detect language',
                           style: TextStyle(
-                              color: _selectLanguageController.appColors.colorText1,
-                            fontSize: 45.sp
-                          ),
+                              color: _selectLanguageController
+                                  .appColors.colorText1,
+                              fontSize: 45.sp),
                         ),
                         trailing: Icon(
                           Icons.auto_awesome,
@@ -84,32 +84,35 @@ class _SelectLanguagePageState extends State<SelectLanguagePage> {
                       style: TextStyle(
                           color: Colors.blue[400],
                           fontWeight: FontWeight.bold,
-                          fontSize: 40.sp
-                      ),
+                          fontSize: 40.sp),
                     ),
                     30.verticalSpace,
                     Container(
                       decoration: BoxDecoration(
                           color: Colors.blue,
-                          borderRadius: BorderRadius.circular(20)
-                      ),
+                          borderRadius: BorderRadius.circular(20)),
                       child: Padding(
                         padding: EdgeInsets.symmetric(horizontal: 50.w),
                         child: ListTile(
                           contentPadding: EdgeInsets.symmetric(vertical: 5.h),
                           title: Text(
                             widget.selectLanguagePage == SelectLanguageType.from
-                                ? selectLanguage.fromLang.name.toString().split(' ')[0]
-                                : selectLanguage.toLang.name.toString().split(' ')[0],
+                                ? selectLanguage.fromLang.name
+                                    .toString()
+                                    .split(' ')[0]
+                                : selectLanguage.toLang.name
+                                    .toString()
+                                    .split(' ')[0],
                             overflow: TextOverflow.ellipsis,
                             style: TextStyle(
-                                color: _selectLanguageController.appColors.colorText1
-                            ),
+                                color: _selectLanguageController
+                                    .appColors.colorText1),
                           ),
                           trailing: Icon(
                             Icons.check,
                             size: 50.w,
-                            color: _selectLanguageController.appColors.iconColor1,
+                            color:
+                                _selectLanguageController.appColors.iconColor1,
                           ),
                         ),
                       ),
@@ -119,70 +122,81 @@ class _SelectLanguagePageState extends State<SelectLanguagePage> {
                       'All languages',
                       style: TextStyle(
                           color: Colors.blue[400],
-                        fontWeight: FontWeight.bold,
-                        fontSize: 40.sp
-                      ),
+                          fontWeight: FontWeight.bold,
+                          fontSize: 40.sp),
                     ),
                     30.verticalSpace,
                     FutureBuilder<List<Language>>(
                       future: selectLanguage.getLanguages(),
-                      builder: (context, snapshot){
-                        if(snapshot.hasData){
+                      builder: (context, snapshot) {
+                        if (snapshot.hasData) {
                           return ListView.builder(
                             shrinkWrap: true,
                             physics: const NeverScrollableScrollPhysics(),
                             itemCount: snapshot.data!.length,
-                            itemBuilder: (context, index){
-                              if(widget.selectLanguagePage == SelectLanguageType.from && selectLanguage.fromLang.code == snapshot.data![index].code){
+                            itemBuilder: (context, index) {
+                              if (widget.selectLanguagePage ==
+                                      SelectLanguageType.from &&
+                                  selectLanguage.fromLang.code ==
+                                      snapshot.data![index].code) {
                                 return const SizedBox(
                                   width: 0,
                                   height: 0,
                                 );
-                              } else if(widget.selectLanguagePage == SelectLanguageType.to && selectLanguage.toLang.code == snapshot.data![index].code){
+                              } else if (widget.selectLanguagePage ==
+                                      SelectLanguageType.to &&
+                                  selectLanguage.toLang.code ==
+                                      snapshot.data![index].code) {
                                 return const SizedBox(
                                   width: 0,
                                   height: 0,
                                 );
-                              } else{
-                                return  ListTile(
-                                  onTap: (){
-                                    setState((){
-                                      if(widget.selectLanguagePage == SelectLanguageType.from){
-                                        if(selectLanguage.toLang.code! == snapshot.data![index].code!){
+                              } else {
+                                return ListTile(
+                                  onTap: () {
+                                    setState(() {
+                                      if (widget.selectLanguagePage ==
+                                          SelectLanguageType.from) {
+                                        if (selectLanguage.toLang.code! ==
+                                            snapshot.data![index].code!) {
                                           var _from = selectLanguage.fromLang;
                                           var _to = selectLanguage.toLang;
                                           selectLanguage.fromLang = _to;
                                           selectLanguage.toLang = _from;
-                                        } else{
-                                          selectLanguage.fromLang = snapshot.data![index];
+                                        } else {
+                                          selectLanguage.fromLang =
+                                              snapshot.data![index];
                                         }
-                                      } else{
-                                        if(selectLanguage.fromLang.code! == snapshot.data![index].code!){
+                                      } else {
+                                        if (selectLanguage.fromLang.code! ==
+                                            snapshot.data![index].code!) {
                                           var _from = selectLanguage.fromLang;
                                           var _to = selectLanguage.toLang;
                                           selectLanguage.fromLang = _to;
                                           selectLanguage.toLang = _from;
-                                        } else{
-                                          selectLanguage.toLang = snapshot.data![index];
+                                        } else {
+                                          selectLanguage.toLang =
+                                              snapshot.data![index];
                                           widget.onChange();
                                         }
                                       }
                                     });
                                     Navigator.pop(context);
                                   },
-                                  contentPadding: EdgeInsets.symmetric(vertical: 5.h),
+                                  contentPadding:
+                                      EdgeInsets.symmetric(vertical: 5.h),
                                   title: Text(
                                     snapshot.data![index].name.toString(),
                                     overflow: TextOverflow.ellipsis,
                                     style: TextStyle(
-                                        color: _selectLanguageController.appColors.colorText1
-                                    ),
+                                        color: _selectLanguageController
+                                            .appColors.colorText1),
                                   ),
                                 );
                               }
                             },
                           );
-                        } else{
+                        } else {
                           return Container();
                         }
                       },
@@ -202,13 +216,13 @@ class _SelectLanguagePageState extends State<SelectLanguagePage> {
       backgroundColor: Colors.transparent,
       elevation: 0,
       title: Text(
-          widget.selectLanguagePage == SelectLanguageType.from ? 'Translate from' : 'Translate to',
+          widget.selectLanguagePage == SelectLanguageType.from
+              ? 'Translate from'
+              : 'Translate to',
           style: TextStyle(
               color: _selectLanguageController.appColors.colorText1,
               fontSize: 60.sp,
-            fontWeight: FontWeight.w600
-          )
-      ),
+              fontWeight: FontWeight.w600)),
       leading: Padding(
         padding: EdgeInsets.only(left: 10.w),
         child: AnimatedOnTapButton(
@@ -224,9 +238,8 @@ class _SelectLanguagePageState extends State<SelectLanguagePage> {
         Padding(
           padding: EdgeInsets.only(right: 30.w),
           child: AnimatedOnTapButton(
-            onTap: (){
+            onTap: () {
               /// open setting page
-
             },
             child: Icon(
               Icons.more_vert,

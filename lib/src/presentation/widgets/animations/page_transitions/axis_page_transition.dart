@@ -7,12 +7,12 @@ class AxisPageTransition extends PageRouteBuilder {
   AxisPageTransition(
       {required this.child, this.direction = AxisDirection.right})
       : super(
-      transitionDuration: const Duration(milliseconds: 300),
-      pageBuilder: (context, animation, secondaryAnimation) => child);
+            transitionDuration: const Duration(milliseconds: 300),
+            pageBuilder: (context, animation, secondaryAnimation) => child);
 
   @override
   Widget buildTransitions(BuildContext context, Animation<double> animation,
-      Animation<double> secondaryAnimation, Widget child) =>
+          Animation<double> secondaryAnimation, Widget child) =>
       SlideTransition(
         position: Tween<Offset>(begin: _getDirection(), end: Offset.zero)
             .animate(animation),

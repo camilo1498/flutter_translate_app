@@ -1,5 +1,4 @@
 class TranslationData {
-
   String? word;
   List<String>? translations;
   String? frequency;
@@ -12,17 +11,18 @@ class TranslationData {
     this.article,
   });
 
-  factory TranslationData.fromJson(Map<String, dynamic> json) => TranslationData(
-    word: json["word"],
-    translations: List<String>.from(json["translations"].map((x) => x)),
-    frequency: json["frequency"].toString(),
-    article: json["article"],
-  );
+  factory TranslationData.fromJson(Map<String, dynamic> json) =>
+      TranslationData(
+        word: json["word"],
+        translations: List<String>.from(json["translations"].map((x) => x)),
+        frequency: json["frequency"].toString(),
+        article: json["article"],
+      );
 
   Map<String, dynamic> toJson() => {
-    "word": word,
-    "translations": List<dynamic>.from(translations!.map((x) => x)),
-    "frequency": frequency,
-    "article": article,
-  };
+        "word": word,
+        "translations": List<dynamic>.from(translations!.map((x) => x)),
+        "frequency": frequency,
+        "article": article,
+      };
 }

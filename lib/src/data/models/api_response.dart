@@ -5,7 +5,6 @@
 import 'package:flutter_translator_app/src/data/models/translate.dart';
 
 class ApiResponse {
-
   bool? success;
   Translate? data;
   String? message;
@@ -17,14 +16,14 @@ class ApiResponse {
   });
 
   factory ApiResponse.fromJson(Map<String, dynamic> json) => ApiResponse(
-    success: json["success"],
-    data: Translate.fromJson(json["data"]),
-    message: json["message"],
-  );
+        success: json["success"],
+        data: Translate.fromJson(json["data"]),
+        message: json["message"],
+      );
 
   Map<String, dynamic> toJson() => {
-    "success": success,
-    "data": data!.toJson(),
-    "message": message,
-  };
+        "success": success,
+        "data": data!.toJson(),
+        "message": message,
+      };
 }

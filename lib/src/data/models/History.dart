@@ -25,22 +25,22 @@ class History {
   });
 
   factory History.fromJson(Map<String, dynamic> json) => History(
-    id: json["id"],
-    timestamp: json["timestamp"],
-    originalText: json["originalText"],
-    translatedText: json["translatedText"],
-    originalCode: json["originalCode"],
-    translatedTextCode: json["translatedTextCode"],
-    isFavorite: json["isFavorite"],
-  );
+        id: json["id"],
+        timestamp: json["timestamp"],
+        originalText: json["originalText"],
+        translatedText: json["translatedText"],
+        originalCode: json["originalCode"],
+        translatedTextCode: json["translatedTextCode"],
+        isFavorite: json["isFavorite"],
+      );
 
   Map<String, dynamic> toJson() => {
-    "id": id,
-    "timestamp": timestamp,
-    "originalText": originalText,
-    "translatedText": translatedText,
-    "originalCode": originalCode,
-    "translatedTextCode": translatedTextCode,
-    "isFavorite": isFavorite,
-  };
+        "id": id,
+        "timestamp": timestamp,
+        "originalText": originalText,
+        "translatedText": translatedText,
+        "originalCode": originalCode,
+        "translatedTextCode": translatedTextCode,
+        "isFavorite": isFavorite,
+      };
 }

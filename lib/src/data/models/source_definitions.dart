@@ -1,7 +1,6 @@
 import 'package:flutter_translator_app/src/data/models/definition.dart';
 
 class SourceDefinition {
-
   String? type;
   List<Definition>? definitions;
 
@@ -10,13 +9,15 @@ class SourceDefinition {
     this.definitions,
   });
 
-  factory SourceDefinition.fromJson(Map<String, dynamic> json) => SourceDefinition(
-    type: json["type"],
-    definitions: List<Definition>.from(json["definitions"].map((x) => Definition.fromJson(x))),
-  );
+  factory SourceDefinition.fromJson(Map<String, dynamic> json) =>
+      SourceDefinition(
+        type: json["type"],
+        definitions: List<Definition>.from(
+            json["definitions"].map((x) => Definition.fromJson(x))),
+      );
 
   Map<String, dynamic> toJson() => {
-    "type": type,
-    "definitions": List<dynamic>.from(definitions!.map((x) => x.toJson())),
-  };
+        "type": type,
+        "definitions": List<dynamic>.from(definitions!.map((x) => x.toJson())),
+      };
 }

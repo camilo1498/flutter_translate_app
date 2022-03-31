@@ -11,6 +11,7 @@ import 'package:provider/provider.dart';
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
   Paint.enableDithering = true;
+
   /// force portrait mode
   SystemChrome.setPreferredOrientations(
       [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);
@@ -23,16 +24,14 @@ void main() {
   SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
     statusBarColor: Colors.transparent,
   ));
-  runApp(
-    MultiProvider(
-      providers: [
-        ChangeNotifierProvider(create: (_) => HomePageProvider()),
-        ChangeNotifierProvider(create: (_) => TranslatePageProvider()),
-        ChangeNotifierProvider(create: (_) => SelectLanguageProvider())
-      ],
-      child: const MyApp(),
-    )
-  );
+  runApp(MultiProvider(
+    providers: [
+      ChangeNotifierProvider(create: (_) => HomePageProvider()),
+      ChangeNotifierProvider(create: (_) => TranslatePageProvider()),
+      ChangeNotifierProvider(create: (_) => SelectLanguageProvider())
+    ],
+    child: const MyApp(),
+  ));
 }
 
 class MyApp extends StatefulWidget {
@@ -54,16 +53,14 @@ class _MyAppState extends State<MyApp> {
           debugShowCheckedModeBanner: false,
           theme: ThemeData(
               primarySwatch: Colors.red,
-              fontFamily: GoogleFonts.notoSans().fontFamily
-          ),
+              fontFamily: GoogleFonts.notoSans().fontFamily),
           home: NotificationListener<OverscrollIndicatorNotification>(
-            onNotification: (overscroll){
+            onNotification: (overscroll) {
               overscroll.disallowIndicator();
               return false;
             },
             child: HomePage(),
-          )
-      ),
+          )),
     );
   }
 }

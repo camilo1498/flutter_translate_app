@@ -14,12 +14,12 @@ class Language {
   });
 
   factory Language.fromJson(Map<String, dynamic> json) => Language(
-    name: json["name"],
-    code: json["code"],
-  );
+        name: json["name"],
+        code: json["code"],
+      );
 
   Map<String, dynamic> toJson() => {
-    "name": name,
-    "code": code,
-  };
+        "name": name,
+        "code": code,
+      };
 }

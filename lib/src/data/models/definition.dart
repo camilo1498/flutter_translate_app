@@ -1,5 +1,4 @@
 class Definition {
-
   String? id;
   String? definition;
   String? example;
@@ -11,14 +10,14 @@ class Definition {
   });
 
   factory Definition.fromJson(Map<String, dynamic> json) => Definition(
-    id: json["id"],
-    definition: json["definition"],
-    example: json["example"],
-  );
+        id: json["id"],
+        definition: json["definition"],
+        example: json["example"],
+      );
 
   Map<String, dynamic> toJson() => {
-    "id": id,
-    "definition": definition,
-    "example": example,
-  };
+        "id": id,
+        "definition": definition,
+        "example": example,
+      };
 }

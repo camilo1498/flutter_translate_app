@@ -7,12 +7,12 @@ class LanguageButton extends StatelessWidget {
   final String text;
   final AppColors appColors;
   final Function() onTap;
-  const LanguageButton({
-    Key? key,
-    required this.text,
-    required this.appColors,
-    required this.onTap
-  }) : super(key: key);
+  const LanguageButton(
+      {Key? key,
+      required this.text,
+      required this.appColors,
+      required this.onTap})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -31,17 +31,14 @@ class LanguageButton extends StatelessWidget {
                   spreadRadius: 1,
                   blurRadius: 5,
                   blurStyle: BlurStyle.inner,
-                  offset: const Offset(0, 1.5)
-              )
-            ]
-        ),
+                  offset: const Offset(0, 1.5))
+            ]),
         child: Text(
           text,
           style: TextStyle(
               color: appColors.colorText3,
               fontWeight: FontWeight.bold,
-              fontSize: 38.sp
-          ),
+              fontSize: 38.sp),
         ),
       ),
     );
