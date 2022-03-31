@@ -125,7 +125,7 @@ class _TranslatePageState extends State<TranslatePage> {
                                   onTapCopy: () =>
                                       translatePageController.setClipBoardData(
                                           text: translatePageProvider
-                                              .originalText),
+                                              .originalText, message: 'Original text copied'),
                                   onTapSpeech: () {}),
 
                             /// text field
@@ -338,7 +338,7 @@ class _TranslatePageState extends State<TranslatePage> {
                                       onTapCopy: () => translatePageController
                                           .setClipBoardData(
                                               text: translatePageProvider
-                                                  .translatedText),
+                                                  .translatedText, message: 'Translation copied'),
                                       onTapSpeech: () {}),
 
                                   /// result translation text

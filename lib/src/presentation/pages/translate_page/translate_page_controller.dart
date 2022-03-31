@@ -8,6 +8,7 @@ import 'package:flutter_translator_app/src/presentation/providers/select_languag
 import 'package:flutter_translator_app/src/presentation/providers/translate_page_provider.dart';
 import 'package:flutter_translator_app/src/presentation/widgets/animations/page_transitions/axis_page_transition.dart';
 import 'package:flutter_translator_app/src/presentation/widgets/animations/page_transitions/fade_page_route.dart';
+import 'package:flutter_translator_app/src/presentation/widgets/sheets/snakbar.dart';
 import 'package:translator/translator.dart';
 
 class TranslatePageController {
@@ -138,8 +139,10 @@ class TranslatePageController {
   }
 
   /// set data to clipboard
-  setClipBoardData({required String text}) async {
-    await Clipboard.setData(ClipboardData(text: text));
+  setClipBoardData({required String text, required String message}) async {
+    await Clipboard.setData(ClipboardData(text: text)).then((value) {
+      showToast(message: message);
+    });
   }
 
   translateFrom(
