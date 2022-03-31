@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
@@ -29,7 +28,6 @@ class _TranslatePageState extends State<TranslatePage> {
   final TranslatePageController translatePageController = TranslatePageController();
   /// mediaQuery
   final ScreenUtil screenUtil = ScreenUtil();
-  int _count = 0;
 
   @override
   void initState() {
@@ -250,7 +248,7 @@ class _TranslatePageState extends State<TranslatePage> {
                                     height: 5.h,
                                     width: 350.w,
                                     decoration: BoxDecoration(
-                                        color: Colors.blue,
+                                        color: Colors.blue[900],
                                         borderRadius: BorderRadius.circular(80)
                                     ),
                                   ),
@@ -264,309 +262,330 @@ class _TranslatePageState extends State<TranslatePage> {
                                   Align(
                                     alignment: Alignment.bottomLeft,
                                     child: Padding(
-                                      padding: EdgeInsets.only(left: 50.w, right: 50.w, top: 38.h, bottom: 40.h),
+                                      padding: EdgeInsets.only(bottom: 40.h),
                                       child: Column(
                                         mainAxisSize: MainAxisSize.min,
                                         crossAxisAlignment: CrossAxisAlignment.start,
                                         children: [
-                                          Text(
-                                            translatePageProvider.translatedText,
-                                            textAlign: TextAlign.left,
-                                            style: TextStyle(
-                                                color: Colors.blue[200]!,
-                                                fontSize: 60.sp
+                                          Padding(
+                                            padding: EdgeInsets.symmetric(horizontal: 60.w),
+                                            child: Text(
+                                              translatePageProvider.translatedText,
+                                              textAlign: TextAlign.left,
+                                              style: TextStyle(
+                                                  color: Colors.blue[200]!,
+                                                  fontSize: 60.sp
+                                              ),
                                             ),
                                           ),
                                           20.verticalSpace,
                                           /// pronunciation container
                                           if(translatePageProvider.translate != null)
                                             if(translatePageProvider.translate!.source!.pronunciation!.isNotEmpty)
-                                              _pronunciation(
-                                                  translatePageProvider: translatePageProvider,
-                                                  textColor: Colors.blue[200]!
+                                              Padding(
+                                                padding: EdgeInsets.symmetric(horizontal: 60.w),
+                                                child: _pronunciation(
+                                                    translatePageProvider: translatePageProvider,
+                                                    textColor: Colors.blue[200]!
+                                                ),
                                               ),
                                           100.verticalSpace,
+
+
                                           /// other translations
                                           if(translatePageProvider.translate != null)
-                                            if(translatePageProvider.translate!.translations != null)
-                                              Container(
-                                                padding: EdgeInsets.symmetric(horizontal: 30.w, vertical: 40.h),
-                                                width: screenUtil.screenWidth,
-                                                decoration: BoxDecoration(
-                                                    borderRadius: BorderRadius.circular(10),
-                                                    border: Border.all(
-                                                      width: 3.w,
-                                                      color: Colors.blue[900]!,
-                                                    )
-                                                ),
-                                                child: Column(
-                                                  mainAxisSize: MainAxisSize.min,
-                                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                                  children: [
-                                                    /// translations
-                                                    Text(
-                                                      'Other translations',
-                                                      textAlign: TextAlign.left,
-                                                      style: TextStyle(
-                                                          color: translatePageController.appColors.colorText1,
-                                                          fontSize: 50.sp,
-                                                          fontWeight: FontWeight.w500
+                                            if(translatePageProvider.translate!.translations != null
+                                                && translatePageProvider.translate!.isCorrect == true
+                                                && translatePageProvider.translate!.sourceLanguage == languageProvider.fromLang.code!.split('-')[0]
+                                                && translatePageProvider.translate!.sourceLanguage != ''
+                                            )
+                                              Padding(
+                                                padding: EdgeInsets.symmetric(horizontal: 20.w),
+                                                child: Container(
+                                                  padding: EdgeInsets.symmetric(horizontal: 30.w, vertical: 40.h),
+                                                  width: screenUtil.screenWidth,
+                                                  decoration: BoxDecoration(
+                                                      borderRadius: BorderRadius.circular(10),
+                                                      border: Border.all(
+                                                        width: 3.w,
+                                                        color: Colors.blue[900]!,
+                                                      )
+                                                  ),
+                                                  child: Column(
+                                                    mainAxisSize: MainAxisSize.min,
+                                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                                    children: [
+                                                      /// translations
+                                                      Text(
+                                                        'Other translations of "${translatePageProvider.originalText}"',
+                                                        textAlign: TextAlign.left,
+                                                        style: TextStyle(
+                                                            color: translatePageController.appColors.colorText1,
+                                                            fontSize: 50.sp,
+                                                            fontWeight: FontWeight.w500
+                                                        ),
                                                       ),
-                                                    ),
-                                                    30.verticalSpace,
-                                                    ...translatePageProvider.translate!.translations!.map((otherTranslation) {
-                                                      return Padding(
-                                                        padding: EdgeInsets.symmetric(vertical: 40.h),
-                                                        child: Column(
-                                                          mainAxisSize: MainAxisSize.min,
-                                                          crossAxisAlignment: CrossAxisAlignment.start,
-                                                          children: [
-                                                            /// adjective, adverb, noun title
-                                                            Text(
-                                                              otherTranslation.type.toString(),
-                                                              textAlign: TextAlign.left,
-                                                              style: TextStyle(
-                                                                  color: Colors.lightBlueAccent[100],
-                                                                  fontSize: 38.sp,
-                                                                  fontWeight: FontWeight.w500
+                                                      30.verticalSpace,
+                                                      ...translatePageProvider.translate!.translations!.map((otherTranslation) {
+                                                        return Padding(
+                                                          padding: EdgeInsets.symmetric(vertical: 40.h),
+                                                          child: Column(
+                                                            mainAxisSize: MainAxisSize.min,
+                                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                                            children: [
+                                                              /// adjective, adverb, noun title
+                                                              Text(
+                                                                otherTranslation.type.toString(),
+                                                                textAlign: TextAlign.left,
+                                                                style: TextStyle(
+                                                                    color: Colors.lightBlueAccent[100],
+                                                                    fontSize: 38.sp,
+                                                                    fontWeight: FontWeight.w500
+                                                                ),
                                                               ),
-                                                            ),
-                                                            10.verticalSpace,
-                                                            if(otherTranslation.translations != null)
-                                                              ...otherTranslation.translations!.map((translationsList) {
-                                                                return Padding(
-                                                                  padding: EdgeInsets.symmetric(vertical: 30.h),
-                                                                  child: Row(
-                                                                    mainAxisSize: MainAxisSize.max,
-                                                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                                                    children: [
-                                                                      /// title
-                                                                      SizedBox(
-                                                                        width: (screenUtil.screenWidth / 2) - 90.w,
-                                                                        child: RichText(
-                                                                          text: TextSpan(
-                                                                              style: TextStyle(
-                                                                                  color: translatePageController.appColors.colorText2,
-                                                                                  fontSize: 40.sp,
-                                                                                  fontWeight: FontWeight.w600
-                                                                              ),
-                                                                              children: [
-                                                                                if(translationsList.article != null)
-                                                                                  TextSpan(text: '${translationsList.article.toString()} '),
-                                                                                TextSpan(text: translationsList.word.toString())
-                                                                              ]
-                                                                          ),
-                                                                        ),
-                                                                      ),
-                                                                      if(translationsList.translations != null)
-                                                                      /// other translations sub list
+                                                              10.verticalSpace,
+                                                              if(otherTranslation.translations != null)
+                                                                ...otherTranslation.translations!.map((translationsList) {
+                                                                  return Padding(
+                                                                    padding: EdgeInsets.symmetric(vertical: 30.h),
+                                                                    child: Row(
+                                                                      mainAxisSize: MainAxisSize.max,
+                                                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                                      children: [
+                                                                        /// title
                                                                         SizedBox(
                                                                           width: (screenUtil.screenWidth / 2) - 90.w,
-                                                                          child: Wrap(
-                                                                            children: [
-                                                                              ...translationsList.translations!.map((subTranslationList) {
-                                                                                return Padding(
-                                                                                  padding: EdgeInsets.symmetric(horizontal: 5.w, vertical: 3.h),
-                                                                                  child: Text(
-                                                                                      subTranslationList != translationsList.translations!.last ? '$subTranslationList,' : subTranslationList,
-                                                                                      style: TextStyle(
-                                                                                          color: translatePageController.appColors.colorText2,
-                                                                                          fontSize: 35.sp,
-                                                                                          fontWeight: FontWeight.w400
-                                                                                      )
-                                                                                  ),
-                                                                                );
-                                                                              })
-                                                                            ],
+                                                                          child: RichText(
+                                                                            text: TextSpan(
+                                                                                style: TextStyle(
+                                                                                    color: translatePageController.appColors.colorText2,
+                                                                                    fontSize: 40.sp,
+                                                                                    fontWeight: FontWeight.w600
+                                                                                ),
+                                                                                children: [
+                                                                                  if(translationsList.article != null)
+                                                                                    TextSpan(text: '${translationsList.article.toString()} '),
+                                                                                  TextSpan(text: translationsList.word.toString())
+                                                                                ]
+                                                                            ),
                                                                           ),
-                                                                        )
-                                                                    ],
-                                                                  ),
-                                                                );
-                                                              })
-                                                          ],
-                                                        ),
-                                                      );
-                                                    }),
-                                                  ],
+                                                                        ),
+                                                                        if(translationsList.translations != null)
+                                                                        /// other translations sub list
+                                                                          SizedBox(
+                                                                            width: (screenUtil.screenWidth / 2) - 90.w,
+                                                                            child: Wrap(
+                                                                              children: [
+                                                                                ...translationsList.translations!.map((subTranslationList) {
+                                                                                  return Padding(
+                                                                                    padding: EdgeInsets.symmetric(horizontal: 5.w, vertical: 3.h),
+                                                                                    child: Text(
+                                                                                        subTranslationList != translationsList.translations!.last ? '$subTranslationList,' : subTranslationList,
+                                                                                        style: TextStyle(
+                                                                                            color: translatePageController.appColors.colorText2,
+                                                                                            fontSize: 35.sp,
+                                                                                            fontWeight: FontWeight.w400
+                                                                                        )
+                                                                                    ),
+                                                                                  );
+                                                                                })
+                                                                              ],
+                                                                            ),
+                                                                          )
+                                                                      ],
+                                                                    ),
+                                                                  );
+                                                                })
+                                                            ],
+                                                          ),
+                                                        );
+                                                      }),
+                                                    ],
+                                                  ),
                                                 ),
                                               ),
                                           30.verticalSpace,
                                           if(translatePageProvider.translate != null)
-                                            if(translatePageProvider.translate!.source!.definitions != null)
+                                            if(translatePageProvider.translate!.source!.definitions != null
+                                                && translatePageProvider.translate!.isCorrect == true
+                                                && translatePageProvider.translate!.sourceLanguage == languageProvider.fromLang.code!.split('-')[0]
+                                                && translatePageProvider.translate!.sourceLanguage != '')
                                             /// main definitions container
-                                              Container(
-                                                padding: EdgeInsets.symmetric(horizontal: 30.w, vertical: 40.h),
-                                                width: screenUtil.screenWidth,
-                                                decoration: BoxDecoration(
-                                                    borderRadius: BorderRadius.circular(10),
-                                                    border: Border.all(
-                                                        width: 3.w,
-                                                        color: Colors.blue[900]!
-                                                    )
-                                                ),
-                                                child: Column(
-                                                  mainAxisSize: MainAxisSize.min,
-                                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                                  children: [
-                                                    Text(
-                                                      'Definitions',
-                                                      textAlign: TextAlign.left,
-                                                      style: TextStyle(
-                                                          color: translatePageController.appColors.colorText1,
-                                                          fontSize: 50.sp,
-                                                          fontWeight: FontWeight.w500
+                                              Padding(
+                                                padding: EdgeInsets.symmetric(horizontal: 20.w),
+                                                child: Container(
+                                                  padding: EdgeInsets.symmetric(horizontal: 30.w, vertical: 40.h),
+                                                  width: screenUtil.screenWidth,
+                                                  decoration: BoxDecoration(
+                                                      borderRadius: BorderRadius.circular(10),
+                                                      border: Border.all(
+                                                          width: 3.w,
+                                                          color: Colors.blue[900]!
+                                                      )
+                                                  ),
+                                                  child: Column(
+                                                    mainAxisSize: MainAxisSize.min,
+                                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                                    children: [
+                                                      Text(
+                                                        'Definitions',
+                                                        textAlign: TextAlign.left,
+                                                        style: TextStyle(
+                                                            color: translatePageController.appColors.colorText1,
+                                                            fontSize: 50.sp,
+                                                            fontWeight: FontWeight.w500
+                                                        ),
                                                       ),
-                                                    ),
 
-                                                    ...translatePageProvider.translate!.source!.definitions!.map((definitions) {
-                                                      return Padding(
-                                                        padding: EdgeInsets.symmetric(vertical: 40.h),
-                                                        child: Column(
-                                                          mainAxisSize: MainAxisSize.min,
-                                                          crossAxisAlignment: CrossAxisAlignment.start,
-                                                          children: [
-                                                            /// adjective, noun, adverb title
-                                                            Text(
-                                                              definitions.type!,
-                                                              textAlign: TextAlign.left,
-                                                              style: TextStyle(
-                                                                  color: Colors.lightBlueAccent[100],
-                                                                  fontSize: 38.sp,
-                                                                  fontWeight: FontWeight.w500
+                                                      ...translatePageProvider.translate!.source!.definitions!.map((definitions) {
+                                                        return Padding(
+                                                          padding: EdgeInsets.symmetric(vertical: 40.h),
+                                                          child: Column(
+                                                            mainAxisSize: MainAxisSize.min,
+                                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                                            children: [
+                                                              /// adjective, noun, adverb title
+                                                              Text(
+                                                                definitions.type!,
+                                                                textAlign: TextAlign.left,
+                                                                style: TextStyle(
+                                                                    color: Colors.lightBlueAccent[100],
+                                                                    fontSize: 38.sp,
+                                                                    fontWeight: FontWeight.w500
+                                                                ),
                                                               ),
-                                                            ),
-                                                            10.verticalSpace,
-                                                            if(definitions.definitions != null)
-                                                              ...definitions.definitions!.map((subDef) {
-                                                                /// card body
-                                                                return Padding(
-                                                                  padding: EdgeInsets.symmetric(vertical: 30.h),
-                                                                  child: Row(
-                                                                    mainAxisSize: MainAxisSize.max,
-                                                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                                                    children: [
-                                                                      /// counter widget
-                                                                      Container(
-                                                                        width: 60.w,
-                                                                        height: 60.w,
-                                                                        alignment: Alignment.center,
-                                                                        decoration: BoxDecoration(
-                                                                            color: Colors.blue[900]!,
-                                                                            shape: BoxShape.circle
-                                                                        ),
-                                                                        child: Text(
-                                                                          (definitions.definitions!.indexOf(subDef) + 1).toString(),
-                                                                          style: TextStyle(
-                                                                              color: translatePageController.appColors.colorText1,
-                                                                              fontSize: 25.sp,
-                                                                              fontWeight: FontWeight.w600
+                                                              10.verticalSpace,
+                                                              if(definitions.definitions != null)
+                                                                ...definitions.definitions!.map((subDef) {
+                                                                  /// card body
+                                                                  return Padding(
+                                                                    padding: EdgeInsets.symmetric(vertical: 30.h),
+                                                                    child: Row(
+                                                                      mainAxisSize: MainAxisSize.max,
+                                                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                                      children: [
+                                                                        /// counter widget
+                                                                        Container(
+                                                                          width: 60.w,
+                                                                          height: 60.w,
+                                                                          alignment: Alignment.center,
+                                                                          decoration: BoxDecoration(
+                                                                              color: Colors.blue[900]!,
+                                                                              shape: BoxShape.circle
+                                                                          ),
+                                                                          child: Text(
+                                                                            (definitions.definitions!.indexOf(subDef) + 1).toString(),
+                                                                            style: TextStyle(
+                                                                                color: translatePageController.appColors.colorText1,
+                                                                                fontSize: 25.sp,
+                                                                                fontWeight: FontWeight.w600
+                                                                            ),
                                                                           ),
                                                                         ),
-                                                                      ),
-                                                                      30.horizontalSpace,
-                                                                      /// definition
-                                                                      Expanded(
-                                                                        child: Column(
-                                                                          mainAxisSize: MainAxisSize.min,
-                                                                          crossAxisAlignment: CrossAxisAlignment.start,
-                                                                          children: [
-                                                                            /// title widget
-                                                                            Text(
-                                                                              subDef.definition!,
-                                                                              style: TextStyle(
-                                                                                  color: translatePageController.appColors.colorText2,
-                                                                                  fontSize: 38.sp,
-                                                                                  fontWeight: FontWeight.w600
+                                                                        30.horizontalSpace,
+                                                                        /// definition
+                                                                        Expanded(
+                                                                          child: Column(
+                                                                            mainAxisSize: MainAxisSize.min,
+                                                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                                                            children: [
+                                                                              /// title widget
+                                                                              Text(
+                                                                                subDef.definition!,
+                                                                                style: TextStyle(
+                                                                                    color: translatePageController.appColors.colorText2,
+                                                                                    fontSize: 38.sp,
+                                                                                    fontWeight: FontWeight.w600
+                                                                                ),
                                                                               ),
-                                                                            ),
-                                                                            15.verticalSpace,
-                                                                            /// subtitle widget
-                                                                            Text(
-                                                                              subDef.example != null
-                                                                                  ? '"${subDef.example!}"'
-                                                                                  : '',
-                                                                              style: TextStyle(
-                                                                                  color: translatePageController.appColors.colorText2,
-                                                                                  fontSize: 37.sp,
-                                                                                  fontWeight: FontWeight.w500
+                                                                              15.verticalSpace,
+                                                                              /// subtitle widget
+                                                                              Text(
+                                                                                subDef.example != null
+                                                                                    ? '"${subDef.example!}"'
+                                                                                    : '',
+                                                                                style: TextStyle(
+                                                                                    color: translatePageController.appColors.colorText2,
+                                                                                    fontSize: 37.sp,
+                                                                                    fontWeight: FontWeight.w500
+                                                                                ),
                                                                               ),
-                                                                            ),
-                                                                            40.verticalSpace,
-                                                                            if(translatePageProvider.translate!.source!.synonyms != null)
-                                                                            /// synonym widget
-                                                                              ListView.builder(
-                                                                                shrinkWrap: true,
-                                                                                itemCount: translatePageProvider.translate!.source!.synonyms!.length,
-                                                                                physics: const NeverScrollableScrollPhysics(),
-                                                                                itemBuilder: (context, synIndex){
-                                                                                  List<Synonym> listSynonym= [];
-                                                                                  if(translatePageProvider.translate!.source!.synonyms![synIndex].isNotEmpty){
-                                                                                    for(int i=0; i< translatePageProvider.translate!.source!.synonyms![synIndex].length; i++){
-                                                                                      listSynonym.add(
-                                                                                          Synonym(
-                                                                                              id: translatePageProvider.translate!.source!.synonyms![synIndex][i].id,
-                                                                                              words: translatePageProvider.translate!.source!.synonyms![synIndex][i].words
-                                                                                          )
-                                                                                      );
-                                                                                    }
-                                                                                    return ListView.builder(
-                                                                                      shrinkWrap: true,
-                                                                                      itemCount: translatePageProvider.translate!.source!.synonyms![synIndex].length,
-                                                                                      physics: const NeverScrollableScrollPhysics(),
-                                                                                      itemBuilder: (context, subSymIndex){
-                                                                                        if(translatePageProvider.translate!.source!.synonyms![synIndex][subSymIndex].id
-                                                                                            == subDef.id){
-                                                                                          return Wrap(
-                                                                                            children: [
-                                                                                              ...translatePageProvider.translate!.source!.synonyms![synIndex][subSymIndex].words!.map((item){
-                                                                                                return Padding(
-                                                                                                  padding: EdgeInsets.symmetric(vertical: 10.h, horizontal: 15.w),
-                                                                                                  child: Container(
-                                                                                                    padding: EdgeInsets.symmetric(vertical: 15.h, horizontal: 35.w),
-                                                                                                    decoration:  BoxDecoration(
-                                                                                                        border: Border.all(
-                                                                                                          color: translatePageController.appColors.iconColor2,
+                                                                              40.verticalSpace,
+                                                                              if(translatePageProvider.translate!.source!.synonyms != null)
+                                                                              /// synonym widget
+                                                                                ListView.builder(
+                                                                                  shrinkWrap: true,
+                                                                                  itemCount: translatePageProvider.translate!.source!.synonyms!.length,
+                                                                                  physics: const NeverScrollableScrollPhysics(),
+                                                                                  itemBuilder: (context, synIndex){
+                                                                                    List<Synonym> listSynonym= [];
+                                                                                    if(translatePageProvider.translate!.source!.synonyms![synIndex].isNotEmpty){
+                                                                                      for(int i=0; i< translatePageProvider.translate!.source!.synonyms![synIndex].length; i++){
+                                                                                        listSynonym.add(
+                                                                                            Synonym(
+                                                                                                id: translatePageProvider.translate!.source!.synonyms![synIndex][i].id,
+                                                                                                words: translatePageProvider.translate!.source!.synonyms![synIndex][i].words
+                                                                                            )
+                                                                                        );
+                                                                                      }
+                                                                                      return ListView.builder(
+                                                                                        shrinkWrap: true,
+                                                                                        itemCount: translatePageProvider.translate!.source!.synonyms![synIndex].length,
+                                                                                        physics: const NeverScrollableScrollPhysics(),
+                                                                                        itemBuilder: (context, subSymIndex){
+                                                                                          if(translatePageProvider.translate!.source!.synonyms![synIndex][subSymIndex].id
+                                                                                              == subDef.id){
+                                                                                            return Wrap(
+                                                                                              children: [
+                                                                                                ...translatePageProvider.translate!.source!.synonyms![synIndex][subSymIndex].words!.map((item){
+                                                                                                  return Padding(
+                                                                                                    padding: EdgeInsets.symmetric(vertical: 10.h, horizontal: 15.w),
+                                                                                                    child: Container(
+                                                                                                      padding: EdgeInsets.symmetric(vertical: 15.h, horizontal: 35.w),
+                                                                                                      decoration:  BoxDecoration(
+                                                                                                          border: Border.all(
+                                                                                                            color: translatePageController.appColors.iconColor2,
+                                                                                                          ),
+                                                                                                          borderRadius: BorderRadius.circular(20)
+                                                                                                      ),
+                                                                                                      child: Text(
+                                                                                                        item,
+                                                                                                        style: TextStyle(
+                                                                                                            color: Colors.lightBlueAccent[100],
+                                                                                                            fontSize: 34.sp,
+                                                                                                            fontWeight: FontWeight.w600
                                                                                                         ),
-                                                                                                        borderRadius: BorderRadius.circular(20)
-                                                                                                    ),
-                                                                                                    child: Text(
-                                                                                                      item,
-                                                                                                      style: TextStyle(
-                                                                                                          color: Colors.lightBlueAccent[100],
-                                                                                                          fontSize: 34.sp,
-                                                                                                          fontWeight: FontWeight.w600
                                                                                                       ),
                                                                                                     ),
-                                                                                                  ),
-                                                                                                );
-                                                                                              })
-                                                                                            ],
-                                                                                          );
-                                                                                        } else{
-                                                                                          return Container();
-                                                                                        }
-                                                                                      },
-                                                                                    );
-                                                                                  } else{
-                                                                                    return Container();
-                                                                                  }
-                                                                                },
-                                                                              )
-                                                                          ],
-                                                                        ),
-                                                                      )
-                                                                    ],
-                                                                  ),
-                                                                );
-                                                              })
-                                                          ],
-                                                        ),
-                                                      );
-                                                    }),
-                                                  ],
+                                                                                                  );
+                                                                                                })
+                                                                                              ],
+                                                                                            );
+                                                                                          } else{
+                                                                                            return Container();
+                                                                                          }
+                                                                                        },
+                                                                                      );
+                                                                                    } else{
+                                                                                      return Container();
+                                                                                    }
+                                                                                  },
+                                                                                )
+                                                                            ],
+                                                                          ),
+                                                                        )
+                                                                      ],
+                                                                    ),
+                                                                  );
+                                                                })
+                                                            ],
+                                                          ),
+                                                        );
+                                                      }),
+                                                    ],
+                                                  ),
                                                 ),
                                               )
                                         ],
