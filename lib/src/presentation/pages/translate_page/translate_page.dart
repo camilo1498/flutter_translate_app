@@ -38,7 +38,7 @@ class _TranslatePageState extends State<TranslatePage> {
 
   @override
   void dispose() {
-    translateController.dispose();
+    //translateController.dispose(Provider.of<TranslateProvider>(context, listen: false));
     super.dispose();
   }
 
@@ -81,7 +81,7 @@ class _TranslatePageState extends State<TranslatePage> {
                                 .textEditingController.text.isNotEmpty)
                               _currentLanguageToolbar(
                                   color: appColors.colorText1,
-                                  language: languageProvider.fromLang.name.toString().split(' ')[0],
+                                  language: languageProvider.fromLang.code != 'auto' ? languageProvider.fromLang.name.toString().split(' ')[0] : 'Detect (${languageProvider.detectedLang.name.toString().split(' ')[0]})',
                                   onTapCopy: () =>
                                       translateController.setClipBoardData(translateProvider.originalText, 'Original text copied'),
                                   onTapSpeech: () {}
@@ -173,7 +173,7 @@ class _TranslatePageState extends State<TranslatePage> {
                                   /// show detect language
                                   if (translateProvider.translate != null)
                                     if (translateProvider.translate!.sourceLanguage != languageProvider.fromLang.code!.split('-')[0]
-                                        && translateProvider.translate!.sourceLanguage != '')
+                                        && translateProvider.translate!.sourceLanguage != '' && languageProvider.fromLang.code != 'auto')
                                       _correctionContainer(
                                         onTap: () => translateController
                                             .changeToDetectLanguage(languageProvider,translateProvider),

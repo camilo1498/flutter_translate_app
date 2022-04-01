@@ -10,8 +10,11 @@ class SelectLanguageProvider extends ChangeNotifier {
     for (var l in LanguagesList.languageList) {
       _languages.add(Language.fromJson(l));
     }
+    languagesList = _languages;
     return _languages;
   }
+
+  List<Language> languagesList = [];
 
   Language _fromLang = Language(name: 'Spanish (Mexico)', code: 'es-MX');
   Language get fromLang => _fromLang;
@@ -33,4 +36,13 @@ class SelectLanguageProvider extends ChangeNotifier {
     _detectedLang = lang;
     notifyListeners();
   }
+
+  /// is the keyboard open
+  bool _showKeyBoard = false;
+  bool get showKeyBoard => _showKeyBoard;
+  set showKeyBoard(bool show) {
+    _showKeyBoard = show;
+    notifyListeners();
+  }
+
 }

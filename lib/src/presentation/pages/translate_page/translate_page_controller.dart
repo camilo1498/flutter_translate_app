@@ -17,7 +17,7 @@ import 'package:flutter_translator_app/src/presentation/widgets/sheets/snakbar.d
 class TranslatePageController {
 
   /// textField controller
-  TextEditingController textEditingController = TextEditingController();
+  late TextEditingController textEditingController;
 
   /// scroll controller
   final ScrollController _listController = ScrollController();
@@ -142,20 +142,24 @@ class TranslatePageController {
 
   /// change select language order => works and update
   void changeLanguageOrder(SelectLanguageProvider languageProvider, TranslateProvider translateProvider,) {
-    /// get current data
-    var _from = languageProvider.fromLang;
-    var _to = languageProvider.toLang;
-    var _originalText = translateProvider.originalText;
-    var _translatedText = translateProvider.translationText;
-    /// replace data
-    textEditingController.text = _translatedText;
-    languageProvider.fromLang = _to;
-    languageProvider.toLang = _from;
-    translateProvider.originalText = _translatedText;
-    translateProvider.translationText = _originalText;
-    /// position text selector to end
-    textEditingController.selection = TextSelection.fromPosition(
-        TextPosition(offset: textEditingController.text.length));
+    if(languageProvider.fromLang.code! != 'auto') {
+      /// get current data
+      var _from = languageProvider.fromLang;
+      var _to = languageProvider.toLang;
+      var _originalText = translateProvider.originalText;
+      var _translatedText = translateProvider.translationText;
+
+      /// replace data
+      textEditingController.text = _translatedText;
+      languageProvider.fromLang = _to;
+      languageProvider.toLang = _from;
+      translateProvider.originalText = _translatedText;
+      translateProvider.translationText = _originalText;
+
+      /// position text selector to end
+      textEditingController.selection = TextSelection.fromPosition(
+          TextPosition(offset: textEditingController.text.length));
+    }
   }
 
   /// auto detect lang from api response => works
@@ -222,12 +226,16 @@ class TranslatePageController {
 
   /// init view => works
   void initState(translateProvider, context){
+    textEditingController = TextEditingController();
     _keyBoardListener(translateProvider, context);
     _validateClipBoardData(translateProvider);
   }
 
   /// dispose view callback => works
-  void dispose(){
+  void dispose(TranslateProvider translateProvider){
+    translateProvider.originalText = '';
+    translateProvider.translationText = '';
+    textEditingController.dispose();
     keyboardSubscription.cancel();
   }
 }

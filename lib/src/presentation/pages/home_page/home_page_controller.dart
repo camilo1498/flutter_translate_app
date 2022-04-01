@@ -41,11 +41,14 @@ class HomePageController {
   }
 
   /// change select language order
-  void changeLanguageOrder({required SelectLanguageProvider selectLanguage}) {
-    var _from = selectLanguage.fromLang;
-    var _to = selectLanguage.toLang;
-    selectLanguage.fromLang = _to;
-    selectLanguage.toLang = _from;
+  void changeLanguageOrder({required SelectLanguageProvider languageProvider}) {
+    if(languageProvider.fromLang.code! != 'auto'){
+      var _from = languageProvider.fromLang;
+      var _to = languageProvider.toLang;
+      languageProvider.fromLang = _to;
+      languageProvider.toLang = _from;
+    }
+
   }
 
   /// panel functions

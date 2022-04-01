@@ -61,7 +61,7 @@ class HomePage extends StatelessWidget {
                             child: AnimatedOnTapButton(
                               onTap: () =>
                                   _homePageController.changeLanguageOrder(
-                                      selectLanguage: languageProvider),
+                                      languageProvider: languageProvider),
                               child: SizedBox(
                                 width: 100.w,
                                 height: 100.w,
