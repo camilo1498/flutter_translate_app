@@ -1,14 +1,10 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
-import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
 import 'package:flutter_translator_app/src/core/constants/app_colors.dart';
-import 'package:flutter_translator_app/src/core/constants/languages.dart';
-import 'package:flutter_translator_app/src/data/models/language.dart';
-import 'package:flutter_translator_app/src/data/models/synonym.dart';
-import 'package:flutter_translator_app/src/data/models/translate.dart';
 import 'package:flutter_translator_app/src/presentation/pages/select_language_page/select_language_page.dart';
 import 'package:flutter_translator_app/src/presentation/pages/translate_page/translate_page_controller.dart';
+import 'package:flutter_translator_app/src/presentation/pages/translate_page/widgets/definitions.dart';
+import 'package:flutter_translator_app/src/presentation/pages/translate_page/widgets/examples.dart';
+import 'package:flutter_translator_app/src/presentation/pages/translate_page/widgets/translations.dart';
 import 'package:flutter_translator_app/src/presentation/providers/select_language_provider.dart';
 import 'package:flutter_translator_app/src/presentation/providers/translate_provider.dart';
 import 'package:flutter_translator_app/src/presentation/widgets/animations/animated_onTap_button.dart';
@@ -88,7 +84,8 @@ class _TranslatePageState extends State<TranslatePage> {
                                   language: languageProvider.fromLang.name.toString().split(' ')[0],
                                   onTapCopy: () =>
                                       translateController.setClipBoardData(translateProvider.originalText, 'Original text copied'),
-                                  onTapSpeech: () {}),
+                                  onTapSpeech: () {}
+                              ),
 
                             /// text field
                             Padding(
@@ -107,11 +104,13 @@ class _TranslatePageState extends State<TranslatePage> {
                                     hintText: 'Enter Text',
                                     hintStyle: TextStyle(
                                         color: appColors.colorText1.withOpacity(0.7),
-                                        fontSize: 80.sp),
+                                        fontSize: 80.sp
+                                    ),
                                   ),
                                   style: TextStyle(
                                       color: appColors.colorText1,
-                                      fontSize: 60.sp),
+                                      fontSize: 60.sp
+                                  ),
                                 )),
 
                             /// clipboard button
@@ -197,7 +196,7 @@ class _TranslatePageState extends State<TranslatePage> {
                                     decoration: BoxDecoration(
                                         color: Colors.blue[900],
                                         borderRadius:
-                                            BorderRadius.circular(80)),
+                                        BorderRadius.circular(80)),
                                   ),
                                   _currentLanguageToolbar(
                                       color: Colors.blue[200]!,
@@ -212,427 +211,62 @@ class _TranslatePageState extends State<TranslatePage> {
                                       padding: EdgeInsets.only(bottom: 40.h),
                                       child: Column(
                                         mainAxisSize: MainAxisSize.min,
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
+                                        crossAxisAlignment: CrossAxisAlignment.start,
                                         children: [
                                           Padding(
-                                            padding: EdgeInsets.symmetric(
-                                                horizontal: 60.w),
+                                            padding: EdgeInsets.symmetric(horizontal: 60.w),
                                             child: Text(
-                                              translateProvider
-                                                  .translationText,
+                                              translateProvider.translationText,
                                               textAlign: TextAlign.left,
                                               style: TextStyle(
                                                   color: Colors.blue[200]!,
-                                                  fontSize: 60.sp),
+                                                  fontSize: 60.sp
+                                              ),
                                             ),
                                           ),
                                           20.verticalSpace,
 
                                           /// pronunciation container
-                                          if (translateProvider.translate !=
-                                              null)
-                                            if (translateProvider
-                                                .translate!
-                                                .source!
-                                                .pronunciation!
-                                                .isNotEmpty)
-                                              Padding(
-                                                padding: EdgeInsets.symmetric(
-                                                    horizontal: 60.w),
+                                          if (translateProvider.translate != null)
+                                            if (translateProvider.translate!.source!.pronunciation!.isNotEmpty)
+                                              Padding(padding: EdgeInsets.symmetric(horizontal: 60.w),
                                                 child: _pronunciation(
-                                                    translatePageProvider:
-                                                        translateProvider,
-                                                    textColor:
-                                                        Colors.blue[200]!),
+                                                    translatePageProvider: translateProvider,
+                                                    textColor: Colors.blue[200]!
+                                                ),
                                               ),
                                           100.verticalSpace,
 
                                           /// other translations
-                                          if (translateProvider.translate !=
-                                              null)
-                                            if (translateProvider.translate!
-                                                        .translations !=
-                                                    null &&
-                                                translateProvider.translate!
-                                                    .translations!.isNotEmpty &&
-                                                translateProvider
-                                                        .translate!.isCorrect ==
-                                                    true &&
-                                                translateProvider.translate!
-                                                        .sourceLanguage ==
-                                                    languageProvider
-                                                        .fromLang.code!
-                                                        .split('-')[0] &&
-                                                translateProvider.translate!
-                                                        .sourceLanguage !=
-                                                    '')
-                                              Padding(
-                                                padding: EdgeInsets.symmetric(
-                                                    horizontal: 20.w),
-                                                child: Container(
-                                                  padding: EdgeInsets.symmetric(
-                                                      horizontal: 30.w,
-                                                      vertical: 40.h),
-                                                  width: screenUtil.screenWidth,
-                                                  decoration: BoxDecoration(
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                              10),
-                                                      border: Border.all(
-                                                        width: 3.w,
-                                                        color:
-                                                            Colors.blue[900]!,
-                                                      )),
-                                                  child: Column(
-                                                    mainAxisSize:
-                                                        MainAxisSize.min,
-                                                    crossAxisAlignment:
-                                                        CrossAxisAlignment
-                                                            .start,
-                                                    children: [
-                                                      /// translations
-                                                      Text(
-                                                        'Other translations of "${translateProvider.originalText}"',
-                                                        textAlign:
-                                                            TextAlign.left,
-                                                        style: TextStyle(
-                                                            color: appColors.colorText1,
-                                                            fontSize: 50.sp,
-                                                            fontWeight:
-                                                                FontWeight
-                                                                    .w500),
-                                                      ),
-                                                      30.verticalSpace,
-                                                      ...translateProvider
-                                                          .translate!
-                                                          .translations!
-                                                          .map(
-                                                              (otherTranslation) {
-                                                        return Padding(
-                                                          padding: EdgeInsets
-                                                              .symmetric(
-                                                                  vertical:
-                                                                      40.h),
-                                                          child: Column(
-                                                            mainAxisSize:
-                                                                MainAxisSize
-                                                                    .min,
-                                                            crossAxisAlignment:
-                                                                CrossAxisAlignment
-                                                                    .start,
-                                                            children: [
-                                                              /// adjective, adverb, noun title
-                                                              Text(
-                                                                otherTranslation
-                                                                    .type
-                                                                    .toString(),
-                                                                textAlign:
-                                                                    TextAlign
-                                                                        .left,
-                                                                style: TextStyle(
-                                                                    color: Colors
-                                                                            .lightBlueAccent[
-                                                                        100],
-                                                                    fontSize:
-                                                                        38.sp,
-                                                                    fontWeight:
-                                                                        FontWeight
-                                                                            .w500),
-                                                              ),
-                                                              10.verticalSpace,
-                                                              if (otherTranslation
-                                                                      .translations !=
-                                                                  null)
-                                                                ...otherTranslation
-                                                                    .translations!
-                                                                    .map(
-                                                                        (translationsList) {
-                                                                  return Padding(
-                                                                    padding: EdgeInsets.symmetric(
-                                                                        vertical:
-                                                                            30.h),
-                                                                    child: Row(
-                                                                      mainAxisSize:
-                                                                          MainAxisSize
-                                                                              .max,
-                                                                      crossAxisAlignment:
-                                                                          CrossAxisAlignment
-                                                                              .start,
-                                                                      mainAxisAlignment:
-                                                                          MainAxisAlignment
-                                                                              .spaceBetween,
-                                                                      children: [
-                                                                        /// title
-                                                                        SizedBox(
-                                                                          width:
-                                                                              (screenUtil.screenWidth / 2) - 90.w,
-                                                                          child:
-                                                                              RichText(
-                                                                            text:
-                                                                                TextSpan(style: TextStyle(color: appColors.colorText2, fontSize: 40.sp, fontWeight: FontWeight.w600), children: [
-                                                                              if (translationsList.article != null)
-                                                                                TextSpan(text: '${translationsList.article.toString()} '),
-                                                                              TextSpan(text: translationsList.word.toString())
-                                                                            ]),
-                                                                          ),
-                                                                        ),
-                                                                        if (translationsList.translations !=
-                                                                            null)
-
-                                                                          /// other translations sub list
-                                                                          SizedBox(
-                                                                            width:
-                                                                                (screenUtil.screenWidth / 2) - 90.w,
-                                                                            child:
-                                                                                Wrap(
-                                                                              children: [
-                                                                                ...translationsList.translations!.map((subTranslationList) {
-                                                                                  return Padding(
-                                                                                    padding: EdgeInsets.symmetric(horizontal: 5.w, vertical: 3.h),
-                                                                                    child: Text(subTranslationList != translationsList.translations!.last ? '$subTranslationList,' : subTranslationList, style: TextStyle(color: appColors.colorText2, fontSize: 35.sp, fontWeight: FontWeight.w400)),
-                                                                                  );
-                                                                                })
-                                                                              ],
-                                                                            ),
-                                                                          )
-                                                                      ],
-                                                                    ),
-                                                                  );
-                                                                })
-                                                            ],
-                                                          ),
-                                                        );
-                                                      }),
-                                                    ],
-                                                  ),
-                                                ),
+                                          if (translateProvider.translate != null)
+                                            if (translateProvider.translate!.translations != null
+                                                && translateProvider.translate!.translations!.isNotEmpty
+                                                && translateProvider.translate!.isCorrect == true
+                                                && translateProvider.translate!.sourceLanguage == languageProvider.fromLang.code!.split('-')[0] && translateProvider.translate!.sourceLanguage != '')
+                                              Translations(
+                                                  translateProvider: translateProvider
                                               ),
                                           30.verticalSpace,
-                                          if (translateProvider.translate !=
-                                              null)
-                                            if (translateProvider.translate!
-                                                        .source!.definitions !=
-                                                    null &&
-                                                translateProvider
-                                                    .translate!
-                                                    .source!
-                                                    .definitions!
-                                                    .isNotEmpty &&
-                                                translateProvider
-                                                        .translate!.isCorrect ==
-                                                    true &&
-                                                translateProvider.translate!
-                                                        .sourceLanguage ==
-                                                    languageProvider
-                                                        .fromLang.code!
-                                                        .split('-')[0] &&
-                                                translateProvider.translate!
-                                                        .sourceLanguage !=
-                                                    '')
 
-                                              /// main definitions container
-                                              Padding(
-                                                padding: EdgeInsets.symmetric(
-                                                    horizontal: 20.w),
-                                                child: Container(
-                                                  padding: EdgeInsets.symmetric(
-                                                      horizontal: 30.w,
-                                                      vertical: 40.h),
-                                                  width: screenUtil.screenWidth,
-                                                  decoration: BoxDecoration(
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                              10),
-                                                      border: Border.all(
-                                                          width: 3.w,
-                                                          color: Colors
-                                                              .blue[900]!)),
-                                                  child: Column(
-                                                    mainAxisSize:
-                                                        MainAxisSize.min,
-                                                    crossAxisAlignment:
-                                                        CrossAxisAlignment
-                                                            .start,
-                                                    children: [
-                                                      Text(
-                                                        'Definitions',
-                                                        textAlign:
-                                                            TextAlign.left,
-                                                        style: TextStyle(
-                                                            color: appColors .colorText1,
-                                                            fontSize: 50.sp,
-                                                            fontWeight:
-                                                                FontWeight
-                                                                    .w500),
-                                                      ),
-                                                      ...translateProvider
-                                                          .translate!
-                                                          .source!
-                                                          .definitions!
-                                                          .map((definitions) {
-                                                        return Padding(
-                                                          padding: EdgeInsets
-                                                              .symmetric(
-                                                                  vertical:
-                                                                      40.h),
-                                                          child: Column(
-                                                            mainAxisSize:
-                                                                MainAxisSize
-                                                                    .min,
-                                                            crossAxisAlignment:
-                                                                CrossAxisAlignment
-                                                                    .start,
-                                                            children: [
-                                                              /// adjective, noun, adverb title
-                                                              Text(
-                                                                definitions
-                                                                    .type!,
-                                                                textAlign:
-                                                                    TextAlign
-                                                                        .left,
-                                                                style: TextStyle(
-                                                                    color: Colors
-                                                                            .lightBlueAccent[
-                                                                        100],
-                                                                    fontSize:
-                                                                        38.sp,
-                                                                    fontWeight:
-                                                                        FontWeight
-                                                                            .w500),
-                                                              ),
-                                                              10.verticalSpace,
-                                                              if (definitions
-                                                                      .definitions !=
-                                                                  null)
-                                                                ...definitions
-                                                                    .definitions!
-                                                                    .map(
-                                                                        (subDef) {
-                                                                  /// card body
-                                                                  return Padding(
-                                                                    padding: EdgeInsets.symmetric(
-                                                                        vertical:
-                                                                            30.h),
-                                                                    child: Row(
-                                                                      mainAxisSize:
-                                                                          MainAxisSize
-                                                                              .max,
-                                                                      crossAxisAlignment:
-                                                                          CrossAxisAlignment
-                                                                              .start,
-                                                                      mainAxisAlignment:
-                                                                          MainAxisAlignment
-                                                                              .spaceBetween,
-                                                                      children: [
-                                                                        /// counter widget
-                                                                        Container(
-                                                                          width:
-                                                                              60.w,
-                                                                          height:
-                                                                              60.w,
-                                                                          alignment:
-                                                                              Alignment.center,
-                                                                          decoration: BoxDecoration(
-                                                                              color: Colors.blue[900]!,
-                                                                              shape: BoxShape.circle),
-                                                                          child:
-                                                                              Text(
-                                                                            (definitions.definitions!.indexOf(subDef) + 1).toString(),
-                                                                            style: TextStyle(
-                                                                                color: appColors.colorText1,
-                                                                                fontSize: 25.sp,
-                                                                                fontWeight: FontWeight.w600),
-                                                                          ),
-                                                                        ),
-                                                                        30.horizontalSpace,
+                                          /// main definitions container
+                                          if (translateProvider.translate != null)
+                                            if (translateProvider.translate!.source!.definitions != null
+                                                && translateProvider.translate!.source!.definitions!.isNotEmpty
+                                                && translateProvider.translate!.isCorrect == true
+                                                && translateProvider.translate!.sourceLanguage == languageProvider.fromLang.code!.split('-')[0] && translateProvider.translate!.sourceLanguage != '')
+                                              Definitions(
+                                                  translateProvider: translateProvider,
+                                              ),
+                                          30.verticalSpace,
 
-                                                                        /// definition
-                                                                        Expanded(
-                                                                          child:
-                                                                              Column(
-                                                                            mainAxisSize:
-                                                                                MainAxisSize.min,
-                                                                            crossAxisAlignment:
-                                                                                CrossAxisAlignment.start,
-                                                                            children: [
-                                                                              /// title widget
-                                                                              Text(
-                                                                                subDef.definition!,
-                                                                                style: TextStyle(color: appColors.colorText2, fontSize: 38.sp, fontWeight: FontWeight.w600),
-                                                                              ),
-                                                                              15.verticalSpace,
-
-                                                                              /// subtitle widget
-                                                                              Text(
-                                                                                subDef.example != null ? '"${subDef.example!}"' : '',
-                                                                                style: TextStyle(color: appColors.colorText2, fontSize: 37.sp, fontWeight: FontWeight.w500),
-                                                                              ),
-                                                                              40.verticalSpace,
-                                                                              if (translateProvider.translate!.source!.synonyms != null)
-
-                                                                                /// synonym widget
-                                                                                ListView.builder(
-                                                                                  shrinkWrap: true,
-                                                                                  itemCount: translateProvider.translate!.source!.synonyms!.length,
-                                                                                  physics: const NeverScrollableScrollPhysics(),
-                                                                                  itemBuilder: (context, synIndex) {
-                                                                                    List<Synonym> listSynonym = [];
-                                                                                    if (translateProvider.translate!.source!.synonyms![synIndex].isNotEmpty) {
-                                                                                      for (int i = 0; i < translateProvider.translate!.source!.synonyms![synIndex].length; i++) {
-                                                                                        listSynonym.add(Synonym(id: translateProvider.translate!.source!.synonyms![synIndex][i].id, words: translateProvider.translate!.source!.synonyms![synIndex][i].words));
-                                                                                      }
-                                                                                      return ListView.builder(
-                                                                                        shrinkWrap: true,
-                                                                                        itemCount: translateProvider.translate!.source!.synonyms![synIndex].length,
-                                                                                        physics: const NeverScrollableScrollPhysics(),
-                                                                                        itemBuilder: (context, subSymIndex) {
-                                                                                          if (translateProvider.translate!.source!.synonyms![synIndex][subSymIndex].id == subDef.id) {
-                                                                                            return Wrap(
-                                                                                              children: [
-                                                                                                ...translateProvider.translate!.source!.synonyms![synIndex][subSymIndex].words!.map((item) {
-                                                                                                  return Padding(
-                                                                                                    padding: EdgeInsets.symmetric(vertical: 10.h, horizontal: 15.w),
-                                                                                                    child: Container(
-                                                                                                      padding: EdgeInsets.symmetric(vertical: 15.h, horizontal: 35.w),
-                                                                                                      decoration: BoxDecoration(
-                                                                                                          border: Border.all(
-                                                                                                            color: appColors.iconColor2,
-                                                                                                          ),
-                                                                                                          borderRadius: BorderRadius.circular(20)),
-                                                                                                      child: Text(
-                                                                                                        item,
-                                                                                                        style: TextStyle(color: Colors.lightBlueAccent[100], fontSize: 34.sp, fontWeight: FontWeight.w600),
-                                                                                                      ),
-                                                                                                    ),
-                                                                                                  );
-                                                                                                })
-                                                                                              ],
-                                                                                            );
-                                                                                          } else {
-                                                                                            return Container();
-                                                                                          }
-                                                                                        },
-                                                                                      );
-                                                                                    } else {
-                                                                                      return Container();
-                                                                                    }
-                                                                                  },
-                                                                                )
-                                                                            ],
-                                                                          ),
-                                                                        )
-                                                                      ],
-                                                                    ),
-                                                                  );
-                                                                })
-                                                            ],
-                                                          ),
-                                                        );
-                                                      }),
-                                                    ],
-                                                  ),
-                                                ),
+                                          /// example container
+                                          if (translateProvider.translate != null)
+                                            if (translateProvider.translate!.source!.examples != null
+                                                && translateProvider.translate!.source!.examples!.isNotEmpty
+                                                && translateProvider.translate!.isCorrect == true
+                                                && translateProvider.translate!.sourceLanguage == languageProvider.fromLang.code!.split('-')[0] && translateProvider.translate!.sourceLanguage != '')
+                                              Examples(
+                                                  translateProvider: translateProvider
                                               )
                                         ],
                                       ),
@@ -658,16 +292,12 @@ class _TranslatePageState extends State<TranslatePage> {
                             LanguageButton(
                                 text: languageProvider.fromLang.name.toString().split(' ')[0],
                                 appColors: appColors,
-                                onTap: () {
-                                  translateProvider.closePage = false;
-                                  /// select translate "from"
-                                  translateController.goToSelectLanguage(context, SelectLanguageType.from, languageProvider, translateProvider);
-                                }),
+                                onTap: () => translateController.goToSelectLanguage(context, SelectLanguageType.from, languageProvider, translateProvider)
+                            ),
                             Padding(
                               padding: EdgeInsets.symmetric(horizontal: 25.w),
                               child: AnimatedOnTapButton(
-                                onTap: () =>
-                                    translateController.changeLanguageOrder(languageProvider, translateProvider),
+                                onTap: () => translateController.changeLanguageOrder(languageProvider, translateProvider),
                                 child: SizedBox(
                                   width: 100.w,
                                   height: 100.w,
@@ -682,12 +312,8 @@ class _TranslatePageState extends State<TranslatePage> {
                             LanguageButton(
                                 text: languageProvider.toLang.name.toString().split(' ')[0],
                                 appColors: appColors,
-                                onTap: () {
-                                  translateProvider.closePage = false;
-                                  /// select translate "to"
-                                  translateController.goToSelectLanguage(context, SelectLanguageType.to, languageProvider, translateProvider);
-
-                                }),
+                                onTap: () => translateController.goToSelectLanguage(context, SelectLanguageType.to, languageProvider, translateProvider)
+                            ),
                           ],
                         ),
                       ),
@@ -704,9 +330,9 @@ class _TranslatePageState extends State<TranslatePage> {
 
   /// appBar
   _appBar({
-      required TranslatePageController translatePageController,
-      required BuildContext context,
-      required TranslateProvider translateProvider}) {
+    required TranslatePageController translatePageController,
+    required BuildContext context,
+    required TranslateProvider translateProvider}) {
     return AnimatedContainer(
       duration: const Duration(milliseconds: 10),
       color: appColors.backgroundColor,
@@ -729,12 +355,7 @@ class _TranslatePageState extends State<TranslatePage> {
           Padding(
             padding: EdgeInsets.only(right: 45.w),
             child: AnimatedOnTapButton(
-              onTap: () {
-                setState(() {
-                  translateProvider.closePage = false;
-                  translatePageController.goToHistoryPage(context: context);
-                });
-              },
+              onTap: () => translatePageController.goToHistoryPage(context, translateProvider),
               child: Icon(
                 Icons.history,
                 color: Colors.white,
@@ -749,9 +370,9 @@ class _TranslatePageState extends State<TranslatePage> {
 
   Widget _currentLanguageToolbar(
       {required String language,
-      required Function() onTapCopy,
-      required Function() onTapSpeech,
-      required Color color}) {
+        required Function() onTapCopy,
+        required Function() onTapSpeech,
+        required Color color}) {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
@@ -836,7 +457,8 @@ class _TranslatePageState extends State<TranslatePage> {
                     textAlign: TextAlign.left,
                     style: TextStyle(
                         color: appColors.colorText2,
-                        fontSize: 40.sp),
+                        fontSize: 40.sp
+                    ),
                   ),
                   5.verticalSpace,
                   Text(
@@ -845,7 +467,8 @@ class _TranslatePageState extends State<TranslatePage> {
                     style: TextStyle(
                         color: Colors.blue[200]!,
                         fontSize: 45.sp,
-                        fontWeight: FontWeight.w500),
+                        fontWeight: FontWeight.w500
+                    ),
                   ),
                 ],
               ),
@@ -865,9 +488,9 @@ class _TranslatePageState extends State<TranslatePage> {
     );
   }
 
-  Widget _pronunciation(
-      {required TranslateProvider translatePageProvider,
-      required Color textColor}) {
+  Widget _pronunciation({
+    required TranslateProvider translatePageProvider,
+    required Color textColor}) {
     return SizedBox(
       width: screenUtil.screenWidth,
       height: 60.h,

@@ -29,7 +29,8 @@ class TranslatePageController {
   late StreamSubscription<bool> keyboardSubscription;
 
   /// go to translation page
-  void goToHistoryPage({required BuildContext context}) {
+  void goToHistoryPage(BuildContext context, TranslateProvider translateProvider) {
+    translateProvider.closePage = false;
     Navigator.push(
         context,
         FadePageRoute(
@@ -38,18 +39,18 @@ class TranslatePageController {
   }
 
   /// translate text  => works
-  void translateText(String text, translatePageProviderTest, languageProvider) async{
-    translatePageProviderTest.originalText = text;
-    translatePageProviderTest.getTranslation(
+  void translateText(String text, translateProvider, languageProvider) async{
+    translateProvider.originalText = text;
+    translateProvider.getTranslation(
         from: languageProvider.fromLang.code!.split('-')[0],
         to: languageProvider.toLang.code!.split('-')[0],
         text: text
     ).then((value) {
       try{
         if(languageProvider.fromLang.code!.split('-')[0] != '' && languageProvider.toLang.code!.split('-')[0] != '' && textEditingController.text.isNotEmpty){
-          translatePageProviderTest.translationText = value.text!;
+          translateProvider.translationText = value.text!;
           var _from = LanguagesList.languageList
-              .where((lang) => lang['code'].toString().split('-').contains(translatePageProviderTest.translate!.sourceLanguage)
+              .where((lang) => lang['code'].toString().split('-').contains(translateProvider.translate!.sourceLanguage)
           );
           Language _detectedLang = Language();
           for(var t in _from){
@@ -60,8 +61,8 @@ class TranslatePageController {
             languageProvider.detectedLang = _detectedLang;
           }
         } else{
-          translatePageProviderTest.translationText = '';
-          translatePageProviderTest.originalText = '';
+          translateProvider.translationText = '';
+          translateProvider.originalText = '';
         }
       } catch(err){
         debugPrint('Translate page error "check params":${err.toString()}');
@@ -71,27 +72,27 @@ class TranslatePageController {
   }
 
   /// willPop scope => works
-  Future<bool> willPopScope(translatePageProviderTest) async{
-    translatePageProviderTest.closePage = true;
-    translatePageProviderTest.originalText = '';
-    translatePageProviderTest.translationText = '';
+  Future<bool> willPopScope(translateProvider) async{
+    translateProvider.closePage = true;
+    translateProvider.originalText = '';
+    translateProvider.translationText = '';
     return true;
   }
 
   /// keyboard listener => works
-  void _keyBoardListener(translatePageProvider, context) {
+  void _keyBoardListener(translateProvider, context) {
     var keyboardVisibilityController = KeyboardVisibilityController();
     keyboardSubscription =
         keyboardVisibilityController.onChange.listen((bool visible) {
           if (!visible) {
-            translatePageProvider.showKeyBoard = false;
+            translateProvider.showKeyBoard = false;
             focusNode.unfocus();
-            if (textEditingController.text.isEmpty && translatePageProvider.closePage) {
+            if (textEditingController.text.isEmpty && translateProvider.closePage) {
               Navigator.pop(context);
             }
           } else {
-            translatePageProvider.closePage = true;
-            translatePageProvider.showKeyBoard = true;
+            translateProvider.closePage = true;
+            translateProvider.showKeyBoard = true;
           }
         });
   }
@@ -124,6 +125,7 @@ class TranslatePageController {
 
   /// go to language selection page and update
   void goToSelectLanguage(BuildContext context, SelectLanguageType languageType, SelectLanguageProvider languageProvider, TranslateProvider translateProvider,) {
+    translateProvider.closePage = false;
     Navigator.of(context).push(AxisPageTransition(
         child: SelectLanguagePage(
           selectLanguagePage: languageType,
@@ -190,12 +192,12 @@ class TranslatePageController {
   }
 
   /// get data from clipboard => works
-  _validateClipBoardData(TranslateProvider translatePageProvider) async {
+  _validateClipBoardData(TranslateProvider translateProvider) async {
     await Clipboard.getData(Clipboard.kTextPlain).then((value) {
       if (value!.text!.isNotEmpty) {
-        translatePageProvider.clipBoardHasData = true;
+        translateProvider.clipBoardHasData = true;
       } else {
-        translatePageProvider.clipBoardHasData = false;
+        translateProvider.clipBoardHasData = false;
       }
     });
   }
@@ -219,9 +221,9 @@ class TranslatePageController {
 
 
   /// init view => works
-  void initState(translatePageProvider, context){
-    _keyBoardListener(translatePageProvider, context);
-    _validateClipBoardData(translatePageProvider);
+  void initState(translateProvider, context){
+    _keyBoardListener(translateProvider, context);
+    _validateClipBoardData(translateProvider);
   }
 
   /// dispose view callback => works
