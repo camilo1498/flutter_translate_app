@@ -1,18 +1,20 @@
 # flutter_translator_app
 
+This app use a [custom backend](https://github.com/camilo1498/google_translate_api) to manage the original google translate json response
+
 ### Packages used
 
-1) google_fonts: ^2.3.1  /// google fonts
+1) provider: ^6.0.2  (state management)
 
-2) provider: ^6.0.2  // state management
+2) grouped_list: ^4.2.0 (was used to order history by date)
 
-3) grouped_list: ^4.2.0 /// was used to order history by date
+3) intl: ^0.17.0 (to parse dates)
 
-4) intl: ^0.17.0 /// to parse dates
+4) flutter_screenutil: ^5.3.1 (to adapt different phone screens)
 
-5) flutter_screenutil: ^5.3.1 /// to adapt different phone screens
+5) flutter_keyboard_visibility: ^5.2.0 (to manage the keyboard state)
 
-6) flutter_keyboard_visibility: ^5.2.0 /// to manage the keyboard state
+6) dio: ^4.0.5 (http request)
 
 ## Gif demo
 
