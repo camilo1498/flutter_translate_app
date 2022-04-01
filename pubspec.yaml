@@ -13,8 +13,6 @@ dependencies:
     sdk: flutter
 
   cupertino_icons: ^1.0.2
-  translator: ^0.1.7
-  google_fonts: ^2.3.1
   provider: ^6.0.2
   grouped_list: ^4.2.0
   intl: ^0.17.0

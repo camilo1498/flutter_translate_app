@@ -15,12 +15,12 @@ class Source {
   });
 
   factory Source.fromJson(Map<String, dynamic> json) => Source(
-        synonyms: List<List<Synonym>>.from(json["synonyms"]
-            .map((x) => List<Synonym>.from(x.map((x) => Synonym.fromJson(x))))),
-        pronunciation: List<String>.from(json["pronunciation"].map((x) => x)),
-        definitions: List<SourceDefinition>.from(
-            json["definitions"].map((x) => SourceDefinition.fromJson(x))),
-        examples: List<String>.from(json["examples"].map((x) => x)),
+        synonyms: json["synonyms"] != null ?List<List<Synonym>>.from(json["synonyms"]
+            .map((x) => List<Synonym>.from(x.map((x) => Synonym.fromJson(x))))) : null,
+        pronunciation: json["pronunciation"] != null ? List<String>.from(json["pronunciation"].map((x) => x)) : null,
+        definitions: json["definitions"] != null ? List<SourceDefinition>.from(
+            json["definitions"].map((x) => SourceDefinition.fromJson(x))) : null,
+        examples: json["examples"] != null ? List<String>.from(json["examples"].map((x) => x)) : null,
       );
 
   Map<String, dynamic> toJson() => {

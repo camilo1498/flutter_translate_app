@@ -17,13 +17,13 @@ class ApiResponse {
 
   factory ApiResponse.fromJson(Map<String, dynamic> json) => ApiResponse(
         success: json["success"],
-        data: Translate.fromJson(json["data"]),
+        data: Translate.fromJson(json["data"] ?? {}),
         message: json["message"],
       );
 
   Map<String, dynamic> toJson() => {
         "success": success,
-        "data": data!.toJson(),
+        "data": data,
         "message": message,
       };
 }

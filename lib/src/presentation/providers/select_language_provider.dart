@@ -7,7 +7,7 @@ class SelectLanguageProvider extends ChangeNotifier {
   Future<List<Language>> getLanguages() async {
     List<Language> _languages = [];
 
-    for (var l in LanguagesList().languageList) {
+    for (var l in LanguagesList.languageList) {
       _languages.add(Language.fromJson(l));
     }
     return _languages;

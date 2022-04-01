@@ -32,8 +32,8 @@ class Translate {
         translationLanguage: json["translationLanguage"],
         isCorrect: json["isCorrect"],
         source: Source.fromJson(json["source"] ?? {}),
-        translations: List<Translation>.from(
-            json["translations"].map((x) => Translation.fromJson(x))),
+        translations: json["translations"] != null ? List<Translation>.from(
+            json["translations"].map((x) => Translation.fromJson(x))) : null,
       );
 
   Map<String, dynamic> toJson() => {

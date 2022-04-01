@@ -1,5 +1,5 @@
 class LanguagesList {
-  List<Map<String, String>> languageList = [
+  static List<Map<String, String>> languageList = [
     {"code": "af-ZA", "name": "Afrikaans"},
     {"code": "sq", "name": "Albanian"},
     {"code": "ar-AE", "name": "Arabic"},

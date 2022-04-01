@@ -8,7 +8,6 @@ import 'package:flutter_translator_app/src/presentation/providers/select_languag
 import 'package:flutter_translator_app/src/presentation/widgets/animations/animated_onTap_button.dart';
 import 'package:flutter_translator_app/src/presentation/widgets/animations/panel.dart';
 import 'package:flutter_translator_app/src/presentation/widgets/language_button.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
@@ -217,8 +216,7 @@ class HomePage extends StatelessWidget {
                           color: appColors.colorText1,
                           fontWeight: FontWeight.w600,
                           fontSize: 53.w,
-                          letterSpacing: 0.7,
-                          fontFamily: GoogleFonts.comicNeue().fontFamily),
+                          letterSpacing: 0.7,),
                     ),
                     TextSpan(
                         text: 'Translate',

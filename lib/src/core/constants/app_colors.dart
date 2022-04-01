@@ -14,6 +14,6 @@ class AppColors {
   Color iconColor1 = HexColor.fromHex('#D6DDF1');
   Color iconColor2 = HexColor.fromHex('#C3C3C5');
 
-  Color buttonColor1 = HexColor.fromHex('#0E4697');
-  Color buttonColor2 = HexColor.fromHex('#004A77');
+  Color buttonColor1 = HexColor.fromHex('#093169');
+  Color buttonColor2 = HexColor.fromHex('#003B5F');
 }
