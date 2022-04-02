@@ -162,22 +162,34 @@ class TranslatePageController {
 
   /// auto detect lang from api response => works (fix)
   void changeToDetectLanguage(SelectLanguageProvider languageProvider, TranslateProvider translateProvider) {
-    /// get current data
-    var _from = languageProvider.fromLang;
-    var _to = languageProvider.detectedLang;
-    var _originalText = translateProvider.originalText;
-    var _translatedText = translateProvider.translationText;
-    /// replace data
-    textEditingController.text = _translatedText;
-    languageProvider.fromLang = _to;
-    languageProvider.toLang = _from;
-    translateProvider.originalText = _translatedText;
-    translateProvider.translationText = _originalText;
-    /// fetch again
-    translateText(translateProvider.originalText, translateProvider, languageProvider);
-    /// position text selector to end
-    textEditingController.selection = TextSelection.fromPosition(
-        TextPosition(offset: textEditingController.text.length));
+
+    if(translateProvider.translate!.sourceLanguage != languageProvider.toLang.code!.split('-')[0]) {
+      var _detectedLang = languageProvider.detectedLang;
+      var _originalText = translateProvider.originalText;
+      textEditingController.text = _originalText;
+      languageProvider.fromLang = _detectedLang;
+      translateText(translateProvider.originalText, translateProvider, languageProvider);
+      /// position text selector to end
+      textEditingController.selection = TextSelection.fromPosition(
+          TextPosition(offset: textEditingController.text.length));
+    } else{
+      /// get current data
+      var _from = languageProvider.fromLang;
+      var _to = languageProvider.toLang;
+      var _originalText = translateProvider.originalText;
+      var _translatedText = translateProvider.translationText;
+
+      /// replace data
+      textEditingController.text = _translatedText;
+      languageProvider.fromLang = _to;
+      languageProvider.toLang = _from;
+      translateProvider.originalText = _translatedText;
+      translateProvider.translationText = _originalText;
+      translateText(translateProvider.originalText, translateProvider, languageProvider);
+      /// position text selector to end
+      textEditingController.selection = TextSelection.fromPosition(
+          TextPosition(offset: textEditingController.text.length));
+    }
   }
 
   /// text correction from api response => works
