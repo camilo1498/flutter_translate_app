@@ -153,6 +153,7 @@ class TranslatePageController {
       languageProvider.toLang = _from;
       translateProvider.originalText = _translatedText;
       translateProvider.translationText = _originalText;
+      /// fetch again
       translateText(translateProvider.originalText, translateProvider, languageProvider);
       /// position text selector to end
       textEditingController.selection = TextSelection.fromPosition(
@@ -164,10 +165,13 @@ class TranslatePageController {
   void changeToDetectLanguage(SelectLanguageProvider languageProvider, TranslateProvider translateProvider) {
 
     if(translateProvider.translate!.sourceLanguage != languageProvider.toLang.code!.split('-')[0]) {
+      /// get current data
       var _detectedLang = languageProvider.detectedLang;
       var _originalText = translateProvider.originalText;
+      /// replace data
       textEditingController.text = _originalText;
       languageProvider.fromLang = _detectedLang;
+      /// fetch again
       translateText(translateProvider.originalText, translateProvider, languageProvider);
       /// position text selector to end
       textEditingController.selection = TextSelection.fromPosition(
