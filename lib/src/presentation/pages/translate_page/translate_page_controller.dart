@@ -57,7 +57,6 @@ class TranslatePageController {
             _detectedLang = Language.fromJson(t);
           }
           if(value.isCorrect!){
-            //languageProvider.fromLang = _detectedLang;
             languageProvider.detectedLang = _detectedLang;
           }
         } else{
@@ -68,7 +67,6 @@ class TranslatePageController {
         debugPrint('Translate page error "check params":${err.toString()}');
       }
     });
-
   }
 
   /// willPop scope => works
@@ -155,14 +153,14 @@ class TranslatePageController {
       languageProvider.toLang = _from;
       translateProvider.originalText = _translatedText;
       translateProvider.translationText = _originalText;
-
+      translateText(translateProvider.originalText, translateProvider, languageProvider);
       /// position text selector to end
       textEditingController.selection = TextSelection.fromPosition(
           TextPosition(offset: textEditingController.text.length));
     }
   }
 
-  /// auto detect lang from api response => works
+  /// auto detect lang from api response => works (fix)
   void changeToDetectLanguage(SelectLanguageProvider languageProvider, TranslateProvider translateProvider) {
     /// get current data
     var _from = languageProvider.fromLang;
@@ -176,7 +174,7 @@ class TranslatePageController {
     translateProvider.originalText = _translatedText;
     translateProvider.translationText = _originalText;
     /// fetch again
-    //translateText(_translatedText, translateProvider, languageProvider);
+    translateText(translateProvider.originalText, translateProvider, languageProvider);
     /// position text selector to end
     textEditingController.selection = TextSelection.fromPosition(
         TextPosition(offset: textEditingController.text.length));
@@ -185,10 +183,10 @@ class TranslatePageController {
   /// text correction from api response => works
   Future<void> textCorrection(SelectLanguageProvider languageProvider, TranslateProvider translateProvider) async {
     /// change translation text
-    textEditingController.text = translateProvider.translate!.text!;
-    translateProvider.originalText = translateProvider.translate!.text!;
+    textEditingController.text = translateProvider.translate!.correctionSourceText!;
+    translateProvider.originalText = translateProvider.translate!.correctionSourceText!;
     /// fetch again
-    //translateText(translateProvider.translate!.text!, translateProvider, languageProvider);
+    translateText(translateProvider.originalText, translateProvider, languageProvider);
     /// position text selector to end
     textEditingController.selection = TextSelection.fromPosition(
         TextPosition(offset: textEditingController.text.length));
@@ -207,12 +205,14 @@ class TranslatePageController {
   }
 
   /// set text from clipboard => works
-  pasteClipBoardData(TranslateProvider translateProvider) async {
+  pasteClipBoardData(TranslateProvider translateProvider, SelectLanguageProvider languageProvider) async {
     await Clipboard.getData(Clipboard.kTextPlain).then((value) {
       translateProvider.originalText = value!.text.toString();
       textEditingController.text = value.text.toString();
       textEditingController.selection = TextSelection.fromPosition(
           TextPosition(offset: textEditingController.text.length));
+    }).then((_) {
+      translateText(translateProvider.originalText, translateProvider, languageProvider);
     });
   }
 

@@ -127,8 +127,8 @@ class _TranslatePageState extends State<TranslatePage> {
                                       padding: EdgeInsets.symmetric(
                                           horizontal: 80.w),
                                       child: AnimatedOnTapButton(
-                                        onTap: () => translateController
-                                            .pasteClipBoardData(translateProvider),
+                                        onTap: () async => await translateController
+                                            .pasteClipBoardData(translateProvider, languageProvider),
                                         child: Container(
                                           width: 280.w,
                                           height: 95.h,
@@ -243,7 +243,7 @@ class _TranslatePageState extends State<TranslatePage> {
                                             if (translateProvider.translate!.translations != null
                                                 && translateProvider.translate!.translations!.isNotEmpty
                                                 && translateProvider.translate!.isCorrect == true
-                                                && translateProvider.translate!.sourceLanguage == languageProvider.fromLang.code!.split('-')[0] && translateProvider.translate!.sourceLanguage != '')
+                                                && translateProvider.translate!.sourceLanguage != '')
                                               Translations(
                                                   translateProvider: translateProvider
                                               ),
@@ -254,7 +254,7 @@ class _TranslatePageState extends State<TranslatePage> {
                                             if (translateProvider.translate!.source!.definitions != null
                                                 && translateProvider.translate!.source!.definitions!.isNotEmpty
                                                 && translateProvider.translate!.isCorrect == true
-                                                && translateProvider.translate!.sourceLanguage == languageProvider.fromLang.code!.split('-')[0] && translateProvider.translate!.sourceLanguage != '')
+                                                && translateProvider.translate!.sourceLanguage != '')
                                               Definitions(
                                                   translateProvider: translateProvider,
                                               ),
@@ -265,7 +265,7 @@ class _TranslatePageState extends State<TranslatePage> {
                                             if (translateProvider.translate!.source!.examples != null
                                                 && translateProvider.translate!.source!.examples!.isNotEmpty
                                                 && translateProvider.translate!.isCorrect == true
-                                                && translateProvider.translate!.sourceLanguage == languageProvider.fromLang.code!.split('-')[0] && translateProvider.translate!.sourceLanguage != '')
+                                                && translateProvider.translate!.sourceLanguage != '')
                                               Examples(
                                                   translateProvider: translateProvider
                                               )
