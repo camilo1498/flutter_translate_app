@@ -1,5 +1,5 @@
 import 'package:flutter_translator_app/src/core/extensions/hex_color.dart';
-import 'package:flutter_translator_app/src/presentation/widgets/toast.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 showToast({required message}){
   Fluttertoast.showToast(

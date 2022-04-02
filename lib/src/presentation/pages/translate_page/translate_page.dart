@@ -186,7 +186,7 @@ class _TranslatePageState extends State<TranslatePage> {
                                       _correctionContainer(
                                         onTap: () => translateController.textCorrection(languageProvider, translateProvider),
                                         title: 'Did do you mean',
-                                        text: translateProvider.translate!.text!,
+                                        text: translateProvider.translate!.correctionSourceText!,
                                       ),
 
                                   /// separated line
@@ -198,12 +198,13 @@ class _TranslatePageState extends State<TranslatePage> {
                                         borderRadius:
                                         BorderRadius.circular(80)),
                                   ),
+                                  60.verticalSpace,
                                   _currentLanguageToolbar(
                                       color: Colors.blue[200]!,
                                       language: languageProvider.toLang.name.toString().split(' ')[0],
                                       onTapCopy: () => translateController.setClipBoardData(translateProvider.translationText, 'Translation copied'),
                                       onTapSpeech: () {}),
-
+                                  60.verticalSpace,
                                   /// result translation text
                                   Align(
                                     alignment: Alignment.bottomLeft,
@@ -428,9 +429,8 @@ class _TranslatePageState extends State<TranslatePage> {
       child: AnimatedOnTapButton(
         onTap: onTap,
         child: Container(
-          height: 160.h,
           width: screenUtil.screenWidth,
-          padding: EdgeInsets.symmetric(horizontal: 40.w),
+          padding: EdgeInsets.symmetric(horizontal: 40.w, vertical: 30.h),
           decoration: BoxDecoration(
               color: appColors.containerColor,
               borderRadius: BorderRadius.circular(15),
@@ -447,37 +447,40 @@ class _TranslatePageState extends State<TranslatePage> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Column(
-                mainAxisSize: MainAxisSize.min,
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    title,
-                    textAlign: TextAlign.left,
-                    style: TextStyle(
-                        color: appColors.colorText2,
-                        fontSize: 40.sp
+              Expanded(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      title,
+                      textAlign: TextAlign.left,
+                      style: TextStyle(
+                          color: appColors.colorText2,
+                          fontSize: 43.sp,
+                        fontWeight: FontWeight.w400
+                      ),
                     ),
-                  ),
-                  5.verticalSpace,
-                  Text(
-                    text,
-                    textAlign: TextAlign.left,
-                    style: TextStyle(
-                        color: Colors.blue[200]!,
-                        fontSize: 45.sp,
-                        fontWeight: FontWeight.w500
+                    10.verticalSpace,
+                    Text(
+                      text,
+                      textAlign: TextAlign.left,
+                      style: TextStyle(
+                          color: Colors.blue[200]!,
+                          fontSize: 50.sp,
+                          fontWeight: FontWeight.w400
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
               SizedBox(
                 width: 100.w,
                 height: 100.w,
                 child: Icon(
                   Icons.arrow_forward,
-                  color: Colors.blue[200]!,
+                  color: appColors.iconColor2,
                   size: 70.w,
                 ),
               )

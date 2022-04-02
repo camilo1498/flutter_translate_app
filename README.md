@@ -16,6 +16,11 @@ This app use a [custom backend](https://github.com/camilo1498/google_translate_a
 
 6) dio: ^4.0.5 (http request)
 
+7) sqflite: ^2.0.2 (local database => history/favourites)
+
+8) fluttertoast: ^8.0.9 (show copied on clipboard message)
+
+
 ## Gif demo
 
 ### Main view container animation

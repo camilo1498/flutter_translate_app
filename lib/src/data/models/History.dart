@@ -1,26 +1,32 @@
 // ignore_for_file: file_names
+import 'package:flutter_translator_app/src/data/models/language.dart';
 
-import 'dart:convert';
-
-History historyFromJson(String str) => History.fromJson(json.decode(str));
-
-String historyToJson(History data) => json.encode(data.toJson());
+class HistoryFields {
+  static const String tableHistory = 'history';
+  static const String id = '_id';
+  static const String timestamp = 'timestamp';
+  static const String originalText = 'originalText';
+  static const String translationText = 'translationText';
+  static const String originalTextCode = 'originalTextCode';
+  static const String translationTextCode = 'translationTextCode';
+  static const String isFavorite = 'isFavorite';
+}
 
 class History {
   String? id;
   int? timestamp;
   String? originalText;
-  String? translatedText;
-  String? originalCode;
-  String? translatedTextCode;
+  String? translationText;
+  String? originalTextCode;
+  String? translationTextCode;
   bool? isFavorite;
   History({
     this.id,
     this.timestamp,
     this.originalText,
-    this.translatedText,
-    this.originalCode,
-    this.translatedTextCode,
+    this.translationText,
+    this.originalTextCode,
+    this.translationTextCode,
     this.isFavorite,
   });
 
@@ -28,19 +34,19 @@ class History {
         id: json["id"],
         timestamp: json["timestamp"],
         originalText: json["originalText"],
-        translatedText: json["translatedText"],
-        originalCode: json["originalCode"],
-        translatedTextCode: json["translatedTextCode"],
+        translationText: json["translationText"],
+        originalTextCode: json["originalTextCode"],
+        translationTextCode: json["translationTextCode"],
         isFavorite: json["isFavorite"],
       );
 
   Map<String, dynamic> toJson() => {
-        "id": id,
-        "timestamp": timestamp,
-        "originalText": originalText,
-        "translatedText": translatedText,
-        "originalCode": originalCode,
-        "translatedTextCode": translatedTextCode,
-        "isFavorite": isFavorite,
+        HistoryFields.id: id,
+        HistoryFields.timestamp: timestamp,
+        HistoryFields.originalText: originalText,
+        HistoryFields.translationText: translationText,
+        HistoryFields.originalTextCode: originalTextCode,
+        HistoryFields.translationTextCode: translationTextCode,
+        HistoryFields.isFavorite: isFavorite,
       };
 }
