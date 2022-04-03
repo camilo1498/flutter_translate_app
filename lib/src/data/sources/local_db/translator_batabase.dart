@@ -33,7 +33,7 @@ class TranslateDataBase {
 
   /// create database
   Future _createDB(Database db, int version) async{
-    const idType = 'INTEGER PRIMARY KEY AUTOINCREMENT';
+    const idType = 'INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL';
     const notNull = 'NOT NULL';
     /// create history table
     await db.execute('''
@@ -62,7 +62,6 @@ class TranslateDataBase {
 
     const orderBy = '${HistoryFields.timestamp} ASC';
     final res = await db.query(HistoryFields.tableHistory, orderBy: orderBy);
-
     return res.map((data) => History.fromJson(data)).toList();
   }
 
@@ -79,7 +78,7 @@ class TranslateDataBase {
   }
 
   /// delete a single element
-  Future<int> deleteHistoryField(int id) async{
+  Future<int> deleteHistoryField(int? id) async{
     final db = await instance.database;
     return db.delete(
         HistoryFields.tableHistory,

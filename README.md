@@ -20,6 +20,7 @@ This app use a [custom backend](https://github.com/camilo1498/google_translate_a
 
 8) fluttertoast: ^8.0.9 (show copied on clipboard message)
 
+9) flutter_slidable: ^1.2.0 (swipe list element)
 
 ## Gif demo
 

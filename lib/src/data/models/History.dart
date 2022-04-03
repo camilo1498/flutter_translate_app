@@ -47,7 +47,7 @@ class History {
 
 
   factory History.fromJson(Map<String, dynamic> json) => History(
-        id: json["id"],
+        id: json["_id"],
         timestamp: json["timestamp"],
         originalText: json["originalText"],
         translationText: json["translationText"],

@@ -1,5 +1,8 @@
+// ignore_for_file: must_be_immutable
+
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:flutter_translator_app/src/core/constants/app_colors.dart';
 import 'package:flutter_translator_app/src/data/models/History.dart';
 import 'package:flutter_translator_app/src/presentation/pages/history_page/history_page_controller.dart';
@@ -176,69 +179,93 @@ class HistoryBody extends StatelessWidget {
                   ),
                 );
               },
-              itemBuilder: (c, element) {
+              itemBuilder: (context, element) {
                 return Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 3),
-                  child: ListTile(
-                    title: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+                  padding: EdgeInsets.only(bottom: 15.h),
+                  child: Slidable(
+                    key: ValueKey(element.id),
+                    endActionPane: ActionPane(
+                      motion: const ScrollMotion(),
+                      dismissible: DismissiblePane(
+                          onDismissed: () => historyPageController.deleteHistoryItem(element.id)
+                      ),
                       children: [
-                        Text(
-                          element.originalText.toString(),
-                          textAlign: TextAlign.left,
-                          style: TextStyle(
-                              color: historyPageController.appColors.colorText1,
-                              fontWeight: FontWeight.w500),
+                        SlidableAction(
+                          onPressed: (_) => historyPageController.deleteHistoryItem(element.id),
+                          backgroundColor: const Color(0xFFFE4A49),
+                          foregroundColor: Colors.white,
+                          icon: Icons.delete,
+                          label: 'Delete',
                         ),
-                        const SizedBox(
-                          height: 5,
-                        ),
-                        Text(
-                          element.translationText.toString(),
-                          textAlign: TextAlign.left,
-                          style: TextStyle(
-                              color: historyPageController.appColors.colorText2
-                                  .withOpacity(0.7),
-                              fontWeight: FontWeight.w500),
-                        )
                       ],
                     ),
-                    trailing: Icon(
-                      element.isFavorite == 'true' ? Icons.star : Icons.star_border,
-                      color: historyPageController.appColors.iconColor2,
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 3),
+                      child: AnimatedOnTapButton(
+                        onTap: (){},
+                        child: ListTile(
+                          title: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                element.originalText.toString(),
+                                textAlign: TextAlign.left,
+                                style: TextStyle(
+                                    color: historyPageController.appColors.colorText1,
+                                    fontWeight: FontWeight.w500),
+                              ),
+                              const SizedBox(
+                                height: 5,
+                              ),
+                              Text(
+                                element.translationText.toString(),
+                                textAlign: TextAlign.left,
+                                style: TextStyle(
+                                    color: historyPageController.appColors.colorText2
+                                        .withOpacity(0.7),
+                                    fontWeight: FontWeight.w500),
+                              )
+                            ],
+                          ),
+                          trailing: Icon(
+                            element.isFavorite == 'true' ? Icons.star : Icons.star_border,
+                            color: historyPageController.appColors.iconColor2,
+                          ),
+                        ),
+                      ),
                     ),
                   ),
                 );
               },
             ),
           )
-              : IgnorePointer(
-            ignoring: true,
-            child: Center(
-              child: Column(
-                mainAxisSize: MainAxisSize.max,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(
-                    Icons.translate,
-                    color: appColors.iconColor2,
-                    size: 300.w,
+              : Center(
+                child: SingleChildScrollView(
+                  controller: listController,
+                  child: Column(
+                    mainAxisSize: MainAxisSize.max,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(
+                        Icons.translate,
+                        color: appColors.iconColor2,
+                        size: 300.w,
+                      ),
+                      40.verticalSpace,
+                      Text(
+                        'Empty history',
+                        textAlign: TextAlign.left,
+                        style: TextStyle(
+                            color: Colors.blue[200]!,
+                            fontSize: 45.sp,
+                            fontWeight: FontWeight.w600
+                        ),
+                      ),
+                    ],
                   ),
-                  40.verticalSpace,
-                  Text(
-                    'Empty history',
-                    textAlign: TextAlign.left,
-                    style: TextStyle(
-                        color: Colors.blue[200]!,
-                        fontSize: 45.sp,
-                        fontWeight: FontWeight.w600
-                    ),
-                  ),
-                ],
+                ),
               ),
-            ),
-          ),
         );
       },
     );
