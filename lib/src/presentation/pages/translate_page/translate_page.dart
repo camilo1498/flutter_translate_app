@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_translator_app/src/core/constants/app_colors.dart';
+import 'package:flutter_translator_app/src/presentation/pages/select_language_page/select_language_page.dart';
 import 'package:flutter_translator_app/src/presentation/pages/translate_page/translate_page_controller.dart';
 import 'package:flutter_translator_app/src/presentation/pages/translate_page/widgets/definitions.dart';
 import 'package:flutter_translator_app/src/presentation/pages/translate_page/widgets/examples.dart';
@@ -291,7 +292,7 @@ class _TranslatePageState extends State<TranslatePage> {
                             LanguageButton(
                                 text: languageProvider.fromLang.name.toString().split(' ')[0],
                                 appColors: appColors,
-                                onTap: () => translateController.goToSelectLanguage
+                                onTap: () => translateController.goToSelectLanguage(SelectLanguageType.from)
                             ),
                             Padding(
                               padding: EdgeInsets.symmetric(horizontal: 25.w),
@@ -311,7 +312,7 @@ class _TranslatePageState extends State<TranslatePage> {
                             LanguageButton(
                                 text: languageProvider.toLang.name.toString().split(' ')[0],
                                 appColors: appColors,
-                                onTap: () => translateController.goToSelectLanguage
+                                onTap: () => translateController.goToSelectLanguage(SelectLanguageType.to)
                             ),
                           ],
                         ),
