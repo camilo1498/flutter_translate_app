@@ -16,14 +16,14 @@ class LanguageProvider extends ChangeNotifier {
 
   List<Language> languagesList = [];
 
-  Language _fromLang = Language(name: 'Spanish (Mexico)', code: 'es-MX');
+  Language _fromLang = Language(name: 'Spanish', code: 'es');
   Language get fromLang => _fromLang;
   set fromLang(Language lang) {
     _fromLang = lang;
     notifyListeners();
   }
 
-  Language _toLang = Language(name: 'English (United States)', code: 'en-US');
+  Language _toLang = Language(name: 'English', code: 'en');
   Language get toLang => _toLang;
   set toLang(Language lang) {
     _toLang = lang;

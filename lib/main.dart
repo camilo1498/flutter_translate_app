@@ -63,7 +63,7 @@ class _MyAppState extends State<MyApp> {
               overscroll.disallowIndicator();
               return false;
             },
-            child: HomePage(),
+            child: const HomePage(),
           )),
     );
   }

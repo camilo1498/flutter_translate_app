@@ -115,12 +115,8 @@ class _SelectLanguagePageState extends State<SelectLanguagePage> {
                           contentPadding: EdgeInsets.symmetric(vertical: 5.h),
                           title: Text(
                             widget.selectLanguagePage == SelectLanguageType.from
-                                ? languageProvider.fromLang.name
-                                .toString()
-                                .split(' ')[0]
-                                : languageProvider.toLang.name
-                                .toString()
-                                .split(' ')[0],
+                                ? languageProvider.fromLang.name.toString()
+                                : languageProvider.toLang.name.toString(),
                             overflow: TextOverflow.ellipsis,
                             style: TextStyle(
                                 color: appColors.colorText1),

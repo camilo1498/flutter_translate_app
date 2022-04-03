@@ -38,7 +38,9 @@ class _TranslatePageState extends State<TranslatePage> {
 
   @override
   void dispose() {
-    translateController.dispose();
+    if(mounted) {
+      translateController.dispose();
+    }
     super.dispose();
   }
 
@@ -81,7 +83,7 @@ class _TranslatePageState extends State<TranslatePage> {
                                 .textEditingController.text.isNotEmpty)
                               _currentLanguageToolbar(
                                   color: appColors.colorText1,
-                                  language: languageProvider.fromLang.code != 'auto' ? languageProvider.fromLang.name.toString().split(' ')[0] : 'Detect (${languageProvider.detectedLang.name.toString().split(' ')[0]})',
+                                  language: languageProvider.fromLang.code != 'auto' ? languageProvider.fromLang.name.toString() : 'Detect (${languageProvider.detectedLang.name.toString()})',
                                   onTapCopy: () =>
                                       translateController.setClipBoardData(translateProvider.originalText, 'Original text copied'),
                                   onTapSpeech: () {}
@@ -172,7 +174,7 @@ class _TranslatePageState extends State<TranslatePage> {
                                 children: [
                                   /// show detect language
                                   if (translateProvider.translate != null)
-                                    if (translateProvider.translate!.sourceLanguage != languageProvider.fromLang.code!.split('-')[0]
+                                    if (translateProvider.translate!.sourceLanguage != languageProvider.fromLang.code!
                                         && translateProvider.translate!.sourceLanguage != '' && languageProvider.fromLang.code != 'auto')
                                       _correctionContainer(
                                         onTap: translateController.changeToDetectLanguage,
@@ -200,7 +202,7 @@ class _TranslatePageState extends State<TranslatePage> {
                                   60.verticalSpace,
                                   _currentLanguageToolbar(
                                       color: Colors.blue[200]!,
-                                      language: languageProvider.toLang.name.toString().split(' ')[0],
+                                      language: languageProvider.toLang.name.toString(),
                                       onTapCopy: () => translateController.setClipBoardData(translateProvider.translationText, 'Translation copied'),
                                       onTapSpeech: () {}),
                                   60.verticalSpace,

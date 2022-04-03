@@ -32,6 +32,7 @@ class TranslatePageController {
     _translateProvider = Provider.of<TranslateProvider>(context, listen: false);
     _languageProvider = Provider.of<LanguageProvider>(context, listen: false);
     _historyProvider = Provider.of<HistoryProvider>(context, listen: false);
+
   }
 
   /// textField controller
@@ -60,15 +61,15 @@ class TranslatePageController {
   void translateText(String text) async{
     _translateProvider.originalText = text;
     _translateProvider.getTranslation(
-        from: _languageProvider.fromLang.code!.split('-')[0],
-        to: _languageProvider.toLang.code!.split('-')[0],
+        from: _languageProvider.fromLang.code!,
+        to: _languageProvider.toLang.code!,
         text: text
     ).then((value) {
       try{
-        if(_languageProvider.fromLang.code!.split('-')[0] != '' && _languageProvider.toLang.code!.split('-')[0] != '' && textEditingController.text.isNotEmpty){
+        if(_languageProvider.fromLang.code! != '' && _languageProvider.toLang.code! != '' && textEditingController.text.isNotEmpty){
           _translateProvider.translationText = value.text!;
           var _from = LanguagesList.languageList
-              .where((lang) => lang['code'].toString().split('-').contains(_translateProvider.translate!.sourceLanguage)
+              .where((lang) => lang['code'].toString().contains(_translateProvider.translate!.sourceLanguage!)
           );
           Language _detectedLang = Language();
           for(var t in _from){
@@ -184,7 +185,7 @@ class TranslatePageController {
   /// auto detect lang from api response => works (fix)
   void changeToDetectLanguage() {
 
-    if(_translateProvider.translate!.sourceLanguage != _languageProvider.toLang.code!.split('-')[0]) {
+    if(_translateProvider.translate!.sourceLanguage != _languageProvider.toLang.code!) {
       /// get current data
       var _detectedLang = _languageProvider.detectedLang;
       var _originalText = _translateProvider.originalText;
@@ -266,8 +267,8 @@ class TranslatePageController {
         timestamp: DateTime.now().millisecondsSinceEpoch,
         originalText: _translateProvider.originalText,
         translationText: _translateProvider.translationText,
-        translationTextCode: _languageProvider.toLang.code!.split('-')[0],
-        originalTextCode: _languageProvider.fromLang.code!.split('-')[0],
+        translationTextCode: _languageProvider.toLang.code!,
+        originalTextCode: _languageProvider.fromLang.code!,
         isFavorite: 'false',
       );
       createHistoryElement(historyElement);
@@ -290,6 +291,13 @@ class TranslatePageController {
 
   /// dispose view callback => works
   void dispose(){
+    WidgetsBinding.instance!
+        .addPostFrameCallback((_) {
+          _translateProvider.originalText = '';
+          _translateProvider.translationText = '';
+      _translateProvider.translate = null;
+    });
+
     textEditingController.dispose();
     keyboardSubscription.cancel();
   }

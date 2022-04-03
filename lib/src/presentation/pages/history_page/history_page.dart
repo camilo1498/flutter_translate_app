@@ -103,11 +103,11 @@ class HistoryAppBar extends StatelessWidget {
       ),
       actions: [
         Padding(
-          padding: EdgeInsets.only(right: 30.w),
+          padding: EdgeInsets.only(right: 45.w),
           child: AnimatedOnTapButton(
             onTap: historyPageController.deleteAllHistory,
             child: Icon(
-              Icons.delete_outline,
+              Provider.of<HistoryProvider>(context).historyList.isNotEmpty ? Icons.delete_outline : Icons.translate,
               color: Colors.white,
               size: 70.w,
             ),
@@ -201,7 +201,7 @@ class HistoryBody extends StatelessWidget {
                     ),
                     child: Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 3),
-                      child: AnimatedOnTapButton(
+                      child: GestureDetector(
                         onTap: (){},
                         child: ListTile(
                           title: Column(
@@ -227,9 +227,12 @@ class HistoryBody extends StatelessWidget {
                               )
                             ],
                           ),
-                          trailing: Icon(
-                            element.isFavorite == 'true' ? Icons.star : Icons.star_border,
-                            color: historyPageController.appColors.iconColor2,
+                          trailing: AnimatedOnTapButton(
+                            onTap: () => historyPageController.updateHistoryItem(element),
+                            child: Icon(
+                              element.isFavorite == 'true' ? Icons.star : Icons.star_border,
+                              color: historyPageController.appColors.iconColor2,
+                            ),
                           ),
                         ),
                       ),
@@ -248,8 +251,8 @@ class HistoryBody extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Icon(
-                        Icons.translate,
-                        color: appColors.iconColor2,
+                        Icons.history_toggle_off_outlined,
+                        color: appColors.iconColor2.withOpacity(0.7),
                         size: 300.w,
                       ),
                       40.verticalSpace,

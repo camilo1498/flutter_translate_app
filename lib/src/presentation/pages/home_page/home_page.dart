@@ -69,9 +69,7 @@ class _HomePageState extends State<HomePage> {
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
                             LanguageButton(
-                                text: languageProvider.fromLang.name
-                                    .toString()
-                                    .split(' ')[0],
+                                text: languageProvider.fromLang.name.toString().split(' ')[0],
                                 appColors: _homePageController.appColors,
                                 onTap: () =>_homePageController.goToSelectLanguage(SelectLanguageType.from)
                             ),
@@ -92,9 +90,7 @@ class _HomePageState extends State<HomePage> {
                               ),
                             ),
                             LanguageButton(
-                                text: languageProvider.toLang.name
-                                    .toString()
-                                    .split(' ')[0],
+                                text: languageProvider.toLang.name.toString().split(' ')[0],
                                 appColors: _homePageController.appColors,
                                 onTap: () => _homePageController.goToSelectLanguage(SelectLanguageType.to)
                             ),
