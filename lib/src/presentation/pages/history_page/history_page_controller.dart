@@ -1,6 +1,19 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter_translator_app/src/core/constants/app_colors.dart';
+import 'package:flutter_translator_app/src/data/sources/local_db/translator_batabase.dart';
+import 'package:flutter_translator_app/src/presentation/providers/history_provider.dart';
+import 'package:provider/provider.dart';
 
 class HistoryPageController {
+  /// context
+  final BuildContext context;
+  /// providers
+  late HistoryProvider _historyProvider;
+  HistoryPageController({
+    required this.context
+}){
+    _historyProvider = Provider.of<HistoryProvider>(context, listen: false);
+  }
   /// app color instance
   final AppColors appColors = AppColors();
 
@@ -20,85 +33,13 @@ class HistoryPageController {
     'December'
   ];
 
-  /// schema history model
-  List elements = [
-    {
-      'date': '2019-07-19 8:40:23',
-      'originalText': 'example',
-      'translatedText': 'ejemplo',
-      'isFavorite': true
-    },
-    {
-      'date': '2019-09-19 8:40:23',
-      'originalText': 'example',
-      'translatedText': 'ejemplo',
-      'isFavorite': false
-    },
-    {
-      'date': '2019-09-19 8:40:23',
-      'originalText': 'example',
-      'translatedText': 'ejemplo',
-      'isFavorite': false
-    },
-    {
-      'date': '2019-09-19 8:40:23',
-      'originalText': 'example',
-      'translatedText': 'ejemplo',
-      'isFavorite': false
-    },
-    {
-      'date': '2020-01-14 8:40:23',
-      'originalText': 'example',
-      'translatedText': 'ejemplo',
-      'isFavorite': false
-    },
-    {
-      'date': '2021-02-115 8:40:23',
-      'originalText': 'example',
-      'translatedText': 'ejemplo',
-      'isFavorite': true
-    },
-    {
-      'date': '2021-07-19 8:40:23',
-      'originalText': 'example',
-      'translatedText': 'ejemplo',
-      'isFavorite': true
-    },
-    {
-      'date': '2021-08-19 8:40:23',
-      'originalText': 'example',
-      'translatedText': 'ejemplo',
-      'isFavorite': false
-    },
-    {
-      'date': '2021-08-19 8:40:23',
-      'originalText': 'example',
-      'translatedText': 'ejemplo',
-      'isFavorite': false
-    },
-    {
-      'date': '2022-02-19 8:40:23',
-      'originalText': 'example',
-      'translatedText': 'ejemplo',
-      'isFavorite': false
-    },
-    {
-      'date': '2022-02-19 8:40:23',
-      'originalText': 'example',
-      'translatedText': 'ejemplo',
-      'isFavorite': true
-    },
-    {
-      'date': '2022-02-19 8:40:23',
-      'originalText': 'example',
-      'translatedText': 'ejemplo',
-      'isFavorite': false
-    },
-    {
-      'date': '2022-02-20 8:40:23',
-      'originalText': 'example',
-      'translatedText': 'ejemplo',
-      'isFavorite': true
-    },
-  ];
+  Future getHistory() async{
+    _historyProvider.historyList = await TranslateDataBase.instance.readHistory();
+  }
+
+  Future deleteAllHistory() async{
+    await TranslateDataBase.instance.deleteAllHistory().then((_) async{
+      _historyProvider.historyList = await TranslateDataBase.instance.readHistory();
+    });
+  }
 }

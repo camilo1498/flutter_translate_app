@@ -39,17 +39,64 @@ class TranslateDataBase {
     await db.execute('''
     CREATE TABLE ${HistoryFields.tableHistory} (
       ${HistoryFields.id} $idType,
-      ${HistoryFields.timestamp} integer $notNull,
-      ${HistoryFields.originalText} text $notNull,
-      ${HistoryFields.translationText} text $notNull,
-      ${HistoryFields.originalTextCode} text $notNull,
-      ${HistoryFields.translationTextCode} text $notNull,
-      ${HistoryFields.isFavorite} boolean $notNull
-    );
+      ${HistoryFields.timestamp} INTEGER $notNull,
+      ${HistoryFields.originalText} TEXT $notNull,
+      ${HistoryFields.translationText} TEXT $notNull,
+      ${HistoryFields.originalTextCode} TEXT $notNull,
+      ${HistoryFields.translationTextCode} TEXT $notNull,
+      ${HistoryFields.isFavorite} TEXT $notNull
+    )
     ''');
   }
 
-  /// create
+  /// insert
+  Future<History> insertHistory(History history) async{
+    final db = await instance.database;
+    final id = await db.insert(HistoryFields.tableHistory, history.toJson());
+    return history.copy(id: id);
+  }
+
+  /// get all data
+  Future<List<History>> readHistory() async{
+    final db = await instance.database;
+
+    const orderBy = '${HistoryFields.timestamp} ASC';
+    final res = await db.query(HistoryFields.tableHistory, orderBy: orderBy);
+
+    return res.map((data) => History.fromJson(data)).toList();
+  }
+
+  /// update isFavorite field
+  Future<int> updateHistory(History history) async {
+    final db = await instance.database;
+
+    return db.update(
+        HistoryFields.tableHistory,
+        history.toJson(),
+        where: '${HistoryFields.id} = ?',
+        whereArgs: [history.id]
+    );
+  }
+
+  /// delete a single element
+  Future<int> deleteHistoryField(int id) async{
+    final db = await instance.database;
+    return db.delete(
+        HistoryFields.tableHistory,
+        where: '${HistoryFields.id} = ?',
+        whereArgs: [id]
+    );
+  }
+
+  /// delete all data (history)
+  Future<int> deleteAllHistory() async{
+    final db = await instance.database;
+
+    return db.rawDelete(
+      'DELETE FROM ${HistoryFields.tableHistory}'
+    );
+  }
+
 
   /// close database connection
   Future close() async{

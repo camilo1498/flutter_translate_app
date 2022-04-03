@@ -5,16 +5,34 @@ import 'package:flutter/services.dart';
 import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
 
 import 'package:flutter_translator_app/src/core/constants/languages.dart';
+import 'package:flutter_translator_app/src/data/models/History.dart';
 import 'package:flutter_translator_app/src/data/models/language.dart';
+import 'package:flutter_translator_app/src/data/sources/local_db/translator_batabase.dart';
 import 'package:flutter_translator_app/src/presentation/pages/history_page/history_page.dart';
 import 'package:flutter_translator_app/src/presentation/pages/select_language_page/select_language_page.dart';
-import 'package:flutter_translator_app/src/presentation/providers/select_language_provider.dart';
+import 'package:flutter_translator_app/src/presentation/providers/history_provider.dart';
+import 'package:flutter_translator_app/src/presentation/providers/language_provider.dart';
 import 'package:flutter_translator_app/src/presentation/providers/translate_provider.dart';
 import 'package:flutter_translator_app/src/presentation/widgets/animations/page_transitions/axis_page_transition.dart';
 import 'package:flutter_translator_app/src/presentation/widgets/animations/page_transitions/fade_page_route.dart';
 import 'package:flutter_translator_app/src/presentation/widgets/sheets/snakbar.dart';
+import 'package:provider/provider.dart';
 
 class TranslatePageController {
+  /// build context
+  final BuildContext context;
+  /// providers
+  late TranslateProvider _translateProvider;
+  late LanguageProvider _languageProvider;
+  late HistoryProvider _historyProvider;
+
+  TranslatePageController({
+    required this.context
+}){
+    _translateProvider = Provider.of<TranslateProvider>(context, listen: false);
+    _languageProvider = Provider.of<LanguageProvider>(context, listen: false);
+    _historyProvider = Provider.of<HistoryProvider>(context, listen: false);
+  }
 
   /// textField controller
   late TextEditingController textEditingController;
@@ -29,8 +47,8 @@ class TranslatePageController {
   late StreamSubscription<bool> keyboardSubscription;
 
   /// go to translation page
-  void goToHistoryPage(BuildContext context, TranslateProvider translateProvider) {
-    translateProvider.closePage = false;
+  void goToHistoryPage() {
+    _translateProvider.closePage = false;
     Navigator.push(
         context,
         FadePageRoute(
@@ -39,29 +57,29 @@ class TranslatePageController {
   }
 
   /// translate text  => works
-  void translateText(String text, translateProvider, languageProvider) async{
-    translateProvider.originalText = text;
-    translateProvider.getTranslation(
-        from: languageProvider.fromLang.code!.split('-')[0],
-        to: languageProvider.toLang.code!.split('-')[0],
+  void translateText(String text) async{
+    _translateProvider.originalText = text;
+    _translateProvider.getTranslation(
+        from: _languageProvider.fromLang.code!.split('-')[0],
+        to: _languageProvider.toLang.code!.split('-')[0],
         text: text
     ).then((value) {
       try{
-        if(languageProvider.fromLang.code!.split('-')[0] != '' && languageProvider.toLang.code!.split('-')[0] != '' && textEditingController.text.isNotEmpty){
-          translateProvider.translationText = value.text!;
+        if(_languageProvider.fromLang.code!.split('-')[0] != '' && _languageProvider.toLang.code!.split('-')[0] != '' && textEditingController.text.isNotEmpty){
+          _translateProvider.translationText = value.text!;
           var _from = LanguagesList.languageList
-              .where((lang) => lang['code'].toString().split('-').contains(translateProvider.translate!.sourceLanguage)
+              .where((lang) => lang['code'].toString().split('-').contains(_translateProvider.translate!.sourceLanguage)
           );
           Language _detectedLang = Language();
           for(var t in _from){
             _detectedLang = Language.fromJson(t);
           }
           if(value.isCorrect!){
-            languageProvider.detectedLang = _detectedLang;
+            _languageProvider.detectedLang = _detectedLang;
           }
         } else{
-          translateProvider.translationText = '';
-          translateProvider.originalText = '';
+          _translateProvider.translationText = '';
+          _translateProvider.originalText = '';
         }
       } catch(err){
         debugPrint('Translate page error "check params":${err.toString()}');
@@ -70,40 +88,42 @@ class TranslatePageController {
   }
 
   /// willPop scope => works
-  Future<bool> willPopScope(translateProvider) async{
-    translateProvider.closePage = true;
-    translateProvider.originalText = '';
-    translateProvider.translationText = '';
+  Future<bool> willPopScope() async{
+    _translateProvider.closePage = true;
+    _translateProvider.originalText = '';
+    _translateProvider.translationText = '';
     return true;
   }
 
   /// keyboard listener => works
-  void _keyBoardListener(translateProvider, context) {
+  void _keyBoardListener() {
     var keyboardVisibilityController = KeyboardVisibilityController();
     keyboardSubscription =
         keyboardVisibilityController.onChange.listen((bool visible) {
           if (!visible) {
-            translateProvider.showKeyBoard = false;
+            addToHistory();
+            _translateProvider.showKeyBoard = false;
             focusNode.unfocus();
-            if (textEditingController.text.isEmpty && translateProvider.closePage) {
+            if (textEditingController.text.isEmpty && _translateProvider.closePage) {
               Navigator.pop(context);
             }
           } else {
-            translateProvider.closePage = true;
-            translateProvider.showKeyBoard = true;
+            _translateProvider.closePage = true;
+            _translateProvider.showKeyBoard = true;
           }
         });
   }
 
+
   /// close page => works
-  void closePage(BuildContext context, TranslateProvider translateProvider) {
+  void closePage() {
     focusNode.unfocus();
-    if (translateProvider.closePage) {
-      translateProvider.closePage = true;
-      if (translateProvider.originalText.isNotEmpty) {
-        translateProvider.closePage = true;
-        translateProvider.translationText = '';
-        translateProvider.originalText = '';
+    if (_translateProvider.closePage) {
+      _translateProvider.closePage = true;
+      if (_translateProvider.originalText.isNotEmpty) {
+        _translateProvider.closePage = true;
+        _translateProvider.translationText = '';
+        _translateProvider.originalText = '';
         Navigator.pop(context);
       }
     } else {
@@ -112,24 +132,24 @@ class TranslatePageController {
   }
 
   /// fetch detected language => works
-  detectedLanguageName(TranslateProvider translateProvider) {
+  detectedLanguageName() {
     var detected = LanguagesList.languageList.where((lang) => lang['code']
         .toString()
         .split('-')
-        .contains(translateProvider.translate!.sourceLanguage))
+        .contains(_translateProvider.translate!.sourceLanguage))
         .map((e) => e['name']).toString();
     return detected;
   }
 
   /// go to language selection page and update
-  void goToSelectLanguage(BuildContext context, SelectLanguageType languageType, SelectLanguageProvider languageProvider, TranslateProvider translateProvider,) {
-    translateProvider.closePage = false;
+  void goToSelectLanguage(SelectLanguageType languageType) {
+    _translateProvider.closePage = false;
     Navigator.of(context).push(AxisPageTransition(
         child: SelectLanguagePage(
           selectLanguagePage: languageType,
           onChange: () {
             /// fetch again
-            translateText(translateProvider.originalText, translateProvider, languageProvider);
+            translateText(_translateProvider.originalText);
             /// position text selector to end
             textEditingController.selection = TextSelection.fromPosition(
                 TextPosition(offset: textEditingController.text.length));
@@ -139,22 +159,22 @@ class TranslatePageController {
   }
 
   /// change select language order => works and update
-  void changeLanguageOrder(SelectLanguageProvider languageProvider, TranslateProvider translateProvider,) {
-    if(languageProvider.fromLang.code! != 'auto') {
+  void changeLanguageOrder() {
+    if(_languageProvider.fromLang.code! != 'auto') {
       /// get current data
-      var _from = languageProvider.fromLang;
-      var _to = languageProvider.toLang;
-      var _originalText = translateProvider.originalText;
-      var _translatedText = translateProvider.translationText;
+      var _from = _languageProvider.fromLang;
+      var _to = _languageProvider.toLang;
+      var _originalText = _translateProvider.originalText;
+      var _translatedText = _translateProvider.translationText;
 
       /// replace data
       textEditingController.text = _translatedText;
-      languageProvider.fromLang = _to;
-      languageProvider.toLang = _from;
-      translateProvider.originalText = _translatedText;
-      translateProvider.translationText = _originalText;
+      _languageProvider.fromLang = _to;
+      _languageProvider.toLang = _from;
+      _translateProvider.originalText = _translatedText;
+      _translateProvider.translationText = _originalText;
       /// fetch again
-      translateText(translateProvider.originalText, translateProvider, languageProvider);
+      translateText(_translateProvider.originalText);
       /// position text selector to end
       textEditingController.selection = TextSelection.fromPosition(
           TextPosition(offset: textEditingController.text.length));
@@ -162,34 +182,34 @@ class TranslatePageController {
   }
 
   /// auto detect lang from api response => works (fix)
-  void changeToDetectLanguage(SelectLanguageProvider languageProvider, TranslateProvider translateProvider) {
+  void changeToDetectLanguage() {
 
-    if(translateProvider.translate!.sourceLanguage != languageProvider.toLang.code!.split('-')[0]) {
+    if(_translateProvider.translate!.sourceLanguage != _languageProvider.toLang.code!.split('-')[0]) {
       /// get current data
-      var _detectedLang = languageProvider.detectedLang;
-      var _originalText = translateProvider.originalText;
+      var _detectedLang = _languageProvider.detectedLang;
+      var _originalText = _translateProvider.originalText;
       /// replace data
       textEditingController.text = _originalText;
-      languageProvider.fromLang = _detectedLang;
+      _languageProvider.fromLang = _detectedLang;
       /// fetch again
-      translateText(translateProvider.originalText, translateProvider, languageProvider);
+      translateText(_translateProvider.originalText);
       /// position text selector to end
       textEditingController.selection = TextSelection.fromPosition(
           TextPosition(offset: textEditingController.text.length));
     } else{
       /// get current data
-      var _from = languageProvider.fromLang;
-      var _to = languageProvider.toLang;
-      var _originalText = translateProvider.originalText;
-      var _translatedText = translateProvider.translationText;
+      var _from = _languageProvider.fromLang;
+      var _to = _languageProvider.toLang;
+      var _originalText = _translateProvider.originalText;
+      var _translatedText = _translateProvider.translationText;
 
       /// replace data
       textEditingController.text = _translatedText;
-      languageProvider.fromLang = _to;
-      languageProvider.toLang = _from;
-      translateProvider.originalText = _translatedText;
-      translateProvider.translationText = _originalText;
-      translateText(translateProvider.originalText, translateProvider, languageProvider);
+      _languageProvider.fromLang = _to;
+      _languageProvider.toLang = _from;
+      _translateProvider.originalText = _translatedText;
+      _translateProvider.translationText = _originalText;
+      translateText(_translateProvider.originalText);
       /// position text selector to end
       textEditingController.selection = TextSelection.fromPosition(
           TextPosition(offset: textEditingController.text.length));
@@ -197,12 +217,12 @@ class TranslatePageController {
   }
 
   /// text correction from api response => works
-  Future<void> textCorrection(SelectLanguageProvider languageProvider, TranslateProvider translateProvider) async {
+  Future<void> textCorrection() async {
     /// change translation text
-    textEditingController.text = translateProvider.translate!.correctionSourceText!;
-    translateProvider.originalText = translateProvider.translate!.correctionSourceText!;
+    textEditingController.text = _translateProvider.translate!.correctionSourceText!;
+    _translateProvider.originalText = _translateProvider.translate!.correctionSourceText!;
     /// fetch again
-    translateText(translateProvider.originalText, translateProvider, languageProvider);
+    translateText(_translateProvider.originalText);
     /// position text selector to end
     textEditingController.selection = TextSelection.fromPosition(
         TextPosition(offset: textEditingController.text.length));
@@ -210,25 +230,25 @@ class TranslatePageController {
   }
 
   /// get data from clipboard => works
-  _validateClipBoardData(TranslateProvider translateProvider) async {
+  _validateClipBoardData() async {
     await Clipboard.getData(Clipboard.kTextPlain).then((value) {
       if (value!.text!.isNotEmpty) {
-        translateProvider.clipBoardHasData = true;
+        _translateProvider.clipBoardHasData = true;
       } else {
-        translateProvider.clipBoardHasData = false;
+        _translateProvider.clipBoardHasData = false;
       }
     });
   }
 
   /// set text from clipboard => works
-  pasteClipBoardData(TranslateProvider translateProvider, SelectLanguageProvider languageProvider) async {
+  pasteClipBoardData() async {
     await Clipboard.getData(Clipboard.kTextPlain).then((value) {
-      translateProvider.originalText = value!.text.toString();
+      _translateProvider.originalText = value!.text.toString();
       textEditingController.text = value.text.toString();
       textEditingController.selection = TextSelection.fromPosition(
           TextPosition(offset: textEditingController.text.length));
     }).then((_) {
-      translateText(translateProvider.originalText, translateProvider, languageProvider);
+      translateText(_translateProvider.originalText);
     });
   }
 
@@ -239,18 +259,37 @@ class TranslatePageController {
     });
   }
 
+  /// add element to history => works
+  addToHistory(){
+    if(textEditingController.text.trim().isNotEmpty && _translateProvider.originalText.isNotEmpty && _translateProvider.translationText.isNotEmpty){
+      final historyElement = History(
+        timestamp: DateTime.now().millisecondsSinceEpoch,
+        originalText: _translateProvider.originalText,
+        translationText: _translateProvider.translationText,
+        translationTextCode: _languageProvider.toLang.code!.split('-')[0],
+        originalTextCode: _languageProvider.fromLang.code!.split('-')[0],
+        isFavorite: 'false',
+      );
+      createHistoryElement(historyElement);
+    }
+  }
+
+  /// add element to history
+  Future createHistoryElement(History history) async {
+    await TranslateDataBase.instance.insertHistory(history).then((element) {
+      _historyProvider.historyList.add(element);
+    });
+  }
 
   /// init view => works
-  void initState(translateProvider, context){
+  void initState(){
     textEditingController = TextEditingController();
-    _keyBoardListener(translateProvider, context);
-    _validateClipBoardData(translateProvider);
+    _keyBoardListener();
+    _validateClipBoardData();
   }
 
   /// dispose view callback => works
-  void dispose(TranslateProvider translateProvider){
-    translateProvider.originalText = '';
-    translateProvider.translationText = '';
+  void dispose(){
     textEditingController.dispose();
     keyboardSubscription.cancel();
   }

@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_translator_app/src/core/constants/app_colors.dart';
-import 'package:flutter_translator_app/src/presentation/pages/select_language_page/select_language_page.dart';
 import 'package:flutter_translator_app/src/presentation/pages/translate_page/translate_page_controller.dart';
 import 'package:flutter_translator_app/src/presentation/pages/translate_page/widgets/definitions.dart';
 import 'package:flutter_translator_app/src/presentation/pages/translate_page/widgets/examples.dart';
 import 'package:flutter_translator_app/src/presentation/pages/translate_page/widgets/translations.dart';
-import 'package:flutter_translator_app/src/presentation/providers/select_language_provider.dart';
+import 'package:flutter_translator_app/src/presentation/providers/language_provider.dart';
 import 'package:flutter_translator_app/src/presentation/providers/translate_provider.dart';
 import 'package:flutter_translator_app/src/presentation/widgets/animations/animated_onTap_button.dart';
 import 'package:flutter_translator_app/src/presentation/widgets/language_button.dart';
@@ -21,7 +20,7 @@ class TranslatePage extends StatefulWidget {
 
 class _TranslatePageState extends State<TranslatePage> {
   /// translate controller instance
-  final TranslatePageController translateController = TranslatePageController();
+  late TranslatePageController translateController;
 
   /// app colors instance
   final AppColors appColors = AppColors();
@@ -31,20 +30,20 @@ class _TranslatePageState extends State<TranslatePage> {
 
   @override
   void initState() {
-    translateController
-        .initState(Provider.of<TranslateProvider>(context, listen: false), context);
+    translateController = TranslatePageController(context: context);
+    translateController.initState();
     super.initState();
   }
 
   @override
   void dispose() {
-    //translateController.dispose(Provider.of<TranslateProvider>(context, listen: false));
+    translateController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    return Consumer2<TranslateProvider, SelectLanguageProvider>(
+    return Consumer2<TranslateProvider, LanguageProvider>(
       builder: (_, translateProvider, languageProvider, __) {
         return NotificationListener<OverscrollIndicatorNotification>(
           onNotification: (overscroll) {
@@ -52,7 +51,7 @@ class _TranslatePageState extends State<TranslatePage> {
             return false;
           },
           child: WillPopScope(
-            onWillPop: () => translateController.willPopScope(translateProvider),
+            onWillPop: () => translateController.willPopScope(),
             child: Scaffold(
               backgroundColor: appColors.backgroundColor,
               appBar: PreferredSize(
@@ -96,8 +95,9 @@ class _TranslatePageState extends State<TranslatePage> {
                                   autofocus: true,
                                   maxLines: null,
                                   minLines: 1,
+                                  textInputAction: TextInputAction.search,
                                   onTap: () => translateProvider.closePage = true,
-                                  onChanged: (text) => translateController.translateText(text, translateProvider, languageProvider),
+                                  onChanged: translateController.translateText,
                                   enableSuggestions: true,
                                   decoration: InputDecoration(
                                     border: InputBorder.none,
@@ -127,8 +127,7 @@ class _TranslatePageState extends State<TranslatePage> {
                                       padding: EdgeInsets.symmetric(
                                           horizontal: 80.w),
                                       child: AnimatedOnTapButton(
-                                        onTap: () async => await translateController
-                                            .pasteClipBoardData(translateProvider, languageProvider),
+                                        onTap: translateController.pasteClipBoardData,
                                         child: Container(
                                           width: 280.w,
                                           height: 95.h,
@@ -175,16 +174,15 @@ class _TranslatePageState extends State<TranslatePage> {
                                     if (translateProvider.translate!.sourceLanguage != languageProvider.fromLang.code!.split('-')[0]
                                         && translateProvider.translate!.sourceLanguage != '' && languageProvider.fromLang.code != 'auto')
                                       _correctionContainer(
-                                        onTap: () => translateController
-                                            .changeToDetectLanguage(languageProvider,translateProvider),
+                                        onTap: translateController.changeToDetectLanguage,
                                         title: 'Translate from',
-                                        text: translateController.detectedLanguageName(translateProvider),
+                                        text: translateController.detectedLanguageName(),
                                       ),
                                   /// show correction text
                                   if (translateProvider.translate != null)
                                     if (!translateProvider.translate!.isCorrect!)
                                       _correctionContainer(
-                                        onTap: () => translateController.textCorrection(languageProvider, translateProvider),
+                                        onTap: translateController.textCorrection,
                                         title: 'Did do you mean',
                                         text: translateProvider.translate!.correctionSourceText!,
                                       ),
@@ -293,12 +291,12 @@ class _TranslatePageState extends State<TranslatePage> {
                             LanguageButton(
                                 text: languageProvider.fromLang.name.toString().split(' ')[0],
                                 appColors: appColors,
-                                onTap: () => translateController.goToSelectLanguage(context, SelectLanguageType.from, languageProvider, translateProvider)
+                                onTap: () => translateController.goToSelectLanguage
                             ),
                             Padding(
                               padding: EdgeInsets.symmetric(horizontal: 25.w),
                               child: AnimatedOnTapButton(
-                                onTap: () => translateController.changeLanguageOrder(languageProvider, translateProvider),
+                                onTap: translateController.changeLanguageOrder,
                                 child: SizedBox(
                                   width: 100.w,
                                   height: 100.w,
@@ -313,7 +311,7 @@ class _TranslatePageState extends State<TranslatePage> {
                             LanguageButton(
                                 text: languageProvider.toLang.name.toString().split(' ')[0],
                                 appColors: appColors,
-                                onTap: () => translateController.goToSelectLanguage(context, SelectLanguageType.to, languageProvider, translateProvider)
+                                onTap: () => translateController.goToSelectLanguage
                             ),
                           ],
                         ),
@@ -344,7 +342,7 @@ class _TranslatePageState extends State<TranslatePage> {
         leading: Padding(
           padding: EdgeInsets.only(left: 10.w),
           child: AnimatedOnTapButton(
-            onTap: () => translateController.closePage(context, translateProvider),
+            onTap: translateController.closePage,
             child: Icon(
               Icons.arrow_back,
               color: Colors.white,
@@ -356,7 +354,7 @@ class _TranslatePageState extends State<TranslatePage> {
           Padding(
             padding: EdgeInsets.only(right: 45.w),
             child: AnimatedOnTapButton(
-              onTap: () => translatePageController.goToHistoryPage(context, translateProvider),
+              onTap: translatePageController.goToHistoryPage,
               child: Icon(
                 Icons.history,
                 color: Colors.white,

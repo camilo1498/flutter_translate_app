@@ -2,8 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_translator_app/src/presentation/pages/home_page/home_page.dart';
+import 'package:flutter_translator_app/src/presentation/providers/history_provider.dart';
 import 'package:flutter_translator_app/src/presentation/providers/home_page_provider.dart';
-import 'package:flutter_translator_app/src/presentation/providers/select_language_provider.dart';
+import 'package:flutter_translator_app/src/presentation/providers/language_provider.dart';
 import 'package:flutter_translator_app/src/presentation/providers/translate_provider.dart';
 import 'package:provider/provider.dart';
 
@@ -27,7 +28,8 @@ void main() {
     providers: [
       ChangeNotifierProvider(create: (_) => HomePageProvider()),
       ChangeNotifierProvider(create: (_) => TranslateProvider()),
-      ChangeNotifierProvider(create: (_) => SelectLanguageProvider()),
+      ChangeNotifierProvider(create: (_) => LanguageProvider()),
+      ChangeNotifierProvider(create: (_) => HistoryProvider()),
     ],
     child: const MyApp(),
   ));

@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_translator_app/src/core/constants/app_colors.dart';
 import 'package:flutter_translator_app/src/data/models/language.dart';
 import 'package:flutter_translator_app/src/presentation/pages/select_language_page/select_language_controller.dart';
-import 'package:flutter_translator_app/src/presentation/providers/select_language_provider.dart';
+import 'package:flutter_translator_app/src/presentation/providers/language_provider.dart';
 import 'package:flutter_translator_app/src/presentation/widgets/animations/animated_onTap_button.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -36,8 +36,8 @@ class _SelectLanguagePageState extends State<SelectLanguagePage> {
   @override
   void initState() {
     languageController
-        .keyBoardListener(Provider.of<SelectLanguageProvider>(context, listen: false), context);
-    languageController.languages = Provider.of<SelectLanguageProvider>(context, listen: false).languagesList;
+        .keyBoardListener(Provider.of<LanguageProvider>(context, listen: false), context);
+    languageController.languages = Provider.of<LanguageProvider>(context, listen: false).languagesList;
     super.initState();
   }
 
@@ -54,7 +54,7 @@ class _SelectLanguagePageState extends State<SelectLanguagePage> {
         overscroll.disallowIndicator();
         return false;
       },
-      child: Consumer<SelectLanguageProvider>(
+      child: Consumer<LanguageProvider>(
         builder: (_, languageProvider, __) {
           return Scaffold(
             backgroundColor:
@@ -214,7 +214,7 @@ class _SelectLanguagePageState extends State<SelectLanguagePage> {
     );
   }
 
-  Widget _appBar({required Function() onTap, required SelectLanguageProvider languageProvider}) {
+  Widget _appBar({required Function() onTap, required LanguageProvider languageProvider}) {
     return AppBar(
       backgroundColor: Colors.transparent,
       elevation: 0,

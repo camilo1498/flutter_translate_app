@@ -1,6 +1,3 @@
-// ignore_for_file: file_names
-import 'package:flutter_translator_app/src/data/models/language.dart';
-
 class HistoryFields {
   static const String tableHistory = 'history';
   static const String id = '_id';
@@ -13,13 +10,13 @@ class HistoryFields {
 }
 
 class History {
-  String? id;
+  int? id;
   int? timestamp;
   String? originalText;
   String? translationText;
   String? originalTextCode;
   String? translationTextCode;
-  bool? isFavorite;
+  String? isFavorite;
   History({
     this.id,
     this.timestamp,
@@ -29,6 +26,25 @@ class History {
     this.translationTextCode,
     this.isFavorite,
   });
+
+  History copy({
+    int? id,
+    int? timestamp,
+    String? originalText,
+    String? translationText,
+    String? originalTextCode,
+    String? translationTextCode,
+    String? isFavorite,
+}) => History(
+    id: id ?? this.id,
+    timestamp: timestamp ?? this.timestamp,
+    originalText: originalText ?? this.originalText,
+    translationText: translationText ?? this.translationText,
+    originalTextCode: originalTextCode ?? this.originalTextCode,
+    translationTextCode: translationTextCode ?? this.translationTextCode,
+    isFavorite:  isFavorite ?? this.isFavorite
+  );
+
 
   factory History.fromJson(Map<String, dynamic> json) => History(
         id: json["id"],

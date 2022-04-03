@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_translator_app/src/core/constants/languages.dart';
 import 'package:flutter_translator_app/src/data/models/language.dart';
 
-class SelectLanguageProvider extends ChangeNotifier {
+class LanguageProvider extends ChangeNotifier {
   /// parse language list to language model object
   Future<List<Language>> getLanguages() async {
     List<Language> _languages = [];
