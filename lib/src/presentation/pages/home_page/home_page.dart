@@ -380,6 +380,7 @@ class _HomePageState extends State<HomePage> {
           child: HistoryBody(
             historyPageController: _historyController,
             historyProvider: Provider.of<HistoryProvider>(context, listen: false),
+            listController: listController,
           )),
     );
   }

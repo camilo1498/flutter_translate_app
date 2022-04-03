@@ -54,7 +54,7 @@ class _HistoryPageState extends State<HistoryPage> {
                 historyPageController: _historyPageController,
               ),
             ),
-            body: HistoryBody(historyProvider: historyProvider, historyPageController: _historyPageController),
+            body: HistoryBody(historyProvider: historyProvider, historyPageController: _historyPageController, listController: ScrollController()),
           );
         },
       ),
@@ -116,13 +116,18 @@ class HistoryAppBar extends StatelessWidget {
 }
 
 class HistoryBody extends StatelessWidget {
+  /// providers
   final HistoryProvider historyProvider;
   final HistoryPageController historyPageController;
+
+  /// list controller
+  final ScrollController? listController;
 
   HistoryBody({
     Key? key,
     required this.historyProvider,
-    required this.historyPageController
+    required this.historyPageController,
+    required this.listController
   }) : super(key: key);
 
   /// parse date time
@@ -134,8 +139,7 @@ class HistoryBody extends StatelessWidget {
   /// screen util instance
   final ScreenUtil screenUtil = ScreenUtil();
 
-  /// list controller
-  final ScrollController? listController = ScrollController();
+
   @override
   Widget build(BuildContext context) {
     return Consumer<HistoryProvider>(
