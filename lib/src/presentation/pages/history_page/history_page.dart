@@ -58,7 +58,7 @@ class _HistoryPageState extends State<HistoryPage> {
                 historyPageController: _historyPageController,
               ),
             ),
-            body: HistoryBody(historyProvider: databaseProvider, historyPageController: _historyPageController, listController: ScrollController()),
+            body: HistoryBody(historyProvider: databaseProvider, historyPageController: _historyPageController),
           );
         },
       ),
@@ -131,7 +131,7 @@ class HistoryBody extends StatelessWidget {
     Key? key,
     required this.historyProvider,
     required this.historyPageController,
-    required this.listController
+    this.listController
   }) : super(key: key);
 
   /// parse date time
@@ -155,8 +155,8 @@ class HistoryBody extends StatelessWidget {
             padding: const EdgeInsets.only(bottom: 20),
             child: GroupedListView<History, String>(
               elements: databaseProvider.historyList,
-              reverse: true,
-              controller: listController,
+              reverse: listController != null ? true : false,
+              controller: listController ?? ScrollController(),
               groupBy: (element) {
                 DateTime _parse = DateTime.fromMillisecondsSinceEpoch(element.timestamp!);
                 DateTime _date = DateTime.parse(dateFormat.parse(_parse.toString()).toString());
@@ -165,7 +165,7 @@ class HistoryBody extends StatelessWidget {
               groupComparator: (value1, value2) => value2.compareTo(value1),
               itemComparator: (item1, item2) =>
                   item1.timestamp.toString().compareTo(item2.timestamp.toString()),
-              order: GroupedListOrder.DESC,
+              order: listController != null ? GroupedListOrder.DESC : GroupedListOrder.ASC,
               groupSeparatorBuilder: (String value) {
                 return Padding(
                   padding: const EdgeInsets.only(
@@ -245,7 +245,7 @@ class HistoryBody extends StatelessWidget {
           )
               : Center(
                 child: SingleChildScrollView(
-                  controller: listController,
+                  controller: listController ?? ScrollController(),
                   child: Column(
                     mainAxisSize: MainAxisSize.max,
                     crossAxisAlignment: CrossAxisAlignment.center,
