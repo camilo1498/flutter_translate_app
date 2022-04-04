@@ -38,6 +38,12 @@ class _HomePageState extends State<HomePage> {
   }
 
   @override
+  void dispose() {
+    super.dispose();
+  }
+
+
+  @override
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: _homePageController.willPopScope,
@@ -284,7 +290,6 @@ class _HomePageState extends State<HomePage> {
             size: 135.w,
             text: 'Gallery',
             onTap: () {
-              /// translate from image
             })
       ],
     );

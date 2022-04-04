@@ -22,6 +22,8 @@ This app use a [custom backend](https://github.com/camilo1498/google_translate_a
 
 9) flutter_slidable: ^1.2.0 (swipe list element)
 
+10) flutter_tts: ^3.3.3 (reproduce tts )
+
 ## Gif demo
 
 ### Main view container animation

@@ -16,24 +16,34 @@ import 'package:flutter_translator_app/src/presentation/providers/translate_prov
 import 'package:flutter_translator_app/src/presentation/widgets/animations/page_transitions/axis_page_transition.dart';
 import 'package:flutter_translator_app/src/presentation/widgets/animations/page_transitions/fade_page_route.dart';
 import 'package:flutter_translator_app/src/presentation/widgets/sheets/snakbar.dart';
+import 'package:flutter_tts/flutter_tts.dart';
 import 'package:provider/provider.dart';
+
 
 class TranslatePageController {
   /// build context
   final BuildContext context;
+  final StateSetter setState;
   /// providers
   late TranslateProvider _translateProvider;
   late LanguageProvider _languageProvider;
   late HistoryProvider _historyProvider;
 
   TranslatePageController({
-    required this.context
+    required this.context,
+    required this.setState
 }){
     _translateProvider = Provider.of<TranslateProvider>(context, listen: false);
     _languageProvider = Provider.of<LanguageProvider>(context, listen: false);
     _historyProvider = Provider.of<HistoryProvider>(context, listen: false);
 
   }
+
+  /// tts reproduce
+  bool isFromLangPlaying = false;
+  bool isToLangPlaying = false;
+  bool fromLangSupport = true;
+  bool toLangSupport = true;
 
   /// textField controller
   late TextEditingController textEditingController;
@@ -46,6 +56,9 @@ class TranslatePageController {
 
   /// stream
   late StreamSubscription<bool> keyboardSubscription;
+
+  /// tts
+  FlutterTts flutterTts = FlutterTts();
 
   /// go to translation page
   void goToHistoryPage() {
@@ -282,8 +295,64 @@ class TranslatePageController {
     });
   }
 
+  /// reproduce "fromLang" audio
+  Future ttsFrom() async{
+    await flutterTts.isLanguageAvailable(_languageProvider.fromLang.tts!).then((available) async{
+      if(available) {
+        setState(() => isFromLangPlaying = true);
+        await flutterTts.setLanguage(_languageProvider.fromLang.tts!).then((value) async{
+          await flutterTts.speak(_translateProvider.originalText);
+        });
+      } else{
+        setState(() => fromLangSupport = false);
+        Timer.periodic(const Duration(seconds: 2), (timer) {
+          setState(() => fromLangSupport = true);
+          timer.cancel();
+        });
+      }
+
+    });
+  }
+  /// reproduce "ttsTo" audio
+  Future ttsTo() async{
+    await flutterTts.isLanguageAvailable(_languageProvider.toLang.tts!).then((available) async{
+
+      if(available){
+        setState(() => isToLangPlaying = true);
+        await flutterTts.setLanguage(_languageProvider.toLang.tts!).then((value) async{
+          await flutterTts.speak(_translateProvider.translationText);
+        });
+      } else{
+        setState(() => toLangSupport = false);
+        Timer.periodic(const Duration(seconds: 2), (timer) {
+          setState(() => toLangSupport = true);
+          timer.cancel();
+        });
+      }
+
+    });
+  }
+
+  /// stop tts
+  Future ttsStop() async{
+    var res = await flutterTts.stop();
+    if(res == 1){
+      setState((){
+        isFromLangPlaying = false;
+        isToLangPlaying = false;
+      });
+    }
+  }
+
   /// init view => works
   void initState(){
+    flutterTts.setCompletionHandler(() {
+      setState(() {
+        isFromLangPlaying = false;
+        isToLangPlaying = false;
+      });
+    });
+
     textEditingController = TextEditingController();
     _keyBoardListener();
     _validateClipBoardData();

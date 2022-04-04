@@ -102,7 +102,7 @@ class LanguagesList {
     {"code": "sk", "name": "Slovak", "tts": "sk-SK"},
     {"code": "sl", "name": "Slovenian", "tts": ""},
     {"code": "so", "name": "Somali", "tts": ""},
-    {"code": "es", "name": "Spanish", "tts": "es-EX"},
+    {"code": "es", "name": "Spanish", "tts": "es-MX"},
     {"code": "su", "name": "Sundanese", "tts": ""},
     {"code": "sw", "name": "Swahili", "tts": ""},
     {"code": "sv", "name": "Swedish", "tts": "sv-SE"},

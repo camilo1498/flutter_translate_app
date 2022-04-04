@@ -31,7 +31,7 @@ class _TranslatePageState extends State<TranslatePage> {
 
   @override
   void initState() {
-    translateController = TranslatePageController(context: context);
+    translateController = TranslatePageController(context: context, setState: setState);
     translateController.initState();
     super.initState();
   }
@@ -81,13 +81,18 @@ class _TranslatePageState extends State<TranslatePage> {
                           children: [
                             if (translateController
                                 .textEditingController.text.isNotEmpty)
+                              /// "from" language tools
                               _currentLanguageToolbar(
+                                icon: translateController.isFromLangPlaying ? Icons.pause_circle_outline_sharp : Icons.volume_up_outlined,
                                   color: appColors.colorText1,
                                   language: languageProvider.fromLang.code != 'auto' ? languageProvider.fromLang.name.toString() : 'Detect (${languageProvider.detectedLang.name.toString()})',
                                   onTapCopy: () =>
                                       translateController.setClipBoardData(translateProvider.originalText, 'Original text copied'),
-                                  onTapSpeech: () {}
+                                  onTapSpeech: translateController.isFromLangPlaying ? translateController.ttsStop : translateController.ttsFrom
                               ),
+                            20.verticalSpace,
+                            /// not supported tts lang alert
+                            supportLanguage(languageProvider.fromLang.name!.split(' ')[0], translateController.fromLangSupport),
 
                             /// text field
                             Padding(
@@ -200,11 +205,19 @@ class _TranslatePageState extends State<TranslatePage> {
                                         BorderRadius.circular(80)),
                                   ),
                                   60.verticalSpace,
+
+                                  /// "to" language tools
                                   _currentLanguageToolbar(
+                                      icon: translateController.isToLangPlaying ? Icons.pause_circle_outline_sharp: Icons.volume_up_outlined,
                                       color: Colors.blue[200]!,
                                       language: languageProvider.toLang.name.toString(),
                                       onTapCopy: () => translateController.setClipBoardData(translateProvider.translationText, 'Translation copied'),
-                                      onTapSpeech: () {}),
+                                      onTapSpeech: translateController.isToLangPlaying ? translateController.ttsStop : translateController.ttsTo
+                                  ),
+                                  20.verticalSpace,
+                                  /// not supported tts lang alert
+                                  supportLanguage(languageProvider.toLang.name!.split(' ')[0], translateController.toLangSupport),
+
                                   60.verticalSpace,
                                   /// result translation text
                                   Align(
@@ -372,6 +385,7 @@ class _TranslatePageState extends State<TranslatePage> {
 
   Widget _currentLanguageToolbar(
       {required String language,
+        required IconData icon,
         required Function() onTapCopy,
         required Function() onTapSpeech,
         required Color color}) {
@@ -406,7 +420,7 @@ class _TranslatePageState extends State<TranslatePage> {
                   AnimatedOnTapButton(
                     onTap: onTapSpeech,
                     child: Icon(
-                      Icons.volume_up_outlined,
+                      icon,
                       color: color,
                       size: 65.w,
                     ),
@@ -507,6 +521,25 @@ class _TranslatePageState extends State<TranslatePage> {
               fontSize: 40.sp,
               wordSpacing: 0.1,
               letterSpacing: 0.5),
+        ),
+      ),
+    );
+  }
+
+  /// language isn't speech sopport
+  Widget supportLanguage(String language, bool support){
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 300),
+      width: screenUtil.screenWidth,
+      height: support ? 0 : 100.h,
+      curve: Curves.easeOutSine,
+      alignment: Alignment.center,
+      color: appColors.containerColor,
+      child: Text(
+        "Speech output  isn't available for $language",
+        style: TextStyle(
+            color: appColors.colorText1,
+            fontSize: 42.sp
         ),
       ),
     );
