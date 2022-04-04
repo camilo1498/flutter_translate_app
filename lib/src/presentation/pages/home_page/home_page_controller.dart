@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_translator_app/src/core/constants/app_colors.dart';
+import 'package:flutter_translator_app/src/presentation/pages/favourite_page/favourite_page.dart';
 import 'package:flutter_translator_app/src/presentation/pages/select_language_page/select_language_page.dart';
 import 'package:flutter_translator_app/src/presentation/pages/translate_page/translate_page.dart';
 import 'package:flutter_translator_app/src/presentation/providers/language_provider.dart';
@@ -46,6 +47,13 @@ class HomePageController {
     Navigator.of(context).push(AxisPageTransition(
         child: SelectLanguagePage(
             selectLanguagePage: languageType, onChange: () {}),
+        direction: AxisDirection.left));
+  }
+
+  /// go to favourite page
+  void goToFavouritePage() {
+    Navigator.of(context).push(AxisPageTransition(
+        child: const FavouritePage(),
         direction: AxisDirection.left));
   }
 

@@ -1,3 +1,5 @@
+
+/// list of all google translate supported languages
 class LanguagesList {
   static List<Map<String, String>> languageList = [
     {"code": "af", "name": "Afrikaans", "tts": "af-ZA"},

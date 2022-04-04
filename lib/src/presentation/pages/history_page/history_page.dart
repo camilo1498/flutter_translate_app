@@ -4,9 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:flutter_translator_app/src/core/constants/app_colors.dart';
+import 'package:flutter_translator_app/src/core/constants/month_list.dart';
 import 'package:flutter_translator_app/src/data/models/History.dart';
 import 'package:flutter_translator_app/src/presentation/pages/history_page/history_page_controller.dart';
-import 'package:flutter_translator_app/src/presentation/providers/history_provider.dart';
+import 'package:flutter_translator_app/src/presentation/providers/database_provider.dart';
 import 'package:flutter_translator_app/src/presentation/widgets/animations/animated_onTap_button.dart';
 import 'package:grouped_list/grouped_list.dart';
 import 'package:intl/intl.dart';
@@ -46,10 +47,10 @@ class _HistoryPageState extends State<HistoryPage> {
         overscroll.disallowIndicator();
         return false;
       },
-      child: Consumer<HistoryProvider>(
-        builder: (_, historyProvider, __){
+      child: Consumer<DatabaseProvider>(
+        builder: (_, databaseProvider, __){
           return Scaffold(
-            backgroundColor: _historyPageController.appColors.backgroundColor,
+            backgroundColor: appColors.backgroundColor,
             appBar: PreferredSize(
               preferredSize: Size(screenUtil.screenWidth, 170.w),
               child: HistoryAppBar(
@@ -57,7 +58,7 @@ class _HistoryPageState extends State<HistoryPage> {
                 historyPageController: _historyPageController,
               ),
             ),
-            body: HistoryBody(historyProvider: historyProvider, historyPageController: _historyPageController, listController: ScrollController()),
+            body: HistoryBody(historyProvider: databaseProvider, historyPageController: _historyPageController, listController: ScrollController()),
           );
         },
       ),
@@ -88,7 +89,7 @@ class HistoryAppBar extends StatelessWidget {
       elevation: 0,
       title: Text('History',
           style: TextStyle(
-              color: historyPageController.appColors.colorText1,
+              color: appColors.colorText1,
               fontSize: 60.sp)),
       leading: Padding(
         padding: EdgeInsets.only(left: 10.w),
@@ -107,7 +108,7 @@ class HistoryAppBar extends StatelessWidget {
           child: AnimatedOnTapButton(
             onTap: historyPageController.deleteAllHistory,
             child: Icon(
-              Provider.of<HistoryProvider>(context).historyList.isNotEmpty ? Icons.delete_outline : Icons.translate,
+              Provider.of<DatabaseProvider>(context).historyList.isNotEmpty ? Icons.delete_outline : Icons.translate,
               color: Colors.white,
               size: 70.w,
             ),
@@ -120,7 +121,7 @@ class HistoryAppBar extends StatelessWidget {
 
 class HistoryBody extends StatelessWidget {
   /// providers
-  final HistoryProvider historyProvider;
+  final DatabaseProvider historyProvider;
   final HistoryPageController historyPageController;
 
   /// list controller
@@ -145,21 +146,21 @@ class HistoryBody extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<HistoryProvider>(
-      builder: (_, historyProvider, __){
+    return Consumer<DatabaseProvider>(
+      builder: (_, databaseProvider, __){
         return Material(
           color: Colors.transparent,
-          child: historyProvider.historyList.isNotEmpty
+          child: databaseProvider.historyList.isNotEmpty
               ? Padding(
             padding: const EdgeInsets.only(bottom: 20),
             child: GroupedListView<History, String>(
-              elements: historyProvider.historyList,
+              elements: databaseProvider.historyList,
               reverse: true,
               controller: listController,
               groupBy: (element) {
                 DateTime _parse = DateTime.fromMillisecondsSinceEpoch(element.timestamp!);
                 DateTime _date = DateTime.parse(dateFormat.parse(_parse.toString()).toString());
-                return '${historyPageController.months[_date.month - 1]} ${_date.day} ${_date.year}';
+                return '${MonthList.months[_date.month - 1]} ${_date.day} ${_date.year}';
               },
               groupComparator: (value1, value2) => value2.compareTo(value1),
               itemComparator: (item1, item2) =>
@@ -211,7 +212,7 @@ class HistoryBody extends StatelessWidget {
                                 element.originalText.toString(),
                                 textAlign: TextAlign.left,
                                 style: TextStyle(
-                                    color: historyPageController.appColors.colorText1,
+                                    color: appColors.colorText1,
                                     fontWeight: FontWeight.w500),
                               ),
                               const SizedBox(
@@ -221,7 +222,7 @@ class HistoryBody extends StatelessWidget {
                                 element.translationText.toString(),
                                 textAlign: TextAlign.left,
                                 style: TextStyle(
-                                    color: historyPageController.appColors.colorText2
+                                    color: appColors.colorText2
                                         .withOpacity(0.7),
                                     fontWeight: FontWeight.w500),
                               )
@@ -231,7 +232,7 @@ class HistoryBody extends StatelessWidget {
                             onTap: () => historyPageController.updateHistoryItem(element),
                             child: Icon(
                               element.isFavorite == 'true' ? Icons.star : Icons.star_border,
-                              color: historyPageController.appColors.iconColor2,
+                              color: appColors.iconColor2,
                             ),
                           ),
                         ),

@@ -10,7 +10,7 @@ import 'package:flutter_translator_app/src/data/models/language.dart';
 import 'package:flutter_translator_app/src/data/sources/local_db/translator_batabase.dart';
 import 'package:flutter_translator_app/src/presentation/pages/history_page/history_page.dart';
 import 'package:flutter_translator_app/src/presentation/pages/select_language_page/select_language_page.dart';
-import 'package:flutter_translator_app/src/presentation/providers/history_provider.dart';
+import 'package:flutter_translator_app/src/presentation/providers/database_provider.dart';
 import 'package:flutter_translator_app/src/presentation/providers/language_provider.dart';
 import 'package:flutter_translator_app/src/presentation/providers/translate_provider.dart';
 import 'package:flutter_translator_app/src/presentation/widgets/animations/page_transitions/axis_page_transition.dart';
@@ -27,7 +27,7 @@ class TranslatePageController {
   /// providers
   late TranslateProvider _translateProvider;
   late LanguageProvider _languageProvider;
-  late HistoryProvider _historyProvider;
+  late DatabaseProvider _historyProvider;
 
   TranslatePageController({
     required this.context,
@@ -35,7 +35,7 @@ class TranslatePageController {
 }){
     _translateProvider = Provider.of<TranslateProvider>(context, listen: false);
     _languageProvider = Provider.of<LanguageProvider>(context, listen: false);
-    _historyProvider = Provider.of<HistoryProvider>(context, listen: false);
+    _historyProvider = Provider.of<DatabaseProvider>(context, listen: false);
 
   }
 
@@ -299,7 +299,10 @@ class TranslatePageController {
   Future ttsFrom() async{
     await flutterTts.isLanguageAvailable(_languageProvider.fromLang.tts!).then((available) async{
       if(available) {
-        setState(() => isFromLangPlaying = true);
+        setState(() {
+          isToLangPlaying = false;
+          isFromLangPlaying = true;
+        });
         await flutterTts.setLanguage(_languageProvider.fromLang.tts!).then((value) async{
           await flutterTts.speak(_translateProvider.originalText);
         });
@@ -318,7 +321,10 @@ class TranslatePageController {
     await flutterTts.isLanguageAvailable(_languageProvider.toLang.tts!).then((available) async{
 
       if(available){
-        setState(() => isToLangPlaying = true);
+        setState(() {
+          isFromLangPlaying = false;
+          isToLangPlaying = true;
+        });
         await flutterTts.setLanguage(_languageProvider.toLang.tts!).then((value) async{
           await flutterTts.speak(_translateProvider.translationText);
         });

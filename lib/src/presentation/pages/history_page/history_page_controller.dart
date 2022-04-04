@@ -1,54 +1,37 @@
 import 'package:flutter/cupertino.dart';
-import 'package:flutter_translator_app/src/core/constants/app_colors.dart';
 import 'package:flutter_translator_app/src/data/models/History.dart';
+import 'package:flutter_translator_app/src/data/models/favourite.dart';
 import 'package:flutter_translator_app/src/data/sources/local_db/translator_batabase.dart';
-import 'package:flutter_translator_app/src/presentation/providers/history_provider.dart';
+import 'package:flutter_translator_app/src/presentation/providers/database_provider.dart';
 import 'package:provider/provider.dart';
 
 class HistoryPageController {
   /// context
   final BuildContext context;
   /// providers
-  late HistoryProvider historyProvider;
+  late DatabaseProvider databaseProvider;
   HistoryPageController({
     required this.context
 }){
-    historyProvider = Provider.of<HistoryProvider>(context, listen: false);
+    databaseProvider = Provider.of<DatabaseProvider>(context, listen: false);
   }
-  /// app color instance
-  final AppColors appColors = AppColors();
 
-  /// to parse int to respective month
-  final List<String> months = [
-    'January',
-    'February',
-    'March',
-    'April',
-    'May',
-    'June',
-    'July',
-    'August',
-    'September',
-    'October',
-    'November',
-    'December'
-  ];
 
   Future getHistory() async{
-    historyProvider.historyList = await TranslateDataBase.instance.readHistory();
+    databaseProvider.historyList = await TranslateDataBase.instance.readHistory();
   }
 
   Future deleteAllHistory() async{
     await TranslateDataBase.instance.deleteAllHistory().then((_) async{
-      if(historyProvider.historyList.isNotEmpty){
-        historyProvider.historyList = await TranslateDataBase.instance.readHistory();
+      if(databaseProvider.historyList.isNotEmpty){
+        databaseProvider.historyList = await TranslateDataBase.instance.readHistory();
       }
     });
   }
 
   Future deleteHistoryItem(int? id) async{
     await TranslateDataBase.instance.deleteHistoryField(id!).then((res) async{
-      historyProvider.historyList = await TranslateDataBase.instance.readHistory();
+      databaseProvider.historyList = await TranslateDataBase.instance.readHistory();
     });
   }
 
@@ -62,8 +45,32 @@ class HistoryPageController {
       timestamp: history.timestamp,
       isFavorite: history.isFavorite == 'true' ? 'false' : 'true'
     );
+
     await TranslateDataBase.instance.updateHistory(_update).then((_) async{
-      historyProvider.historyList = await TranslateDataBase.instance.readHistory();
+      if(_update.isFavorite == 'false'){
+        /// delete favourite
+        await TranslateDataBase.instance.deleteFavouriteFieldHistoryId(_update.id).then((res) async{
+          databaseProvider.historyList = await TranslateDataBase.instance.readHistory();
+          databaseProvider.favouriteList = await TranslateDataBase.instance.readFavourite();
+        });
+      } else{
+        /// insert favourite
+        Favourite favourite = Favourite(
+          timestamp: DateTime.now().millisecondsSinceEpoch,
+          historyId: _update.id,
+          translationTextCode: _update.translationTextCode,
+          originalText: _update.originalText,
+          originalTextCode: _update.originalTextCode,
+          translationText: _update.translationText,
+          isFavorite: 'true'
+        );
+        await TranslateDataBase.instance.insertFavourite(favourite).then((element) async{
+          databaseProvider.favouriteList.add(element);
+          databaseProvider.favouriteList = await TranslateDataBase.instance.readFavourite();
+        });
+        databaseProvider.historyList = await TranslateDataBase.instance.readHistory();
+      }
+
     });
   }
 }

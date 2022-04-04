@@ -4,7 +4,7 @@ import 'package:flutter_translator_app/src/presentation/pages/history_page/histo
 import 'package:flutter_translator_app/src/presentation/pages/history_page/history_page_controller.dart';
 import 'package:flutter_translator_app/src/presentation/pages/home_page/home_page_controller.dart';
 import 'package:flutter_translator_app/src/presentation/pages/select_language_page/select_language_page.dart';
-import 'package:flutter_translator_app/src/presentation/providers/history_provider.dart';
+import 'package:flutter_translator_app/src/presentation/providers/database_provider.dart';
 import 'package:flutter_translator_app/src/presentation/providers/home_page_provider.dart';
 import 'package:flutter_translator_app/src/presentation/providers/language_provider.dart';
 import 'package:flutter_translator_app/src/presentation/widgets/animations/animated_onTap_button.dart';
@@ -199,9 +199,7 @@ class _HomePageState extends State<HomePage> {
           leading: Padding(
             padding: EdgeInsets.only(left: 10.w),
             child: AnimatedOnTapButton(
-              onTap: () {
-                /// open favourite page
-              },
+              onTap: _homePageController.goToFavouritePage,
               child: Icon(
                 Icons.star,
                 color: Colors.white,
@@ -380,7 +378,7 @@ class _HomePageState extends State<HomePage> {
               : 0,
           child: HistoryBody(
             historyPageController: _historyController,
-            historyProvider: Provider.of<HistoryProvider>(context, listen: false),
+            historyProvider: Provider.of<DatabaseProvider>(context, listen: false),
             listController: listController,
           )),
     );
