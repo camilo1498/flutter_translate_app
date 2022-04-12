@@ -3,27 +3,27 @@
 This app use a [custom backend](https://github.com/camilo1498/google_translate_api) to manage the original google translate json response
 
 ### Packages used
+``` dart
+provider: ^6.0.2  (state management)
 
-1) provider: ^6.0.2  (state management)
+grouped_list: ^4.2.0 (was used to order history by date)
 
-2) grouped_list: ^4.2.0 (was used to order history by date)
+intl: ^0.17.0 (to parse dates)
 
-3) intl: ^0.17.0 (to parse dates)
+flutter_screenutil: ^5.3.1 (to adapt different phone screens)
 
-4) flutter_screenutil: ^5.3.1 (to adapt different phone screens)
+flutter_keyboard_visibility: ^5.2.0 (to manage the keyboard state)
 
-5) flutter_keyboard_visibility: ^5.2.0 (to manage the keyboard state)
+dio: ^4.0.5 (http request)
 
-6) dio: ^4.0.5 (http request)
+sqflite: ^2.0.2 (local database => history/favourites)
 
-7) sqflite: ^2.0.2 (local database => history/favourites)
+fluttertoast: ^8.0.9 (show copied on clipboard message)
 
-8) fluttertoast: ^8.0.9 (show copied on clipboard message)
+flutter_slidable: ^1.2.0 (swipe list element)
 
-9) flutter_slidable: ^1.2.0 (swipe list element)
-
-10) flutter_tts: ^3.3.3 (reproduce tts )
-
+flutter_tts: ^3.3.3 (reproduce tts )
+```
 ## Gif demo
 
 ### Main view container animation
