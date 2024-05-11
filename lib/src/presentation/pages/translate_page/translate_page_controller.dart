@@ -138,8 +138,6 @@ class TranslatePageController {
         _translateProvider.translationText = '';
         _translateProvider.originalText = '';
         Navigator.pop(context);
-      } else {
-        Navigator.pop(context);
       }
     } else {
       Navigator.pop(context);

@@ -123,6 +123,8 @@ class _HomePageState extends State<HomePage> {
                     onTap: () {},
                     child: StatefulBuilder(builder: (context, setState) {
                       return SlidingUpPanel(
+                        maxHeight: screenUtil.screenHeight,
+                        minHeight: screenUtil.screenHeight * .58,
                         controller: _homePageController.panelController,
                         color: ColorTween(
                                 begin: _homePageController
@@ -162,8 +164,6 @@ class _HomePageState extends State<HomePage> {
                             ],
                           );
                         },
-                        maxHeight: screenUtil.screenHeight,
-                        minHeight: screenUtil.screenHeight * 0.55,
                         header: Container(
                           width: screenUtil.screenWidth,
                           alignment: Alignment.center,
@@ -349,10 +349,12 @@ class _HomePageState extends State<HomePage> {
             ),
           ),
           20.verticalSpace,
-          Text(
-            text ?? '',
-            style: TextStyle(color: appColors.colorText2, fontSize: 30.sp),
-          )
+          if (text != null) ...[
+            Text(
+              text,
+              style: TextStyle(color: appColors.colorText2, fontSize: 30.sp),
+            )
+          ],
         ],
       ),
     );
@@ -366,9 +368,9 @@ class _HomePageState extends State<HomePage> {
     return GestureDetector(
       onTap: () => _homePageController.goToTranslationPage(context: context),
       child: !homeProvider.isPanelOpen
-          ? Container(
+          ? SizedBox(
               width: screenUtil.screenWidth,
-              height: screenUtil.screenHeight * 0.55,
+              height: screenUtil.screenHeight * 0.568,
               child: Padding(
                 padding: EdgeInsets.symmetric(horizontal: 60.w, vertical: 65.h),
                 child: AnimatedOpacity(
