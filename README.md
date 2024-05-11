@@ -4,25 +4,25 @@ This app use a [custom backend](https://github.com/camilo1498/google_translate_a
 
 ### Packages used
 ``` dart
-provider: ^6.0.2  (state management)
+provider: ^6.1.2  (state management)
 
-grouped_list: ^4.2.0 (was used to order history by date)
+grouped_list: ^5.1.2 (was used to order history by date)
 
-intl: ^0.17.0 (to parse dates)
+intl: ^0.19.0 (to parse dates)
 
-flutter_screenutil: ^5.3.1 (to adapt different phone screens)
+flutter_screenutil: ^5.9.0 (to adapt different phone screens)
 
 flutter_keyboard_visibility: ^5.2.0 (to manage the keyboard state)
 
-dio: ^4.0.5 (http request)
+dio: ^5.4.3+1 (http request)
 
-sqflite: ^2.0.2 (local database => history/favourites)
+sqflite: ^2.3.3+1 (local database => history/favourites)
 
-fluttertoast: ^8.0.9 (show copied on clipboard message)
+fluttertoast: ^8.2.5 (show copied on clipboard message)
 
-flutter_slidable: ^1.2.0 (swipe list element)
+flutter_slidable: ^3.1.0 (swipe list element)
 
-flutter_tts: ^3.3.3 (reproduce tts )
+flutter_tts: ^4.0.2 (reproduce tts )
 ```
 ## Gif demo
 
