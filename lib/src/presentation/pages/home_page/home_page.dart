@@ -1,20 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_translator_app/src/core/constants/app_colors.dart';
-import 'package:flutter_translator_app/src/presentation/pages/history_page/history_page.dart';
-import 'package:flutter_translator_app/src/presentation/pages/history_page/history_page_controller.dart';
-import 'package:flutter_translator_app/src/presentation/pages/home_page/home_page_controller.dart';
-import 'package:flutter_translator_app/src/presentation/pages/select_language_page/select_language_page.dart';
-import 'package:flutter_translator_app/src/presentation/providers/database_provider.dart';
-import 'package:flutter_translator_app/src/presentation/providers/home_page_provider.dart';
-import 'package:flutter_translator_app/src/presentation/providers/language_provider.dart';
-import 'package:flutter_translator_app/src/presentation/widgets/animations/animated_onTap_button.dart';
-import 'package:flutter_translator_app/src/presentation/widgets/animations/panel.dart';
-import 'package:flutter_translator_app/src/presentation/widgets/language_button.dart';
+import 'package:flutter_translate_app/src/core/constants/app_colors.dart';
+import 'package:flutter_translate_app/src/presentation/pages/history_page/history_page.dart';
+import 'package:flutter_translate_app/src/presentation/pages/history_page/history_page_controller.dart';
+import 'package:flutter_translate_app/src/presentation/pages/home_page/home_page_controller.dart';
+import 'package:flutter_translate_app/src/presentation/pages/select_language_page/select_language_page.dart';
+import 'package:flutter_translate_app/src/presentation/providers/database_provider.dart';
+import 'package:flutter_translate_app/src/presentation/providers/home_page_provider.dart';
+import 'package:flutter_translate_app/src/presentation/providers/language_provider.dart';
+import 'package:flutter_translate_app/src/presentation/widgets/animations/animated_onTap_button.dart';
+import 'package:flutter_translate_app/src/presentation/widgets/animations/panel.dart';
+import 'package:flutter_translate_app/src/presentation/widgets/language_button.dart';
 import 'package:provider/provider.dart';
 
 class HomePage extends StatefulWidget {
-  const HomePage({Key? key}) : super(key: key);
+  const HomePage({super.key});
 
   @override
   State<HomePage> createState() => _HomePageState();
@@ -41,10 +41,19 @@ class _HomePageState extends State<HomePage> {
     super.dispose();
   }
 
+  bool close = true;
+
   @override
   Widget build(BuildContext context) {
     return PopScope(
-      canPop: _homePageController.willPopScope(),
+      canPop: close,
+      onPopInvoked: (didPop) async {
+        if (didPop) return;
+        final res = await _homePageController.willPopScope();
+        setState(() {
+          close = res;
+        });
+      },
       child: Consumer2<HomePageProvider, LanguageProvider>(
         builder: (_, homeProvider, languageProvider, __) {
           return Scaffold(
@@ -139,17 +148,22 @@ class _HomePageState extends State<HomePage> {
                         },
                         slideDirection: SlideDirection.down,
                         panelBuilder: (ScrollController listController) {
-                          return Align(
-                            alignment: Alignment.bottomCenter,
-                            child: _body(
-                                context: context,
-                                appColors: _homePageController.appColors,
-                                homeProvider: homeProvider,
-                                listController: listController),
+                          return Stack(
+                            children: [
+                              Align(
+                                alignment:
+                                    Alignment(0, homeProvider.opacityHistory),
+                                child: _body(
+                                    context: context,
+                                    appColors: _homePageController.appColors,
+                                    homeProvider: homeProvider,
+                                    listController: listController),
+                              ),
+                            ],
                           );
                         },
-                        maxHeight: screenUtil.screenHeight - 256.h,
-                        minHeight: 0.63.sh,
+                        maxHeight: screenUtil.screenHeight,
+                        minHeight: screenUtil.screenHeight * 0.55,
                         header: Container(
                           width: screenUtil.screenWidth,
                           alignment: Alignment.center,
@@ -354,8 +368,7 @@ class _HomePageState extends State<HomePage> {
       child: !homeProvider.isPanelOpen
           ? Container(
               width: screenUtil.screenWidth,
-              height: 0.63.sh,
-              color: Colors.transparent,
+              height: screenUtil.screenHeight * 0.55,
               child: Padding(
                 padding: EdgeInsets.symmetric(horizontal: 60.w, vertical: 65.h),
                 child: AnimatedOpacity(

@@ -1,4 +1,4 @@
-import 'package:flutter_translator_app/src/data/models/translation_data.dart';
+import 'package:flutter_translate_app/src/data/models/translation_data.dart';
 
 class Translation {
   String? type;

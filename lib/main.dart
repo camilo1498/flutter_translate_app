@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_translator_app/src/presentation/pages/home_page/home_page.dart';
-import 'package:flutter_translator_app/src/presentation/providers/database_provider.dart';
-import 'package:flutter_translator_app/src/presentation/providers/home_page_provider.dart';
-import 'package:flutter_translator_app/src/presentation/providers/language_provider.dart';
-import 'package:flutter_translator_app/src/presentation/providers/translate_provider.dart';
+import 'package:flutter_translate_app/src/presentation/pages/home_page/home_page.dart';
+import 'package:flutter_translate_app/src/presentation/providers/database_provider.dart';
+import 'package:flutter_translate_app/src/presentation/providers/home_page_provider.dart';
+import 'package:flutter_translate_app/src/presentation/providers/language_provider.dart';
+import 'package:flutter_translate_app/src/presentation/providers/translate_provider.dart';
 import 'package:provider/provider.dart';
 
 void main() {

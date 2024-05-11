@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_translator_app/src/core/constants/languages.dart';
-import 'package:flutter_translator_app/src/data/models/language.dart';
+import 'package:flutter_translate_app/src/core/constants/languages.dart';
+import 'package:flutter_translate_app/src/data/models/language.dart';
 
 class LanguageProvider extends ChangeNotifier {
   /// parse language list to language model object
@@ -44,5 +44,4 @@ class LanguageProvider extends ChangeNotifier {
     _showKeyBoard = show;
     notifyListeners();
   }
-
 }

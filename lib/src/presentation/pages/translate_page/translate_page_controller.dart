@@ -3,18 +3,18 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
-import 'package:flutter_translator_app/src/core/constants/languages.dart';
-import 'package:flutter_translator_app/src/data/models/History.dart';
-import 'package:flutter_translator_app/src/data/models/language.dart';
-import 'package:flutter_translator_app/src/data/sources/local_db/translator_batabase.dart';
-import 'package:flutter_translator_app/src/presentation/pages/history_page/history_page.dart';
-import 'package:flutter_translator_app/src/presentation/pages/select_language_page/select_language_page.dart';
-import 'package:flutter_translator_app/src/presentation/providers/database_provider.dart';
-import 'package:flutter_translator_app/src/presentation/providers/language_provider.dart';
-import 'package:flutter_translator_app/src/presentation/providers/translate_provider.dart';
-import 'package:flutter_translator_app/src/presentation/widgets/animations/page_transitions/axis_page_transition.dart';
-import 'package:flutter_translator_app/src/presentation/widgets/animations/page_transitions/fade_page_route.dart';
-import 'package:flutter_translator_app/src/presentation/widgets/sheets/snakbar.dart';
+import 'package:flutter_translate_app/src/core/constants/languages.dart';
+import 'package:flutter_translate_app/src/data/models/History.dart';
+import 'package:flutter_translate_app/src/data/models/language.dart';
+import 'package:flutter_translate_app/src/data/sources/local_db/translator_batabase.dart';
+import 'package:flutter_translate_app/src/presentation/pages/history_page/history_page.dart';
+import 'package:flutter_translate_app/src/presentation/pages/select_language_page/select_language_page.dart';
+import 'package:flutter_translate_app/src/presentation/providers/database_provider.dart';
+import 'package:flutter_translate_app/src/presentation/providers/language_provider.dart';
+import 'package:flutter_translate_app/src/presentation/providers/translate_provider.dart';
+import 'package:flutter_translate_app/src/presentation/widgets/animations/page_transitions/axis_page_transition.dart';
+import 'package:flutter_translate_app/src/presentation/widgets/animations/page_transitions/fade_page_route.dart';
+import 'package:flutter_translate_app/src/presentation/widgets/sheets/snakbar.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:provider/provider.dart';
 
@@ -79,15 +79,15 @@ class TranslatePageController {
             _languageProvider.toLang.code! != '' &&
             textEditingController.text.isNotEmpty) {
           _translateProvider.translationText = value.text!;
-          var _from = LanguagesList.languageList.where((lang) => lang['code']
+          var from = LanguagesList.languageList.where((lang) => lang['code']
               .toString()
               .contains(_translateProvider.translate!.sourceLanguage!));
-          Language _detectedLang = Language();
-          for (var t in _from) {
-            _detectedLang = Language.fromJson(t);
+          Language detectedLang = Language();
+          for (var t in from) {
+            detectedLang = Language.fromJson(t);
           }
           if (value.isCorrect!) {
-            _languageProvider.detectedLang = _detectedLang;
+            _languageProvider.detectedLang = detectedLang;
           }
         } else {
           _translateProvider.translationText = '';
@@ -100,10 +100,11 @@ class TranslatePageController {
   }
 
   /// willPop scope => works
-  bool willPopScope() {
+  Future<bool> willPopScope() async {
     _translateProvider.closePage = true;
     _translateProvider.originalText = '';
     _translateProvider.translationText = '';
+
     return true;
   }
 
@@ -136,6 +137,8 @@ class TranslatePageController {
         _translateProvider.closePage = true;
         _translateProvider.translationText = '';
         _translateProvider.originalText = '';
+        Navigator.pop(context);
+      } else {
         Navigator.pop(context);
       }
     } else {

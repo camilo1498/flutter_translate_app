@@ -1,8 +1,8 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_translator_app/src/core/constants/environment.dart';
-import 'package:flutter_translator_app/src/data/models/api_response.dart';
-import 'package:flutter_translator_app/src/data/models/translate.dart';
+import 'package:flutter_translate_app/src/core/constants/environment.dart';
+import 'package:flutter_translate_app/src/data/models/api_response.dart';
+import 'package:flutter_translate_app/src/data/models/translate.dart';
 
 class TranslateProvider extends ChangeNotifier {
   /// Dio instance
@@ -62,7 +62,8 @@ class TranslateProvider extends ChangeNotifier {
     try {
       if (text.trim() != '') {
         /// send request to api
-        Response response = await dio.get(Environment.url,
+        Response response = await dio.get(
+            Environment.url + Environment.translate,
             queryParameters: <String, dynamic>{
               'from': from.trim(),
               'to': to.trim(),
@@ -80,8 +81,12 @@ class TranslateProvider extends ChangeNotifier {
       }
       return Translate();
     } on DioException catch (err) {
-      ApiResponse apiResponse = ApiResponse.fromJson(err.response!.data);
-      debugPrint(apiResponse.message);
+      if (err.response?.data is Map<String, dynamic>) {
+        ApiResponse apiResponse = ApiResponse.fromJson(err.response!.data);
+        debugPrint(apiResponse.message);
+      } else {
+        debugPrint('API error contact with the developer \n${err}');
+      }
       return Translate();
     } finally {
       notifyListeners();

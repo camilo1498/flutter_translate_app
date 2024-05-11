@@ -1,4 +1,4 @@
-import 'package:flutter_translator_app/src/data/models/definition.dart';
+import 'package:flutter_translate_app/src/data/models/definition.dart';
 
 class SourceDefinition {
   String? type;

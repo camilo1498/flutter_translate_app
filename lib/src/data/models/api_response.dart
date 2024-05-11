@@ -2,7 +2,7 @@
 //
 //     final apiResponse = apiResponseFromJson(jsonString);
 
-import 'package:flutter_translator_app/src/data/models/translate.dart';
+import 'package:flutter_translate_app/src/data/models/translate.dart';
 
 class ApiResponse {
   bool? success;

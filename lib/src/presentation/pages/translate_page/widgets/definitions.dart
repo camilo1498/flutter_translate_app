@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_translator_app/src/core/constants/app_colors.dart';
-import 'package:flutter_translator_app/src/data/models/synonym.dart';
-import 'package:flutter_translator_app/src/presentation/pages/translate_page/widgets/source_container.dart';
-import 'package:flutter_translator_app/src/presentation/providers/translate_provider.dart';
+import 'package:flutter_translate_app/src/core/constants/app_colors.dart';
+import 'package:flutter_translate_app/src/data/models/synonym.dart';
+import 'package:flutter_translate_app/src/presentation/pages/translate_page/widgets/source_container.dart';
+import 'package:flutter_translate_app/src/presentation/providers/translate_provider.dart';
 
 class Definitions extends StatelessWidget {
   final TranslateProvider translateProvider;

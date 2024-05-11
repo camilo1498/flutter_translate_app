@@ -1,11 +1,11 @@
 import 'package:flutter/cupertino.dart';
-import 'package:flutter_translator_app/src/core/constants/app_colors.dart';
-import 'package:flutter_translator_app/src/presentation/pages/favourite_page/favourite_page.dart';
-import 'package:flutter_translator_app/src/presentation/pages/select_language_page/select_language_page.dart';
-import 'package:flutter_translator_app/src/presentation/pages/translate_page/translate_page.dart';
-import 'package:flutter_translator_app/src/presentation/providers/language_provider.dart';
-import 'package:flutter_translator_app/src/presentation/widgets/animations/page_transitions/axis_page_transition.dart';
-import 'package:flutter_translator_app/src/presentation/widgets/animations/page_transitions/fade_page_route.dart';
+import 'package:flutter_translate_app/src/core/constants/app_colors.dart';
+import 'package:flutter_translate_app/src/presentation/pages/favourite_page/favourite_page.dart';
+import 'package:flutter_translate_app/src/presentation/pages/select_language_page/select_language_page.dart';
+import 'package:flutter_translate_app/src/presentation/pages/translate_page/translate_page.dart';
+import 'package:flutter_translate_app/src/presentation/providers/language_provider.dart';
+import 'package:flutter_translate_app/src/presentation/widgets/animations/page_transitions/axis_page_transition.dart';
+import 'package:flutter_translate_app/src/presentation/widgets/animations/page_transitions/fade_page_route.dart';
 import 'package:provider/provider.dart';
 
 import '../../widgets/animations/panel.dart';
@@ -59,16 +59,16 @@ class HomePageController {
   /// change select language order
   void changeLanguageOrder() {
     if (_languageProvider.fromLang.code! != 'auto') {
-      var _from = _languageProvider.fromLang;
-      var _to = _languageProvider.toLang;
-      _languageProvider.fromLang = _to;
-      _languageProvider.toLang = _from;
+      var from = _languageProvider.fromLang;
+      var to = _languageProvider.toLang;
+      _languageProvider.fromLang = to;
+      _languageProvider.toLang = from;
     }
   }
 
-  bool willPopScope() {
+  Future<bool> willPopScope() async {
     if (panelController.isPanelOpen) {
-      closePanel();
+      await closePanel();
       return false;
     } else {
       return true;

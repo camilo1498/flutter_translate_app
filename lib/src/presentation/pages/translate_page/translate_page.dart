@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_translator_app/src/core/constants/app_colors.dart';
-import 'package:flutter_translator_app/src/presentation/pages/select_language_page/select_language_page.dart';
-import 'package:flutter_translator_app/src/presentation/pages/translate_page/translate_page_controller.dart';
-import 'package:flutter_translator_app/src/presentation/pages/translate_page/widgets/definitions.dart';
-import 'package:flutter_translator_app/src/presentation/pages/translate_page/widgets/examples.dart';
-import 'package:flutter_translator_app/src/presentation/pages/translate_page/widgets/translations.dart';
-import 'package:flutter_translator_app/src/presentation/providers/language_provider.dart';
-import 'package:flutter_translator_app/src/presentation/providers/translate_provider.dart';
-import 'package:flutter_translator_app/src/presentation/widgets/animations/animated_onTap_button.dart';
-import 'package:flutter_translator_app/src/presentation/widgets/language_button.dart';
+import 'package:flutter_translate_app/src/core/constants/app_colors.dart';
+import 'package:flutter_translate_app/src/presentation/pages/select_language_page/select_language_page.dart';
+import 'package:flutter_translate_app/src/presentation/pages/translate_page/translate_page_controller.dart';
+import 'package:flutter_translate_app/src/presentation/pages/translate_page/widgets/definitions.dart';
+import 'package:flutter_translate_app/src/presentation/pages/translate_page/widgets/examples.dart';
+import 'package:flutter_translate_app/src/presentation/pages/translate_page/widgets/translations.dart';
+import 'package:flutter_translate_app/src/presentation/providers/language_provider.dart';
+import 'package:flutter_translate_app/src/presentation/providers/translate_provider.dart';
+import 'package:flutter_translate_app/src/presentation/widgets/animations/animated_onTap_button.dart';
+import 'package:flutter_translate_app/src/presentation/widgets/language_button.dart';
 import 'package:provider/provider.dart';
 
 class TranslatePage extends StatefulWidget {
@@ -45,6 +45,8 @@ class _TranslatePageState extends State<TranslatePage> {
     super.dispose();
   }
 
+  bool close = true;
+
   @override
   Widget build(BuildContext context) {
     return Consumer2<TranslateProvider, LanguageProvider>(
@@ -55,7 +57,15 @@ class _TranslatePageState extends State<TranslatePage> {
             return false;
           },
           child: PopScope(
-            canPop: translateController.willPopScope(),
+            canPop: close,
+            onPopInvoked: (didPop) async {
+              if (didPop) return;
+              final res = await translateController.willPopScope();
+              setState(() {
+                close = res;
+                Navigator.of(context).pop();
+              });
+            },
             child: Scaffold(
               backgroundColor: appColors.backgroundColor,
               appBar: PreferredSize(

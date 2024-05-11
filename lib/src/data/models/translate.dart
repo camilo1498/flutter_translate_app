@@ -1,7 +1,7 @@
 import 'dart:convert';
 
-import 'package:flutter_translator_app/src/data/models/source.dart';
-import 'package:flutter_translator_app/src/data/models/translation.dart';
+import 'package:flutter_translate_app/src/data/models/source.dart';
+import 'package:flutter_translate_app/src/data/models/translation.dart';
 
 Translate translateFromJson(String str) => Translate.fromJson(json.decode(str));
 
@@ -35,8 +35,10 @@ class Translate {
         translationLanguage: json["translationLanguage"],
         isCorrect: json["isCorrect"],
         source: Source.fromJson(json["source"] ?? {}),
-        translations: json["translations"] != null ? List<Translation>.from(
-            json["translations"].map((x) => Translation.fromJson(x))) : null,
+        translations: json["translations"] != null
+            ? List<Translation>.from(
+                json["translations"].map((x) => Translation.fromJson(x)))
+            : null,
       );
 
   Map<String, dynamic> toJson() => {

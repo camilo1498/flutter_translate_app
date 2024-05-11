@@ -1,5 +1,5 @@
-import 'package:flutter_translator_app/src/data/models/source_definitions.dart';
-import 'package:flutter_translator_app/src/data/models/synonym.dart';
+import 'package:flutter_translate_app/src/data/models/source_definitions.dart';
+import 'package:flutter_translate_app/src/data/models/synonym.dart';
 
 class Source {
   List<List<Synonym>>? synonyms;
@@ -15,12 +15,20 @@ class Source {
   });
 
   factory Source.fromJson(Map<String, dynamic> json) => Source(
-        synonyms: json["synonyms"] != null ?List<List<Synonym>>.from(json["synonyms"]
-            .map((x) => List<Synonym>.from(x.map((x) => Synonym.fromJson(x))))) : null,
-        pronunciation: json["pronunciation"] != null ? List<String>.from(json["pronunciation"].map((x) => x)) : null,
-        definitions: json["definitions"] != null ? List<SourceDefinition>.from(
-            json["definitions"].map((x) => SourceDefinition.fromJson(x))) : null,
-        examples: json["examples"] != null ? List<String>.from(json["examples"].map((x) => x)) : null,
+        synonyms: json["synonyms"] != null
+            ? List<List<Synonym>>.from(json["synonyms"].map(
+                (x) => List<Synonym>.from(x.map((x) => Synonym.fromJson(x)))))
+            : null,
+        pronunciation: json["pronunciation"] != null
+            ? List<String>.from(json["pronunciation"].map((x) => x))
+            : null,
+        definitions: json["definitions"] != null
+            ? List<SourceDefinition>.from(
+                json["definitions"].map((x) => SourceDefinition.fromJson(x)))
+            : null,
+        examples: json["examples"] != null
+            ? List<String>.from(json["examples"].map((x) => x))
+            : null,
       );
 
   Map<String, dynamic> toJson() => {
