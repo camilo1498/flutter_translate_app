@@ -7,10 +7,9 @@ import 'package:flutter_translator_app/src/presentation/providers/translate_prov
 class Translations extends StatelessWidget {
   final TranslateProvider translateProvider;
   const Translations({
-    Key? key,
+    super.key,
     required this.translateProvider,
-  }) : super(key: key);
-
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -48,34 +47,53 @@ class Translations extends StatelessWidget {
                 if (otherTranslation.translations != null)
                   ...otherTranslation.translations!.map((translationsList) {
                     return Padding(
-                      padding: EdgeInsets.symmetric(vertical:  30.h),
+                      padding: EdgeInsets.symmetric(vertical: 30.h),
                       child: Row(
                         mainAxisSize: MainAxisSize.max,
-                        crossAxisAlignment:CrossAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           /// title
                           SizedBox(
                             width: (screenUtil.screenWidth / 2) - 90.w,
                             child: RichText(
-                              text:TextSpan(style: TextStyle(color: appColors.colorText2, fontSize: 40.sp, fontWeight: FontWeight.w600), children: [
-                                if (translationsList.article != null)
-                                  TextSpan(text: '${translationsList.article.toString()} '),
-                                TextSpan(text: translationsList.word.toString())
-                              ]),
+                              text: TextSpan(
+                                  style: TextStyle(
+                                      color: appColors.colorText2,
+                                      fontSize: 40.sp,
+                                      fontWeight: FontWeight.w600),
+                                  children: [
+                                    if (translationsList.article != null)
+                                      TextSpan(
+                                          text:
+                                              '${translationsList.article.toString()} '),
+                                    TextSpan(
+                                        text: translationsList.word.toString())
+                                  ]),
                             ),
                           ),
-                          if (translationsList.translations !=null)
+                          if (translationsList.translations != null)
 
-                          /// other translations sub list
+                            /// other translations sub list
                             SizedBox(
-                              width:(screenUtil.screenWidth / 2) - 90.w,
-                              child:Wrap(
+                              width: (screenUtil.screenWidth / 2) - 90.w,
+                              child: Wrap(
                                 children: [
-                                  ...translationsList.translations!.map((subTranslationList) {
+                                  ...translationsList.translations!
+                                      .map((subTranslationList) {
                                     return Padding(
-                                      padding: EdgeInsets.symmetric(horizontal: 5.w, vertical: 3.h),
-                                      child: Text(subTranslationList != translationsList.translations!.last ? '$subTranslationList,' : subTranslationList, style: TextStyle(color: appColors.colorText2, fontSize: 35.sp, fontWeight: FontWeight.w400)),
+                                      padding: EdgeInsets.symmetric(
+                                          horizontal: 5.w, vertical: 3.h),
+                                      child: Text(
+                                          subTranslationList !=
+                                                  translationsList
+                                                      .translations!.last
+                                              ? '$subTranslationList,'
+                                              : subTranslationList,
+                                          style: TextStyle(
+                                              color: appColors.colorText2,
+                                              fontSize: 35.sp,
+                                              fontWeight: FontWeight.w400)),
                                     );
                                   })
                                 ],

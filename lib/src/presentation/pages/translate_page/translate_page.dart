@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_translator_app/src/core/constants/app_colors.dart';
 import 'package:flutter_translator_app/src/presentation/pages/select_language_page/select_language_page.dart';
 import 'package:flutter_translator_app/src/presentation/pages/translate_page/translate_page_controller.dart';
@@ -10,10 +11,9 @@ import 'package:flutter_translator_app/src/presentation/providers/translate_prov
 import 'package:flutter_translator_app/src/presentation/widgets/animations/animated_onTap_button.dart';
 import 'package:flutter_translator_app/src/presentation/widgets/language_button.dart';
 import 'package:provider/provider.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class TranslatePage extends StatefulWidget {
-  const TranslatePage({Key? key}) : super(key: key);
+  const TranslatePage({super.key});
 
   @override
   State<TranslatePage> createState() => _TranslatePageState();
@@ -31,14 +31,15 @@ class _TranslatePageState extends State<TranslatePage> {
 
   @override
   void initState() {
-    translateController = TranslatePageController(context: context, setState: setState);
+    translateController =
+        TranslatePageController(context: context, setState: setState);
     translateController.initState();
     super.initState();
   }
 
   @override
   void dispose() {
-    if(mounted) {
+    if (mounted) {
       translateController.dispose();
     }
     super.dispose();
@@ -53,8 +54,8 @@ class _TranslatePageState extends State<TranslatePage> {
             overscroll.disallowIndicator();
             return false;
           },
-          child: WillPopScope(
-            onWillPop: () => translateController.willPopScope(),
+          child: PopScope(
+            canPop: translateController.willPopScope(),
             child: Scaffold(
               backgroundColor: appColors.backgroundColor,
               appBar: PreferredSize(
@@ -81,50 +82,70 @@ class _TranslatePageState extends State<TranslatePage> {
                           children: [
                             if (translateController
                                 .textEditingController.text.isNotEmpty)
+
                               /// "from" language tools
                               _currentLanguageToolbar(
-                                icon: translateController.isFromLangPlaying ? Icons.pause_circle_outline_sharp : Icons.volume_up_outlined,
+                                  icon: translateController.isFromLangPlaying
+                                      ? Icons.pause_circle_outline_sharp
+                                      : Icons.volume_up_outlined,
                                   color: appColors.colorText1,
-                                  language: languageProvider.fromLang.code != 'auto' ? languageProvider.fromLang.name.toString() : 'Detect (${languageProvider.detectedLang.name.toString()})',
+                                  language: languageProvider.fromLang.code !=
+                                          'auto'
+                                      ? languageProvider.fromLang.name
+                                          .toString()
+                                      : 'Detect (${languageProvider.detectedLang.name.toString()})',
                                   onTapCopy: () =>
-                                      translateController.setClipBoardData(translateProvider.originalText, 'Original text copied'),
-                                  onTapSpeech: translateController.isFromLangPlaying ? translateController.ttsStop : translateController.ttsFrom
-                              ),
+                                      translateController.setClipBoardData(
+                                          translateProvider.originalText,
+                                          'Original text copied'),
+                                  onTapSpeech:
+                                      translateController.isFromLangPlaying
+                                          ? translateController.ttsStop
+                                          : translateController.ttsFrom),
                             20.verticalSpace,
+
                             /// not supported tts lang alert
-                            supportLanguage(languageProvider.fromLang.name!.split(' ')[0], translateController.fromLangSupport),
+                            supportLanguage(
+                                languageProvider.fromLang.name!.split(' ')[0],
+                                translateController.fromLangSupport),
 
                             /// text field
                             Padding(
-                                padding: EdgeInsets.only(left: 60.w, right: 60.w, top: 38.h, bottom: 40.h),
+                                padding: EdgeInsets.only(
+                                    left: 60.w,
+                                    right: 60.w,
+                                    top: 38.h,
+                                    bottom: 40.h),
                                 child: TextField(
-                                  controller: translateController.textEditingController,
+                                  controller:
+                                      translateController.textEditingController,
                                   focusNode: translateController.focusNode,
                                   autofocus: true,
                                   maxLines: null,
                                   minLines: 1,
                                   textInputAction: TextInputAction.search,
-                                  onTap: () => translateProvider.closePage = true,
+                                  onTap: () =>
+                                      translateProvider.closePage = true,
                                   onChanged: translateController.translateText,
                                   enableSuggestions: true,
                                   decoration: InputDecoration(
                                     border: InputBorder.none,
                                     hintText: 'Enter Text',
                                     hintStyle: TextStyle(
-                                        color: appColors.colorText1.withOpacity(0.7),
-                                        fontSize: 80.sp
-                                    ),
+                                        color: appColors.colorText1
+                                            .withOpacity(0.7),
+                                        fontSize: 80.sp),
                                   ),
                                   style: TextStyle(
                                       color: appColors.colorText1,
-                                      fontSize: 60.sp
-                                  ),
+                                      fontSize: 60.sp),
                                 )),
 
                             /// clipboard button
-                            if (translateProvider.clipBoardHasData
-                                && translateController.textEditingController.text.isEmpty
-                                || translateProvider.originalText.isEmpty)
+                            if (translateProvider.clipBoardHasData &&
+                                    translateController
+                                        .textEditingController.text.isEmpty ||
+                                translateProvider.originalText.isEmpty)
                               Column(
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
@@ -135,15 +156,16 @@ class _TranslatePageState extends State<TranslatePage> {
                                       padding: EdgeInsets.symmetric(
                                           horizontal: 80.w),
                                       child: AnimatedOnTapButton(
-                                        onTap: translateController.pasteClipBoardData,
+                                        onTap: translateController
+                                            .pasteClipBoardData,
                                         child: Container(
                                           width: 280.w,
                                           height: 95.h,
                                           alignment: Alignment.center,
                                           decoration: BoxDecoration(
                                               color: appColors.buttonColor2,
-                                              borderRadius: BorderRadius.circular(25)
-                                          ),
+                                              borderRadius:
+                                                  BorderRadius.circular(25)),
                                           padding: EdgeInsets.symmetric(
                                               horizontal: 15.w, vertical: 10.h),
                                           child: Row(
@@ -161,7 +183,8 @@ class _TranslatePageState extends State<TranslatePage> {
                                                     fontSize: 40.sp,
                                                     fontWeight: FontWeight.w600,
                                                     letterSpacing: 0.3,
-                                                    color: appColors.colorText3),
+                                                    color:
+                                                        appColors.colorText3),
                                               )
                                             ],
                                           ),
@@ -173,26 +196,40 @@ class _TranslatePageState extends State<TranslatePage> {
                               ),
 
                             /// translation data
-                            if (translateProvider.originalText.trim().isNotEmpty)
+                            if (translateProvider.originalText
+                                .trim()
+                                .isNotEmpty)
                               Column(
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
                                   /// show detect language
                                   if (translateProvider.translate != null)
-                                    if (translateProvider.translate!.sourceLanguage != languageProvider.fromLang.code!
-                                        && translateProvider.translate!.sourceLanguage != '' && languageProvider.fromLang.code != 'auto')
+                                    if (translateProvider
+                                                .translate!.sourceLanguage !=
+                                            languageProvider.fromLang.code! &&
+                                        translateProvider
+                                                .translate!.sourceLanguage !=
+                                            '' &&
+                                        languageProvider.fromLang.code !=
+                                            'auto')
                                       _correctionContainer(
-                                        onTap: translateController.changeToDetectLanguage,
+                                        onTap: translateController
+                                            .changeToDetectLanguage,
                                         title: 'Translate from',
-                                        text: translateController.detectedLanguageName(),
+                                        text: translateController
+                                            .detectedLanguageName(),
                                       ),
+
                                   /// show correction text
                                   if (translateProvider.translate != null)
-                                    if (!translateProvider.translate!.isCorrect!)
+                                    if (!translateProvider
+                                        .translate!.isCorrect!)
                                       _correctionContainer(
-                                        onTap: translateController.textCorrection,
+                                        onTap:
+                                            translateController.textCorrection,
                                         title: 'Did do you mean',
-                                        text: translateProvider.translate!.correctionSourceText!,
+                                        text: translateProvider
+                                            .translate!.correctionSourceText!,
                                       ),
 
                                   /// separated line
@@ -202,23 +239,36 @@ class _TranslatePageState extends State<TranslatePage> {
                                     decoration: BoxDecoration(
                                         color: Colors.blue[900],
                                         borderRadius:
-                                        BorderRadius.circular(80)),
+                                            BorderRadius.circular(80)),
                                   ),
                                   60.verticalSpace,
 
                                   /// "to" language tools
                                   _currentLanguageToolbar(
-                                      icon: translateController.isToLangPlaying ? Icons.pause_circle_outline_sharp: Icons.volume_up_outlined,
+                                      icon: translateController.isToLangPlaying
+                                          ? Icons.pause_circle_outline_sharp
+                                          : Icons.volume_up_outlined,
                                       color: Colors.blue[200]!,
-                                      language: languageProvider.toLang.name.toString(),
-                                      onTapCopy: () => translateController.setClipBoardData(translateProvider.translationText, 'Translation copied'),
-                                      onTapSpeech: translateController.isToLangPlaying ? translateController.ttsStop : translateController.ttsTo
-                                  ),
+                                      language: languageProvider.toLang.name
+                                          .toString(),
+                                      onTapCopy: () =>
+                                          translateController.setClipBoardData(
+                                              translateProvider.translationText,
+                                              'Translation copied'),
+                                      onTapSpeech:
+                                          translateController.isToLangPlaying
+                                              ? translateController.ttsStop
+                                              : translateController.ttsTo),
                                   20.verticalSpace,
+
                                   /// not supported tts lang alert
-                                  supportLanguage(languageProvider.toLang.name!.split(' ')[0], translateController.toLangSupport),
+                                  supportLanguage(
+                                      languageProvider.toLang.name!
+                                          .split(' ')[0],
+                                      translateController.toLangSupport),
 
                                   60.verticalSpace,
+
                                   /// result translation text
                                   Align(
                                     alignment: Alignment.bottomLeft,
@@ -226,63 +276,103 @@ class _TranslatePageState extends State<TranslatePage> {
                                       padding: EdgeInsets.only(bottom: 40.h),
                                       child: Column(
                                         mainAxisSize: MainAxisSize.min,
-                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
                                         children: [
                                           Padding(
-                                            padding: EdgeInsets.symmetric(horizontal: 60.w),
+                                            padding: EdgeInsets.symmetric(
+                                                horizontal: 60.w),
                                             child: Text(
                                               translateProvider.translationText,
                                               textAlign: TextAlign.left,
                                               style: TextStyle(
                                                   color: Colors.blue[200]!,
-                                                  fontSize: 60.sp
-                                              ),
+                                                  fontSize: 60.sp),
                                             ),
                                           ),
                                           20.verticalSpace,
 
                                           /// pronunciation container
-                                          if (translateProvider.translate != null)
-                                            if (translateProvider.translate!.source!.pronunciation!.isNotEmpty)
-                                              Padding(padding: EdgeInsets.symmetric(horizontal: 60.w),
+                                          if (translateProvider.translate !=
+                                              null)
+                                            if (translateProvider
+                                                .translate!
+                                                .source!
+                                                .pronunciation!
+                                                .isNotEmpty)
+                                              Padding(
+                                                padding: EdgeInsets.symmetric(
+                                                    horizontal: 60.w),
                                                 child: _pronunciation(
-                                                    translatePageProvider: translateProvider,
-                                                    textColor: Colors.blue[200]!
-                                                ),
+                                                    translatePageProvider:
+                                                        translateProvider,
+                                                    textColor:
+                                                        Colors.blue[200]!),
                                               ),
                                           100.verticalSpace,
 
                                           /// other translations
-                                          if (translateProvider.translate != null)
-                                            if (translateProvider.translate!.translations != null
-                                                && translateProvider.translate!.translations!.isNotEmpty
-                                                && translateProvider.translate!.isCorrect == true
-                                                && translateProvider.translate!.sourceLanguage != '')
+                                          if (translateProvider.translate !=
+                                              null)
+                                            if (translateProvider.translate!
+                                                        .translations !=
+                                                    null &&
+                                                translateProvider.translate!
+                                                    .translations!.isNotEmpty &&
+                                                translateProvider
+                                                        .translate!.isCorrect ==
+                                                    true &&
+                                                translateProvider.translate!
+                                                        .sourceLanguage !=
+                                                    '')
                                               Translations(
-                                                  translateProvider: translateProvider
-                                              ),
+                                                  translateProvider:
+                                                      translateProvider),
                                           30.verticalSpace,
 
                                           /// main definitions container
-                                          if (translateProvider.translate != null)
-                                            if (translateProvider.translate!.source!.definitions != null
-                                                && translateProvider.translate!.source!.definitions!.isNotEmpty
-                                                && translateProvider.translate!.isCorrect == true
-                                                && translateProvider.translate!.sourceLanguage != '')
+                                          if (translateProvider.translate !=
+                                              null)
+                                            if (translateProvider.translate!
+                                                        .source!.definitions !=
+                                                    null &&
+                                                translateProvider
+                                                    .translate!
+                                                    .source!
+                                                    .definitions!
+                                                    .isNotEmpty &&
+                                                translateProvider
+                                                        .translate!.isCorrect ==
+                                                    true &&
+                                                translateProvider.translate!
+                                                        .sourceLanguage !=
+                                                    '')
                                               Definitions(
-                                                  translateProvider: translateProvider,
+                                                translateProvider:
+                                                    translateProvider,
                                               ),
                                           30.verticalSpace,
 
                                           /// example container
-                                          if (translateProvider.translate != null)
-                                            if (translateProvider.translate!.source!.examples != null
-                                                && translateProvider.translate!.source!.examples!.isNotEmpty
-                                                && translateProvider.translate!.isCorrect == true
-                                                && translateProvider.translate!.sourceLanguage != '')
+                                          if (translateProvider.translate !=
+                                              null)
+                                            if (translateProvider.translate!
+                                                        .source!.examples !=
+                                                    null &&
+                                                translateProvider
+                                                    .translate!
+                                                    .source!
+                                                    .examples!
+                                                    .isNotEmpty &&
+                                                translateProvider
+                                                        .translate!.isCorrect ==
+                                                    true &&
+                                                translateProvider.translate!
+                                                        .sourceLanguage !=
+                                                    '')
                                               Examples(
-                                                  translateProvider: translateProvider
-                                              )
+                                                  translateProvider:
+                                                      translateProvider)
                                         ],
                                       ),
                                     ),
@@ -305,10 +395,13 @@ class _TranslatePageState extends State<TranslatePage> {
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
                             LanguageButton(
-                                text: languageProvider.fromLang.name.toString().split(' ')[0],
+                                text: languageProvider.fromLang.name
+                                    .toString()
+                                    .split(' ')[0],
                                 appColors: appColors,
-                                onTap: () => translateController.goToSelectLanguage(SelectLanguageType.from)
-                            ),
+                                onTap: () =>
+                                    translateController.goToSelectLanguage(
+                                        SelectLanguageType.from)),
                             Padding(
                               padding: EdgeInsets.symmetric(horizontal: 25.w),
                               child: AnimatedOnTapButton(
@@ -325,10 +418,12 @@ class _TranslatePageState extends State<TranslatePage> {
                               ),
                             ),
                             LanguageButton(
-                                text: languageProvider.toLang.name.toString().split(' ')[0],
+                                text: languageProvider.toLang.name
+                                    .toString()
+                                    .split(' ')[0],
                                 appColors: appColors,
-                                onTap: () => translateController.goToSelectLanguage(SelectLanguageType.to)
-                            ),
+                                onTap: () => translateController
+                                    .goToSelectLanguage(SelectLanguageType.to)),
                           ],
                         ),
                       ),
@@ -344,10 +439,10 @@ class _TranslatePageState extends State<TranslatePage> {
   }
 
   /// appBar
-  _appBar({
-    required TranslatePageController translatePageController,
-    required BuildContext context,
-    required TranslateProvider translateProvider}) {
+  _appBar(
+      {required TranslatePageController translatePageController,
+      required BuildContext context,
+      required TranslateProvider translateProvider}) {
     return AnimatedContainer(
       duration: const Duration(milliseconds: 10),
       color: appColors.backgroundColor,
@@ -385,10 +480,10 @@ class _TranslatePageState extends State<TranslatePage> {
 
   Widget _currentLanguageToolbar(
       {required String language,
-        required IconData icon,
-        required Function() onTapCopy,
-        required Function() onTapSpeech,
-        required Color color}) {
+      required IconData icon,
+      required Function() onTapCopy,
+      required Function() onTapSpeech,
+      required Color color}) {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
@@ -474,8 +569,7 @@ class _TranslatePageState extends State<TranslatePage> {
                       style: TextStyle(
                           color: appColors.colorText2,
                           fontSize: 43.sp,
-                        fontWeight: FontWeight.w400
-                      ),
+                          fontWeight: FontWeight.w400),
                     ),
                     10.verticalSpace,
                     Text(
@@ -484,8 +578,7 @@ class _TranslatePageState extends State<TranslatePage> {
                       style: TextStyle(
                           color: Colors.blue[200]!,
                           fontSize: 50.sp,
-                          fontWeight: FontWeight.w400
-                      ),
+                          fontWeight: FontWeight.w400),
                     ),
                   ],
                 ),
@@ -506,9 +599,9 @@ class _TranslatePageState extends State<TranslatePage> {
     );
   }
 
-  Widget _pronunciation({
-    required TranslateProvider translatePageProvider,
-    required Color textColor}) {
+  Widget _pronunciation(
+      {required TranslateProvider translatePageProvider,
+      required Color textColor}) {
     return SizedBox(
       width: screenUtil.screenWidth,
       height: 60.h,
@@ -527,7 +620,7 @@ class _TranslatePageState extends State<TranslatePage> {
   }
 
   /// language isn't speech sopport
-  Widget supportLanguage(String language, bool support){
+  Widget supportLanguage(String language, bool support) {
     return AnimatedContainer(
       duration: const Duration(milliseconds: 300),
       width: screenUtil.screenWidth,
@@ -537,10 +630,7 @@ class _TranslatePageState extends State<TranslatePage> {
       color: appColors.containerColor,
       child: Text(
         "Speech output  isn't available for $language",
-        style: TextStyle(
-            color: appColors.colorText1,
-            fontSize: 42.sp
-        ),
+        style: TextStyle(color: appColors.colorText1, fontSize: 42.sp),
       ),
     );
   }

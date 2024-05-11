@@ -1,15 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_translator_app/src/core/constants/app_colors.dart';
 import 'package:flutter_translator_app/src/presentation/pages/translate_page/widgets/source_container.dart';
 import 'package:flutter_translator_app/src/presentation/providers/translate_provider.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class Examples extends StatelessWidget {
   final TranslateProvider translateProvider;
-  const Examples({
-    Key? key,
-    required this.translateProvider
-  }) : super(key: key);
+  const Examples({super.key, required this.translateProvider});
 
   @override
   Widget build(BuildContext context) {
@@ -20,17 +17,16 @@ class Examples extends StatelessWidget {
           'Examples',
           textAlign: TextAlign.left,
           style: TextStyle(
-              color: appColors .colorText1,
+              color: appColors.colorText1,
               fontSize: 50.sp,
-              fontWeight: FontWeight.w500
-          ),
+              fontWeight: FontWeight.w500),
         ),
         30.verticalSpace,
         ListView.builder(
           itemCount: translateProvider.translate!.source!.examples!.length,
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
-          itemBuilder: (context, index){
+          itemBuilder: (context, index) {
             return Padding(
               padding: EdgeInsets.symmetric(vertical: 20.h),
               child: Row(
@@ -43,9 +39,7 @@ class Examples extends StatelessWidget {
                     height: 60.w,
                     alignment: Alignment.center,
                     decoration: BoxDecoration(
-                        color: Colors.blue[900]!,
-                        shape: BoxShape.circle
-                    ),
+                        color: Colors.blue[900]!, shape: BoxShape.circle),
                     child: Text(
                       (index + 1).toString(),
                       style: TextStyle(
@@ -58,7 +52,8 @@ class Examples extends StatelessWidget {
                   30.horizontalSpace,
                   Expanded(
                     child: Text(
-                      translateProvider.translate!.source!.examples![index].toString(),
+                      translateProvider.translate!.source!.examples![index]
+                          .toString(),
                       style: TextStyle(
                           color: appColors.colorText1,
                           fontSize: 35.sp,

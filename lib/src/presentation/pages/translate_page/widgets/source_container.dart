@@ -3,10 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class SourceContainer extends StatelessWidget {
   final List<Widget> children;
-  SourceContainer({
-    Key? key,
-    required this.children
-  }) : super(key: key);
+  SourceContainer({super.key, required this.children});
 
   final ScreenUtil screenUtil = ScreenUtil();
   @override
@@ -18,10 +15,7 @@ class SourceContainer extends StatelessWidget {
         padding: EdgeInsets.symmetric(horizontal: 30.w, vertical: 40.h),
         decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(10),
-            border: Border.all(
-                width: 3.w,
-                color: Colors.blue[900]!)
-        ),
+            border: Border.all(width: 3.w, color: Colors.blue[900]!)),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,

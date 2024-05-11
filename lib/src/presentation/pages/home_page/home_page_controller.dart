@@ -13,14 +13,14 @@ import '../../widgets/animations/panel.dart';
 class HomePageController {
   /// build context
   final BuildContext context;
+
   /// providers
   late LanguageProvider _languageProvider;
 
-  HomePageController({
-    required this.context
-  }){
+  HomePageController({required this.context}) {
     _languageProvider = Provider.of<LanguageProvider>(context, listen: false);
   }
+
   /// panel controller
   PanelController panelController = PanelController();
 
@@ -53,26 +53,24 @@ class HomePageController {
   /// go to favourite page
   void goToFavouritePage() {
     Navigator.of(context).push(AxisPageTransition(
-        child: const FavouritePage(),
-        direction: AxisDirection.left));
+        child: const FavouritePage(), direction: AxisDirection.left));
   }
 
   /// change select language order
   void changeLanguageOrder() {
-    if(_languageProvider.fromLang.code! != 'auto'){
+    if (_languageProvider.fromLang.code! != 'auto') {
       var _from = _languageProvider.fromLang;
       var _to = _languageProvider.toLang;
       _languageProvider.fromLang = _to;
       _languageProvider.toLang = _from;
     }
-
   }
 
-  Future<bool> willPopScope() async{
-    if(panelController.isPanelOpen){
+  bool willPopScope() {
+    if (panelController.isPanelOpen) {
       closePanel();
       return false;
-    } else{
+    } else {
       return true;
     }
   }

@@ -1,18 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_translator_app/src/core/constants/app_colors.dart';
 import 'package:flutter_translator_app/src/presentation/widgets/animations/animated_onTap_button.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class LanguageButton extends StatelessWidget {
   final String text;
   final AppColors appColors;
   final Function() onTap;
   const LanguageButton(
-      {Key? key,
+      {super.key,
       required this.text,
       required this.appColors,
-      required this.onTap})
-      : super(key: key);
+      required this.onTap});
 
   @override
   Widget build(BuildContext context) {

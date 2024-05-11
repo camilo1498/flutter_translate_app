@@ -5,10 +5,8 @@ import 'package:flutter_translator_app/src/data/models/api_response.dart';
 import 'package:flutter_translator_app/src/data/models/translate.dart';
 
 class TranslateProvider extends ChangeNotifier {
-
   /// Dio instance
   final Dio dio = Dio();
-
 
   /// original test
   String _originalText = '';
@@ -59,38 +57,34 @@ class TranslateProvider extends ChangeNotifier {
   }
 
   /// translate data from api
-  Future<Translate> getTranslation({required String from, required String to, required String text}) async{
-    try{
-      if(text.trim() != ''){
+  Future<Translate> getTranslation(
+      {required String from, required String to, required String text}) async {
+    try {
+      if (text.trim() != '') {
         /// send request to api
-        Response response = await dio.get(
-            Environment.url,
+        Response response = await dio.get(Environment.url,
             queryParameters: <String, dynamic>{
               'from': from.trim(),
               'to': to.trim(),
               'text': text.trim()
             },
-            options: Options(
-                headers: {
-                  'Connection': 'keep-alive',
-                  'Content-Type': 'application/json'
-                }
-            )
-        );
+            options: Options(headers: {
+              'Connection': 'keep-alive',
+              'Content-Type': 'application/json'
+            }));
         ApiResponse apiResponse = ApiResponse.fromJson(response.data);
-        if(apiResponse.success == true){
+        if (apiResponse.success == true) {
           _translate = Translate.fromJson(apiResponse.data!.toJson());
           return Translate.fromJson(apiResponse.data!.toJson());
         }
       }
       return Translate();
-    } on DioError catch(err){
+    } on DioException catch (err) {
       ApiResponse apiResponse = ApiResponse.fromJson(err.response!.data);
       debugPrint(apiResponse.message);
       return Translate();
-    } finally{
+    } finally {
       notifyListeners();
     }
   }
-
 }

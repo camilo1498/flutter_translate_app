@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_translator_app/src/core/constants/app_colors.dart';
 import 'package:flutter_translator_app/src/presentation/pages/history_page/history_page.dart';
 import 'package:flutter_translator_app/src/presentation/pages/history_page/history_page_controller.dart';
@@ -11,10 +12,8 @@ import 'package:flutter_translator_app/src/presentation/widgets/animations/anima
 import 'package:flutter_translator_app/src/presentation/widgets/animations/panel.dart';
 import 'package:flutter_translator_app/src/presentation/widgets/language_button.dart';
 import 'package:provider/provider.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class HomePage extends StatefulWidget {
-
   const HomePage({Key? key}) : super(key: key);
 
   @override
@@ -42,11 +41,10 @@ class _HomePageState extends State<HomePage> {
     super.dispose();
   }
 
-
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-      onWillPop: _homePageController.willPopScope,
+    return PopScope(
+      canPop: _homePageController.willPopScope(),
       child: Consumer2<HomePageProvider, LanguageProvider>(
         builder: (_, homeProvider, languageProvider, __) {
           return Scaffold(
@@ -75,10 +73,13 @@ class _HomePageState extends State<HomePage> {
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
                             LanguageButton(
-                                text: languageProvider.fromLang.name.toString().split(' ')[0],
+                                text: languageProvider.fromLang.name
+                                    .toString()
+                                    .split(' ')[0],
                                 appColors: _homePageController.appColors,
-                                onTap: () =>_homePageController.goToSelectLanguage(SelectLanguageType.from)
-                            ),
+                                onTap: () =>
+                                    _homePageController.goToSelectLanguage(
+                                        SelectLanguageType.from)),
                             Padding(
                               padding: EdgeInsets.symmetric(horizontal: 25.w),
                               child: AnimatedOnTapButton(
@@ -88,18 +89,20 @@ class _HomePageState extends State<HomePage> {
                                   height: 100.w,
                                   child: Icon(
                                     Icons.compare_arrows,
-                                    color:
-                                    _homePageController.appColors.iconColor2,
+                                    color: _homePageController
+                                        .appColors.iconColor2,
                                     size: 70.w,
                                   ),
                                 ),
                               ),
                             ),
                             LanguageButton(
-                                text: languageProvider.toLang.name.toString().split(' ')[0],
+                                text: languageProvider.toLang.name
+                                    .toString()
+                                    .split(' ')[0],
                                 appColors: _homePageController.appColors,
-                                onTap: () => _homePageController.goToSelectLanguage(SelectLanguageType.to)
-                            ),
+                                onTap: () => _homePageController
+                                    .goToSelectLanguage(SelectLanguageType.to)),
                           ],
                         ),
                         80.verticalSpace,
@@ -113,10 +116,10 @@ class _HomePageState extends State<HomePage> {
                       return SlidingUpPanel(
                         controller: _homePageController.panelController,
                         color: ColorTween(
-                            begin:
-                            _homePageController.appColors.containerColor,
-                            end:
-                            _homePageController.appColors.backgroundColor)
+                                begin: _homePageController
+                                    .appColors.containerColor,
+                                end: _homePageController
+                                    .appColors.backgroundColor)
                             .transform(homeProvider.opacity)!,
                         backdropColor: Colors.transparent,
                         borderRadius: const BorderRadius.only(
@@ -134,7 +137,7 @@ class _HomePageState extends State<HomePage> {
                             }
                           });
                         },
-                        slideDirection: SlideDirection.DOWN,
+                        slideDirection: SlideDirection.down,
                         panelBuilder: (ScrollController listController) {
                           return Align(
                             alignment: Alignment.bottomCenter,
@@ -183,74 +186,75 @@ class _HomePageState extends State<HomePage> {
     return AnimatedContainer(
       duration: const Duration(milliseconds: 10),
       color: ColorTween(
-          begin: appColors.containerColor, end: appColors.backgroundColor)
+              begin: appColors.containerColor, end: appColors.backgroundColor)
           .transform(homeProvider.opacity),
       child: !homeProvider.isPanelOpen
           ? AnimatedOpacity(
-        duration: const Duration(milliseconds: 10),
-        opacity: homeProvider.opacityHistory <= 1.0 &&
-            homeProvider.opacityHistory >= 0.45
-            ? homeProvider.opacityHistory
-            : 0,
-        child: AppBar(
-          backgroundColor: Colors.transparent,
-          elevation: 0,
-          centerTitle: true,
-          leading: Padding(
-            padding: EdgeInsets.only(left: 10.w),
-            child: AnimatedOnTapButton(
-              onTap: _homePageController.goToFavouritePage,
-              child: Icon(
-                Icons.star,
-                color: Colors.white,
-                size: 70.w,
-              ),
-            ),
-          ),
-          actions: [
-            Padding(
-              padding: EdgeInsets.only(right: 45.w),
-              child: AnimatedOnTapButton(
-                onTap: () {
-                  /// open setting page
-                },
-                child: Icon(
-                  Icons.translate,
-                  color: Colors.white,
-                  size: 70.w,
+              duration: const Duration(milliseconds: 10),
+              opacity: homeProvider.opacityHistory <= 1.0 &&
+                      homeProvider.opacityHistory >= 0.45
+                  ? homeProvider.opacityHistory
+                  : 0,
+              child: AppBar(
+                backgroundColor: Colors.transparent,
+                elevation: 0,
+                centerTitle: true,
+                leading: Padding(
+                  padding: EdgeInsets.only(left: 10.w),
+                  child: AnimatedOnTapButton(
+                    onTap: _homePageController.goToFavouritePage,
+                    child: Icon(
+                      Icons.star,
+                      color: Colors.white,
+                      size: 70.w,
+                    ),
+                  ),
+                ),
+                actions: [
+                  Padding(
+                    padding: EdgeInsets.only(right: 45.w),
+                    child: AnimatedOnTapButton(
+                      onTap: () {
+                        /// open setting page
+                      },
+                      child: Icon(
+                        Icons.translate,
+                        color: Colors.white,
+                        size: 70.w,
+                      ),
+                    ),
+                  ),
+                ],
+                title: RichText(
+                  text: TextSpan(children: [
+                    TextSpan(
+                      text: 'Flutter ',
+                      style: TextStyle(
+                        color: appColors.colorText1,
+                        fontWeight: FontWeight.w600,
+                        fontSize: 53.w,
+                        letterSpacing: 0.7,
+                      ),
+                    ),
+                    TextSpan(
+                        text: 'Translate',
+                        style: TextStyle(
+                            color: appColors.colorText2, fontSize: 50.sp))
+                  ]),
                 ),
               ),
-            ),
-          ],
-          title: RichText(
-            text: TextSpan(children: [
-              TextSpan(
-                text: 'Flutter ',
-                style: TextStyle(
-                  color: appColors.colorText1,
-                  fontWeight: FontWeight.w600,
-                  fontSize: 53.w,
-                  letterSpacing: 0.7,),
-              ),
-              TextSpan(
-                  text: 'Translate',
-                  style: TextStyle(
-                      color: appColors.colorText2, fontSize: 50.sp))
-            ]),
-          ),
-        ),
-      )
+            )
           : AnimatedOpacity(
-        duration: const Duration(milliseconds: 10),
-        opacity:
-        homeProvider.opacity <= 1.0 && homeProvider.opacity >= 0.5
-            ? homeProvider.opacity
-            : 0,
-        child: HistoryAppBar(
-          onTap: () => _homePageController.closePanel(),
-          historyPageController: _historyController,
-        ),
-      ),
+              duration: const Duration(milliseconds: 10),
+              opacity:
+                  homeProvider.opacity <= 1.0 && homeProvider.opacity >= 0.5
+                      ? homeProvider.opacity
+                      : 0,
+              child: HistoryAppBar(
+                onTap: () => _homePageController.closePanel(),
+                historyPageController: _historyController,
+              ),
+            ),
     );
   }
 
@@ -287,8 +291,7 @@ class _HomePageState extends State<HomePage> {
             iconSize: 55.w,
             size: 135.w,
             text: 'Gallery',
-            onTap: () {
-            })
+            onTap: () {})
       ],
     );
   }
@@ -296,12 +299,12 @@ class _HomePageState extends State<HomePage> {
   /// custom circle button
   Widget _button(
       {required double size,
-        required Color color,
-        String? text,
-        required IconData icon,
-        required AppColors appColors,
-        required double iconSize,
-        required Function() onTap}) {
+      required Color color,
+      String? text,
+      required IconData icon,
+      required AppColors appColors,
+      required double iconSize,
+      required Function() onTap}) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 0),
       child: Column(
@@ -343,44 +346,45 @@ class _HomePageState extends State<HomePage> {
 
   Widget _body(
       {required HomePageProvider homeProvider,
-        required AppColors appColors,
-        required ScrollController listController,
-        required BuildContext context}) {
+      required AppColors appColors,
+      required ScrollController listController,
+      required BuildContext context}) {
     return GestureDetector(
       onTap: () => _homePageController.goToTranslationPage(context: context),
       child: !homeProvider.isPanelOpen
           ? Container(
-        width: screenUtil.screenWidth,
-        height: 0.63.sh,
-        color: Colors.transparent,
-        child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: 60.w, vertical: 65.h),
-          child: AnimatedOpacity(
-            duration: const Duration(milliseconds: 10),
-            opacity: homeProvider.opacityHistory <= 1.0 &&
-                homeProvider.opacityHistory >= 0.5
-                ? homeProvider.opacityHistory
-                : 0,
-            child: Text(
-              'Enter Text',
-              style: TextStyle(
-                  color: appColors.colorText1.withOpacity(0.7),
-                  fontSize: 80.sp),
-            ),
-          ),
-        ),
-      )
+              width: screenUtil.screenWidth,
+              height: 0.63.sh,
+              color: Colors.transparent,
+              child: Padding(
+                padding: EdgeInsets.symmetric(horizontal: 60.w, vertical: 65.h),
+                child: AnimatedOpacity(
+                  duration: const Duration(milliseconds: 10),
+                  opacity: homeProvider.opacityHistory <= 1.0 &&
+                          homeProvider.opacityHistory >= 0.5
+                      ? homeProvider.opacityHistory
+                      : 0,
+                  child: Text(
+                    'Enter Text',
+                    style: TextStyle(
+                        color: appColors.colorText1.withOpacity(0.7),
+                        fontSize: 80.sp),
+                  ),
+                ),
+              ),
+            )
           : AnimatedOpacity(
-          duration: const Duration(milliseconds: 10),
-          opacity:
-          homeProvider.opacity <= 1.0 && homeProvider.opacity >= 0.5
-              ? homeProvider.opacity
-              : 0,
-          child: HistoryBody(
-            historyPageController: _historyController,
-            historyProvider: Provider.of<DatabaseProvider>(context, listen: false),
-            listController: listController,
-          )),
+              duration: const Duration(milliseconds: 10),
+              opacity:
+                  homeProvider.opacity <= 1.0 && homeProvider.opacity >= 0.5
+                      ? homeProvider.opacity
+                      : 0,
+              child: HistoryBody(
+                historyPageController: _historyController,
+                historyProvider:
+                    Provider.of<DatabaseProvider>(context, listen: false),
+                listController: listController,
+              )),
     );
   }
 }

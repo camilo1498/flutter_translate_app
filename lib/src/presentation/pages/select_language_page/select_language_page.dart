@@ -1,13 +1,13 @@
 // ignore_for_file: must_be_immutable
 
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_translator_app/src/core/constants/app_colors.dart';
 import 'package:flutter_translator_app/src/data/models/language.dart';
 import 'package:flutter_translator_app/src/presentation/pages/select_language_page/select_language_controller.dart';
 import 'package:flutter_translator_app/src/presentation/providers/language_provider.dart';
 import 'package:flutter_translator_app/src/presentation/widgets/animations/animated_onTap_button.dart';
 import 'package:provider/provider.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 enum SelectLanguageType { from, to }
 
@@ -15,8 +15,7 @@ class SelectLanguagePage extends StatefulWidget {
   SelectLanguageType selectLanguagePage = SelectLanguageType.from;
   Function() onChange;
   SelectLanguagePage(
-      {Key? key, required this.selectLanguagePage, required this.onChange})
-      : super(key: key);
+      {super.key, required this.selectLanguagePage, required this.onChange});
 
   @override
   State<SelectLanguagePage> createState() => _SelectLanguagePageState();
@@ -25,7 +24,7 @@ class SelectLanguagePage extends StatefulWidget {
 class _SelectLanguagePageState extends State<SelectLanguagePage> {
   /// language controller
   final SelectLanguageController languageController =
-  SelectLanguageController();
+      SelectLanguageController();
 
   /// screen util instance
   final ScreenUtil screenUtil = ScreenUtil();
@@ -35,9 +34,10 @@ class _SelectLanguagePageState extends State<SelectLanguagePage> {
 
   @override
   void initState() {
-    languageController
-        .keyBoardListener(Provider.of<LanguageProvider>(context, listen: false), context);
-    languageController.languages = Provider.of<LanguageProvider>(context, listen: false).languagesList;
+    languageController.keyBoardListener(
+        Provider.of<LanguageProvider>(context, listen: false), context);
+    languageController.languages =
+        Provider.of<LanguageProvider>(context, listen: false).languagesList;
     super.initState();
   }
 
@@ -49,7 +49,8 @@ class _SelectLanguagePageState extends State<SelectLanguagePage> {
   }
 
   @override
-  Widget build(BuildContext context) {return NotificationListener<OverscrollIndicatorNotification>(
+  Widget build(BuildContext context) {
+    return NotificationListener<OverscrollIndicatorNotification>(
       onNotification: (overscroll) {
         overscroll.disallowIndicator();
         return false;
@@ -57,13 +58,14 @@ class _SelectLanguagePageState extends State<SelectLanguagePage> {
       child: Consumer<LanguageProvider>(
         builder: (_, languageProvider, __) {
           return Scaffold(
-            backgroundColor:
-            appColors.backgroundColor,
+            backgroundColor: appColors.backgroundColor,
             appBar: PreferredSize(
               preferredSize: Size(screenUtil.screenWidth, 170.w),
-              child: _appBar(onTap: () {
-                Navigator.pop(context);
-              }, languageProvider: languageProvider),
+              child: _appBar(
+                  onTap: () {
+                    Navigator.pop(context);
+                  },
+                  languageProvider: languageProvider),
             ),
             body: Padding(
               padding: EdgeInsets.symmetric(horizontal: 60.w),
@@ -80,15 +82,14 @@ class _SelectLanguagePageState extends State<SelectLanguagePage> {
                       ListTile(
                         contentPadding: EdgeInsets.symmetric(vertical: 5.h),
                         onTap: () {
-                          languageProvider.fromLang = Language(
-                              code: 'auto', name: 'Detect language');
+                          languageProvider.fromLang =
+                              Language(code: 'auto', name: 'Detect language');
                           Navigator.pop(context);
                         },
                         title: Text(
                           'Detect language',
                           style: TextStyle(
-                              color: appColors.colorText1,
-                              fontSize: 45.sp),
+                              color: appColors.colorText1, fontSize: 45.sp),
                         ),
                         trailing: Icon(
                           Icons.auto_awesome,
@@ -118,8 +119,7 @@ class _SelectLanguagePageState extends State<SelectLanguagePage> {
                                 ? languageProvider.fromLang.name.toString()
                                 : languageProvider.toLang.name.toString(),
                             overflow: TextOverflow.ellipsis,
-                            style: TextStyle(
-                                color: appColors.colorText1),
+                            style: TextStyle(color: appColors.colorText1),
                           ),
                           trailing: Icon(
                             Icons.check,
@@ -144,14 +144,15 @@ class _SelectLanguagePageState extends State<SelectLanguagePage> {
                       itemCount: languageController.languages.length,
                       itemBuilder: (context, index) {
                         if (widget.selectLanguagePage ==
-                            SelectLanguageType.from &&
-                            languageProvider.fromLang.code == languageController.languages[index].code) {
+                                SelectLanguageType.from &&
+                            languageProvider.fromLang.code ==
+                                languageController.languages[index].code) {
                           return const SizedBox(
                             width: 0,
                             height: 0,
                           );
                         } else if (widget.selectLanguagePage ==
-                            SelectLanguageType.to &&
+                                SelectLanguageType.to &&
                             languageProvider.toLang.code ==
                                 languageController.languages[index].code) {
                           return const SizedBox(
@@ -161,40 +162,39 @@ class _SelectLanguagePageState extends State<SelectLanguagePage> {
                         } else {
                           return ListTile(
                             onTap: () {
-                                if (widget.selectLanguagePage ==
-                                    SelectLanguageType.from) {
-                                  if (languageProvider.toLang.code! ==
-                                      languageController.languages[index].code!) {
-                                    var _from = languageProvider.fromLang;
-                                    var _to = languageProvider.toLang;
-                                    languageProvider.fromLang = _to;
-                                    languageProvider.toLang = _from;
-                                  } else {
-                                    languageProvider.fromLang =
-                                    languageController.languages[index];
-                                  }
+                              if (widget.selectLanguagePage ==
+                                  SelectLanguageType.from) {
+                                if (languageProvider.toLang.code! ==
+                                    languageController.languages[index].code!) {
+                                  var _from = languageProvider.fromLang;
+                                  var _to = languageProvider.toLang;
+                                  languageProvider.fromLang = _to;
+                                  languageProvider.toLang = _from;
                                 } else {
-                                  if (languageProvider.fromLang.code! ==
-                                      languageController.languages[index].code!) {
-                                    var _from = languageProvider.fromLang;
-                                    var _to = languageProvider.toLang;
-                                    languageProvider.fromLang = _to;
-                                    languageProvider.toLang = _from;
-                                  } else {
-                                    languageProvider.toLang =
-                                    languageController.languages[index];
-                                    widget.onChange();
-                                  }
+                                  languageProvider.fromLang =
+                                      languageController.languages[index];
                                 }
+                              } else {
+                                if (languageProvider.fromLang.code! ==
+                                    languageController.languages[index].code!) {
+                                  var _from = languageProvider.fromLang;
+                                  var _to = languageProvider.toLang;
+                                  languageProvider.fromLang = _to;
+                                  languageProvider.toLang = _from;
+                                } else {
+                                  languageProvider.toLang =
+                                      languageController.languages[index];
+                                  widget.onChange();
+                                }
+                              }
                               Navigator.pop(context);
                             },
-                            contentPadding:
-                            EdgeInsets.symmetric(vertical: 5.h),
+                            contentPadding: EdgeInsets.symmetric(vertical: 5.h),
                             title: Text(
-                              languageController.languages[index].name.toString(),
+                              languageController.languages[index].name
+                                  .toString(),
                               overflow: TextOverflow.ellipsis,
-                              style: TextStyle(
-                                  color: appColors.colorText1),
+                              style: TextStyle(color: appColors.colorText1),
                             ),
                           );
                         }
@@ -210,42 +210,40 @@ class _SelectLanguagePageState extends State<SelectLanguagePage> {
     );
   }
 
-  Widget _appBar({required Function() onTap, required LanguageProvider languageProvider}) {
+  Widget _appBar(
+      {required Function() onTap, required LanguageProvider languageProvider}) {
     return AppBar(
       backgroundColor: Colors.transparent,
       elevation: 0,
       title: languageProvider.showKeyBoard
           ? Padding(
-        padding: EdgeInsets.symmetric(horizontal: 10.w),
-        child: TextField(
-          controller: languageController.searchController,
-          focusNode: languageController.focusNode,
-          autofocus: true,
-          enableSuggestions: true,
-          maxLines: 1,
-          onChanged: (text) => languageController.searchBox(text, languageProvider, setState),
-          decoration: InputDecoration(
-            border: InputBorder.none,
-            hintText: 'Search Language',
-            hintStyle: TextStyle(
-                color: appColors.colorText1.withOpacity(0.7),
-                fontSize: 50.sp
-            ),
-          ),
-          style: TextStyle(
-              color: appColors.colorText1,
-              fontSize: 50.sp
-          ),
-        ),
-      )
+              padding: EdgeInsets.symmetric(horizontal: 10.w),
+              child: TextField(
+                controller: languageController.searchController,
+                focusNode: languageController.focusNode,
+                autofocus: true,
+                enableSuggestions: true,
+                maxLines: 1,
+                onChanged: (text) => languageController.searchBox(
+                    text, languageProvider, setState),
+                decoration: InputDecoration(
+                  border: InputBorder.none,
+                  hintText: 'Search Language',
+                  hintStyle: TextStyle(
+                      color: appColors.colorText1.withOpacity(0.7),
+                      fontSize: 50.sp),
+                ),
+                style: TextStyle(color: appColors.colorText1, fontSize: 50.sp),
+              ),
+            )
           : Text(
-          widget.selectLanguagePage == SelectLanguageType.from
-              ? 'Translate from'
-              : 'Translate to',
-          style: TextStyle(
-              color: appColors.colorText1,
-              fontSize: 60.sp,
-              fontWeight: FontWeight.w600)),
+              widget.selectLanguagePage == SelectLanguageType.from
+                  ? 'Translate from'
+                  : 'Translate to',
+              style: TextStyle(
+                  color: appColors.colorText1,
+                  fontSize: 60.sp,
+                  fontWeight: FontWeight.w600)),
       leading: Padding(
         padding: EdgeInsets.only(left: 10.w),
         child: AnimatedOnTapButton(
@@ -266,15 +264,15 @@ class _SelectLanguagePageState extends State<SelectLanguagePage> {
               languageProvider.showKeyBoard = !languageProvider.showKeyBoard;
             },
             child: Icon(
-              languageProvider.showKeyBoard ? Icons.cancel_outlined : Icons.search,
+              languageProvider.showKeyBoard
+                  ? Icons.cancel_outlined
+                  : Icons.search,
               color: Colors.white,
               size: 70.w,
             ),
           ),
         ),
-
       ],
     );
   }
-
 }
