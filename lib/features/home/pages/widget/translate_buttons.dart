@@ -12,6 +12,7 @@ class ItemModel {
   final String language;
   final VoidCallback? onTap;
   final ButtonOriginalPosition position;
+  OverlayEntry? overlayEntry;
 
   ItemModel({
     this.onTap,
@@ -22,7 +23,7 @@ class ItemModel {
 }
 
 class Buttons extends StatefulWidget {
-  const Buttons({super.key});
+  const Buttons({Key? key}) : super(key: key);
 
   @override
   State<Buttons> createState() => _ButtonsState();
@@ -31,6 +32,7 @@ class Buttons extends StatefulWidget {
 class _ButtonsState extends State<Buttons> with TickerProviderStateMixin {
   late AnimationController _animCtrl;
   late List<ItemModel> _items;
+  final List<LayerLink> _layerLinks = [];
 
   @override
   void initState() {
@@ -59,6 +61,8 @@ class _ButtonsState extends State<Buttons> with TickerProviderStateMixin {
         language: 'Español',
       ),
     ];
+
+    _layerLinks.addAll(List.generate(_items.length, (_) => LayerLink()));
   }
 
   @override
@@ -112,102 +116,132 @@ class _ButtonsState extends State<Buttons> with TickerProviderStateMixin {
     setState(() {});
   }
 
+  void _showOverlay(BuildContext context, int index) {
+    final item = _items[index];
+    final renderBox = context.findRenderObject() as RenderBox;
+    final overlayOffset = renderBox.localToGlobal(
+      const Offset(0.0, -55),
+    );
+
+    item.overlayEntry = OverlayEntry(
+      builder: (context) => Positioned(
+        left: overlayOffset.dx,
+        top: overlayOffset.dy,
+        child: Material(
+          color: Colors.transparent,
+          child: Container(
+            width: renderBox.size.width,
+            height: renderBox.size.height * 3,
+            padding: const EdgeInsets.all(8.0),
+            decoration: BoxDecoration(
+              color: AppColors.overlayBackgroundGray,
+              borderRadius: BorderRadius.circular(14),
+            ),
+            child: Text(
+              item.language,
+              style: const TextStyle(color: Colors.white),
+            ),
+          ),
+        ),
+      ),
+    );
+
+    Overlay.of(context).insert(item.overlayEntry!);
+  }
+
+  void _hideOverlay(int index) {
+    final item = _items[index];
+    item.overlayEntry?.remove();
+    item.overlayEntry = null;
+  }
+
   @override
   Widget build(BuildContext context) {
     final double screenWidth = ScreenUtil().screenWidth;
 
-    return Column(
-      children: [
-        SizedBox(
-          height: 80,
-          width: screenWidth,
-          child: Stack(
-            alignment: Alignment.center,
-            children: [
-              GestureDetector(
-                behavior: HitTestBehavior.translucent,
-                onTap: () {
-                  _animCtrl.isCompleted
-                      ? _animCtrl.reverse()
-                      : _animCtrl.forward();
-                  setState(() {});
-                },
-                child: Container(
-                  width: 60.w,
-                  height: 60.w,
-                  color: Colors.white,
-                ),
-              ),
-              AnimatedBuilder(
-                animation: _animCtrl,
-                builder: (context, child) {
-                  return Stack(
-                    alignment: Alignment.center,
-                    children: List.generate(_items.length, (index) {
-                      /// gey item index
-                      final item = _items[index];
+    return SizedBox(
+      height: 80,
+      width: screenWidth,
+      child: Stack(
+        alignment: Alignment.center,
+        children: [
+          GestureDetector(
+            behavior: HitTestBehavior.translucent,
+            onTap: () {
+              _animCtrl.isCompleted ? _animCtrl.reverse() : _animCtrl.forward();
+              setState(() {});
+            },
+            child: Container(
+              width: 60.w,
+              height: 60.w,
+              color: Colors.white,
+            ),
+          ),
+          ...List.generate(_items.length, (index) {
+            final item = _items[index];
 
-                      /// get position
-                      double left = (screenWidth / 2 * _animCtrl.value +
-                              screenWidth / 2) /
-                          1.945;
+            double left =
+                (screenWidth / 2 * _animCtrl.value + screenWidth / 2) / 1.945;
 
-                      /// widget
-                      return Positioned(
-                        left: item.position == ButtonOriginalPosition.left
-                            ? left
-                            : screenWidth / 1.945 - left,
-                        child: Transform.scale(
-                          scale: index == 1
-                              ? 1
-                              : 1 - 0.4 * (1 - _animCtrl.value.abs()),
-                          child: GestureDetector(
-                            behavior: HitTestBehavior.translucent,
-                            onTap: () {
-                              _onDragStart(index);
-                            },
-                            onLongPress: () {
-                              print('object');
-                            },
-                            onHorizontalDragStart: (_) => _onDragStart(index),
-                            onHorizontalDragUpdate: (details) =>
-                                _onGestureSlide(
-                                    item.position == ButtonOriginalPosition.left
-                                        ? details.delta.dx
-                                        : -details.delta.dx,
-                                    index),
-                            onHorizontalDragEnd: (details) => _onGestureEnd(
-                                details.velocity,
-                                isSecond: item.position ==
-                                    ButtonOriginalPosition.left),
-                            child: Container(
-                              height: 55,
-                              alignment: Alignment.center,
-                              width: screenWidth / 2 - 50,
-                              decoration: BoxDecoration(
-                                color: AppColors.btnBlack,
-                                borderRadius: BorderRadius.circular(14),
-                              ),
-                              child: Text(
-                                item.language,
-                                style: const TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
+            return Builder(
+              builder: (BuildContext context) {
+                return Positioned(
+                  left: item.position == ButtonOriginalPosition.left
+                      ? left
+                      : screenWidth / 1.945 - left,
+                  child: CompositedTransformTarget(
+                    link: _layerLinks[index],
+                    child: Transform.scale(
+                      scale: index == 1
+                          ? 1
+                          : 1 - 0.4 * (1 - _animCtrl.value.abs()),
+                      child: GestureDetector(
+                        behavior: HitTestBehavior.translucent,
+                        onTap: () {
+                          _onDragStart(index);
+                        },
+                        onLongPress: () {
+                          _showOverlay(context, index);
+                        },
+                        onLongPressUp: () {
+                          _hideOverlay(index);
+                        },
+                        onHorizontalDragStart: (_) => _onDragStart(index),
+                        onHorizontalDragUpdate: (details) => _onGestureSlide(
+                            item.position == ButtonOriginalPosition.left
+                                ? details.delta.dx
+                                : -details.delta.dx,
+                            index),
+                        onHorizontalDragEnd: (details) => _onGestureEnd(
+                            details.velocity,
+                            isSecond:
+                                item.position == ButtonOriginalPosition.left),
+                        child: Container(
+                          height: 55,
+                          alignment: Alignment.center,
+                          width: screenWidth / 2 - 50,
+                          decoration: BoxDecoration(
+                            color: AppColors.btnBlack,
+                            borderRadius: BorderRadius.circular(14),
+                          ),
+                          child: Text(
+                            item.language,
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 14,
+                              fontWeight: FontWeight.bold,
                             ),
                           ),
                         ),
-                      );
-                    }),
-                  );
-                },
-              ),
-            ],
-          ),
-        ),
-      ],
+                      ),
+                    ),
+                  ),
+                );
+              },
+            );
+          }),
+        ],
+      ),
     );
   }
 }

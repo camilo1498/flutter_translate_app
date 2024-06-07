@@ -13,5 +13,8 @@ class AppColors {
   /// panel background black
   static const Color backgroundBlack = Color(0xff101013);
 
+  /// overlay
+  static const Color overlayBackgroundGray = Color(0xff1B1A1F);
+
   static const Color btnBlack = Color(0xff121317);
 }

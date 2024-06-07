@@ -41,11 +41,15 @@ class _HomePageState extends State<HomePage> {
               Positioned(
                 bottom: 0,
                 child: SizedBox(
-                  height: 450.h,
+                  height: 480.h,
                   width: size.screenWidth,
                   child: const Padding(
                     padding: EdgeInsets.symmetric(horizontal: 22),
-                    child: Buttons(),
+                    child: Column(
+                      children: [
+                        Buttons(),
+                      ],
+                    ),
                   ),
                 ),
               ),
@@ -63,7 +67,7 @@ class _HomePageState extends State<HomePage> {
                 ),
 
                 /// list of the history translations
-                collapsed: Container(
+                collapsed: SizedBox(
                   width: size.screenWidth,
                   height: 400,
                 ),
