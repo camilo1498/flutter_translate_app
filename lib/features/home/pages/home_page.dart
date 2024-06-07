@@ -31,7 +31,7 @@ class _HomePageState extends State<HomePage> {
         appNavigator.back();
       },
       child: Scaffold(
-        backgroundColor: AppColors.black,
+        backgroundColor: AppColors.backgroundGray,
         body: SizedBox(
           width: size.screenWidth,
           height: size.screenHeight,
@@ -40,10 +40,9 @@ class _HomePageState extends State<HomePage> {
               /// bottom
               Positioned(
                 bottom: 0,
-                child: Container(
-                  height: 500.h,
+                child: SizedBox(
+                  height: 450.h,
                   width: size.screenWidth,
-                  color: Colors.white,
                   child: const Padding(
                     padding: EdgeInsets.symmetric(horizontal: 22),
                     child: Buttons(),
@@ -53,31 +52,24 @@ class _HomePageState extends State<HomePage> {
 
               /// panel
               DraggablePanel(
-                color: Colors.blue,
                 controller: panelCtrl,
+                color: AppColors.backgroundBlack,
                 slideDirection: SlideDirection.down,
-                maxHeight: size.screenHeight - 480.h,
-                minHeight: size.screenHeight * 0.6.h,
+                maxHeight: size.screenHeight - 50.h,
+                minHeight: size.screenHeight - 480.h,
+                borderRadius: const BorderRadius.only(
+                  bottomRight: Radius.circular(28),
+                  bottomLeft: Radius.circular(28),
+                ),
 
                 /// list of the history translations
                 collapsed: Container(
                   width: size.screenWidth,
-                  height: size.statusBarHeight,
-                  color: Colors.yellow,
-                  child: Text(
-                    'collapsable',
-                    style: TextStyle(color: Colors.black, fontSize: 30),
-                  ),
+                  height: 400,
                 ),
-
-                onPanelOpened: () {
-                  print(panelCtrl.isPanelOpen);
-                },
 
                 /// enter text label
-                panel: Container(
-                  color: Colors.red,
-                ),
+                panel: Container(),
                 panelBuilder: (sc) => Container(),
               )
             ],

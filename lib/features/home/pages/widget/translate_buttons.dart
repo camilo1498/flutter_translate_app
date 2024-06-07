@@ -3,18 +3,21 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter/physics.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:g_translate_v2/core/configs/app_colors.dart';
 
-enum TargetEnum { red, green, none }
+enum ButtonOriginalPosition { right, left }
 
 class ItemModel {
-  double value;
-  Color color;
-  TargetEnum target;
+  final double value;
+  final String language;
+  final VoidCallback? onTap;
+  final ButtonOriginalPosition position;
 
   ItemModel({
+    this.onTap,
     required this.value,
-    required this.color,
-    required this.target,
+    required this.position,
+    required this.language,
   });
 }
 
@@ -26,239 +29,185 @@ class Buttons extends StatefulWidget {
 }
 
 class _ButtonsState extends State<Buttons> with TickerProviderStateMixin {
-  late AnimationController animCtrl;
-  final size = ScreenUtil();
-  TargetEnum target = TargetEnum.none;
-  List<ItemModel> items = [];
+  late AnimationController _animCtrl;
+  late List<ItemModel> _items;
 
   @override
   void initState() {
     super.initState();
-    animCtrl = AnimationController(
+    _animCtrl = AnimationController(
       duration: const Duration(milliseconds: 300),
-      reverseDuration: const Duration(milliseconds: 300),
       vsync: this,
       value: -1.0,
       upperBound: 1.0,
       lowerBound: -1.0,
-    )..addListener(() => setState(() {}));
+    )..addListener(() {
+        setState(() {});
+      });
 
-    double left =
-        (((size.screenWidth / 2) * 1) + ((size.screenWidth / 2))) / 1.945;
+    final double left = ScreenUtil().screenWidth / 1.945;
 
-    items = [
+    _items = [
       ItemModel(
         value: 0,
-        color: Colors.red,
-        target: TargetEnum.red,
+        position: ButtonOriginalPosition.left,
+        language: 'Inglés',
       ),
       ItemModel(
         value: left,
-        color: Colors.green,
-        target: TargetEnum.green,
+        position: ButtonOriginalPosition.right,
+        language: 'Español',
       ),
     ];
   }
 
   @override
   void dispose() {
-    animCtrl.dispose();
+    _animCtrl.dispose();
     super.dispose();
   }
 
-  void _onGestureSlide(double dx) {
-    double newValue = animCtrl.value;
+  void _onGestureSlide(double dx, int index) {
+    double newValue = _animCtrl.value +
+        (index == 0 ? -dx : dx) / (ScreenUtil().screenWidth / 2 - 51).abs();
 
-    newValue += dx / ((size.screenWidth / 2) - 50 - 1.0).abs();
-
-    if ((animCtrl.value != newValue) && (newValue > -1.0 && newValue < 1.0)) {
-      animCtrl.value = newValue;
+    if (newValue > -1.0 && newValue < 1.0) {
+      _animCtrl.value = newValue;
     }
   }
 
-  void _onGestureEnd(Velocity v, {bool isSecond = false}) {
-    double minFlingVelocity = (size.screenWidth / 2);
-    if (animCtrl.isAnimating) return;
-    double visualVelocity = isSecond
-        ? v.pixelsPerSecond.dx / ((size.screenWidth / 2))
-        : -v.pixelsPerSecond.dx / ((size.screenWidth / 2));
-    double d2Close = animCtrl.value + 1;
-    double d2Open = 1 - animCtrl.value;
-    double minDistance = min(d2Close, d2Open);
-    if (v.pixelsPerSecond.dx.abs() >= minFlingVelocity) {
-      animCtrl.fling(velocity: visualVelocity);
-      return;
-    }
-    if (minDistance == d2Close) {
-      _flingPanelToPosition(-1.0, visualVelocity);
+  void _onGestureEnd(Velocity velocity, {bool isSecond = false}) {
+    if (_animCtrl.isAnimating) return;
+
+    double visualVelocity = velocity.pixelsPerSecond.dx /
+        (ScreenUtil().screenWidth / 2) *
+        (isSecond ? 1 : -1);
+    double maxD = _animCtrl.value + 1;
+    double minD = 1 - _animCtrl.value;
+    double minDistance = min(maxD, minD);
+
+    if (velocity.pixelsPerSecond.dx.abs() >= ScreenUtil().screenWidth / 2) {
+      _animCtrl.fling(velocity: visualVelocity);
     } else {
-      _flingPanelToPosition(1.0, visualVelocity);
+      _flingPanelToPosition(minDistance == maxD ? -1.0 : 1.0, visualVelocity);
     }
   }
 
   void _flingPanelToPosition(double targetPos, double velocity) {
-    double adjustedVelocity = velocity * 0.1;
-    final Simulation simulation = SpringSimulation(
+    _animCtrl.animateWith(SpringSimulation(
       SpringDescription.withDampingRatio(
         mass: 1.0,
         stiffness: 100.0,
         ratio: 1.5,
       ),
-      animCtrl.value,
+      _animCtrl.value,
       targetPos,
-      adjustedVelocity,
-    );
-    animCtrl.animateWith(simulation);
+      velocity * 0.1,
+    ));
   }
 
   void _onDragStart(int index) {
-    setState(() {
-      final item = items.removeAt(index);
-      items.insert(1, item);
-    });
+    final item = _items.removeAt(index);
+    _items.insert(1, item);
+    setState(() {});
   }
 
   @override
   Widget build(BuildContext context) {
-    final size = ScreenUtil();
-    double left =
-        (((size.screenWidth / 2) * animCtrl.value) + ((size.screenWidth / 2))) /
-            1.945;
+    final double screenWidth = ScreenUtil().screenWidth;
 
     return Column(
       children: [
-        Container(
-          height: 200.h,
-          width: size.screenWidth,
-          color: Colors.black,
+        SizedBox(
+          height: 80,
+          width: screenWidth,
           child: Stack(
+            alignment: Alignment.center,
             children: [
-              Align(
-                alignment: Alignment.center,
-                child: GestureDetector(
-                  behavior: HitTestBehavior.translucent,
-                  onTap: () {
-                    if (animCtrl.isCompleted) {
-                      animCtrl.reverse();
-                    } else {
-                      animCtrl.forward();
-                    }
-                    setState(() {});
-                  },
-                  child: Container(
-                    width: 100.w,
-                    height: 100.w,
-                    color: Colors.white,
-                  ),
+              GestureDetector(
+                behavior: HitTestBehavior.translucent,
+                onTap: () {
+                  _animCtrl.isCompleted
+                      ? _animCtrl.reverse()
+                      : _animCtrl.forward();
+                  setState(() {});
+                },
+                child: Container(
+                  width: 60.w,
+                  height: 60.w,
+                  color: Colors.white,
                 ),
               ),
-              /*   AnimatedBuilder(
-                animation: animCtrl,
-                builder: (context, child) => Stack(
-                  children: [
-                    _ItemButton(
-                      start: (details) => updateTarget(TargetEnum.red),
-                      update: (details) => _onGestureSlide(details.delta.dx),
-                      end: (details) {
-                        _onGestureEnd(details.velocity, isSecond: true);
-                      },
-                      color: Colors.red,
-                      value: animCtrl.value,
-                    ),
-                    _ItemButton(
-                      start: (details) => updateTarget(TargetEnum.green),
-                      update: (details) => _onGestureSlide(
-                        -details.delta.dx,
-                      ),
-                      end: (details) {
-                        _onGestureEnd(details.velocity, isSecond: false);
-                      },
-                      color: Colors.green,
-                      value: -animCtrl.value,
-                    ),
-                  ]..sort((a, b) {
-                      print(target == TargetEnum.red);
-                      if (target == TargetEnum.red) {
-                        return 1;
-                      } else {
-                        return -1;
-                      }
-                    }),
-                ),
-              ),*/
               AnimatedBuilder(
-                animation: animCtrl,
-                builder: (context, child) => Stack(
-                  children: List.generate(items.length, (index) {
-                    final item = items[index];
-                    return Positioned(
-                      left: item.target == TargetEnum.red
-                          ? left
-                          : (size.screenWidth / 1.945) - left,
-                      child: GestureDetector(
-                        onTap: () => _onDragStart(index),
-                        onHorizontalDragStart: (details) => _onDragStart(index),
-                        onHorizontalDragUpdate: (details) => _onGestureSlide(
-                          item.target == TargetEnum.red
-                              ? details.delta.dx
-                              : -details.delta.dx,
+                animation: _animCtrl,
+                builder: (context, child) {
+                  return Stack(
+                    alignment: Alignment.center,
+                    children: List.generate(_items.length, (index) {
+                      /// gey item index
+                      final item = _items[index];
+
+                      /// get position
+                      double left = (screenWidth / 2 * _animCtrl.value +
+                              screenWidth / 2) /
+                          1.945;
+
+                      /// widget
+                      return Positioned(
+                        left: item.position == ButtonOriginalPosition.left
+                            ? left
+                            : screenWidth / 1.945 - left,
+                        child: Transform.scale(
+                          scale: index == 1
+                              ? 1
+                              : 1 - 0.4 * (1 - _animCtrl.value.abs()),
+                          child: GestureDetector(
+                            behavior: HitTestBehavior.translucent,
+                            onTap: () {
+                              _onDragStart(index);
+                            },
+                            onLongPress: () {
+                              print('object');
+                            },
+                            onHorizontalDragStart: (_) => _onDragStart(index),
+                            onHorizontalDragUpdate: (details) =>
+                                _onGestureSlide(
+                                    item.position == ButtonOriginalPosition.left
+                                        ? details.delta.dx
+                                        : -details.delta.dx,
+                                    index),
+                            onHorizontalDragEnd: (details) => _onGestureEnd(
+                                details.velocity,
+                                isSecond: item.position ==
+                                    ButtonOriginalPosition.left),
+                            child: Container(
+                              height: 55,
+                              alignment: Alignment.center,
+                              width: screenWidth / 2 - 50,
+                              decoration: BoxDecoration(
+                                color: AppColors.btnBlack,
+                                borderRadius: BorderRadius.circular(14),
+                              ),
+                              child: Text(
+                                item.language,
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                          ),
                         ),
-                        onHorizontalDragEnd: (details) => _onGestureEnd(
-                            details.velocity,
-                            isSecond: item.target == TargetEnum.red),
-                        child: Container(
-                          width: (size.screenWidth / 2) - 50,
-                          height: 50,
-                          color: item.color,
-                        ),
-                      ),
-                    );
-                  }),
-                ),
+                      );
+                    }),
+                  );
+                },
               ),
             ],
           ),
         ),
       ],
-    );
-  }
-}
-
-class _ItemButton extends StatelessWidget {
-  const _ItemButton({
-    super.key,
-    this.end,
-    this.start,
-    this.update,
-    required this.value,
-    required this.color,
-  });
-
-  final double value;
-  final Function(DragEndDetails)? end;
-  final Function(DragStartDetails)? start;
-  final Function(DragUpdateDetails)? update;
-  final Color color;
-
-  @override
-  Widget build(BuildContext context) {
-    final size = ScreenUtil();
-    double left = ((size.screenWidth / 2) * value) + ((size.screenWidth / 2));
-    double screenWidthFraction = left / 1.94;
-    screenWidthFraction = screenWidthFraction.clamp(0.0, 240);
-    print(screenWidthFraction);
-    return Positioned(
-      left: screenWidthFraction,
-      child: GestureDetector(
-        onHorizontalDragStart: start,
-        onHorizontalDragUpdate: update,
-        onHorizontalDragEnd: end,
-        child: Container(
-          width: (size.screenWidth / 2) - 50,
-          height: 50,
-          color: color,
-        ),
-      ),
     );
   }
 }
