@@ -6,8 +6,20 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 enum TargetEnum { red, green, none }
 
+class ItemModel {
+  double value;
+  Color color;
+  TargetEnum target;
+
+  ItemModel({
+    required this.value,
+    required this.color,
+    required this.target,
+  });
+}
+
 class Buttons extends StatefulWidget {
-  const Buttons({Key? key}) : super(key: key);
+  const Buttons({super.key});
 
   @override
   State<Buttons> createState() => _ButtonsState();
@@ -17,6 +29,7 @@ class _ButtonsState extends State<Buttons> with TickerProviderStateMixin {
   late AnimationController animCtrl;
   final size = ScreenUtil();
   TargetEnum target = TargetEnum.none;
+  List<ItemModel> items = [];
 
   @override
   void initState() {
@@ -29,6 +42,22 @@ class _ButtonsState extends State<Buttons> with TickerProviderStateMixin {
       upperBound: 1.0,
       lowerBound: -1.0,
     )..addListener(() => setState(() {}));
+
+    double left =
+        (((size.screenWidth / 2) * 1) + ((size.screenWidth / 2))) / 1.945;
+
+    items = [
+      ItemModel(
+        value: 0,
+        color: Colors.red,
+        target: TargetEnum.red,
+      ),
+      ItemModel(
+        value: left,
+        color: Colors.green,
+        target: TargetEnum.green,
+      ),
+    ];
   }
 
   @override
@@ -38,15 +67,10 @@ class _ButtonsState extends State<Buttons> with TickerProviderStateMixin {
   }
 
   void _onGestureSlide(double dx) {
-    updateTarget(target);
     double newValue = animCtrl.value;
 
     newValue += dx / ((size.screenWidth / 2) - 50 - 1.0).abs();
-    /*  if (target == TargetEnum.red) {
-      newValue += dx / ((size.screenWidth / 2) - 50 - 1.0).abs();
-    } else {
-      newValue += dx / ((size.screenWidth / 2) - 50 - 1.0).abs();
-    }*/
+
     if ((animCtrl.value != newValue) && (newValue > -1.0 && newValue < 1.0)) {
       animCtrl.value = newValue;
     }
@@ -55,7 +79,7 @@ class _ButtonsState extends State<Buttons> with TickerProviderStateMixin {
   void _onGestureEnd(Velocity v, {bool isSecond = false}) {
     double minFlingVelocity = (size.screenWidth / 2);
     if (animCtrl.isAnimating) return;
-    double visualVelocity = target == TargetEnum.red
+    double visualVelocity = isSecond
         ? v.pixelsPerSecond.dx / ((size.screenWidth / 2))
         : -v.pixelsPerSecond.dx / ((size.screenWidth / 2));
     double d2Close = animCtrl.value + 1;
@@ -87,20 +111,24 @@ class _ButtonsState extends State<Buttons> with TickerProviderStateMixin {
     animCtrl.animateWith(simulation);
   }
 
-  void updateTarget(TargetEnum targetItem) {
+  void _onDragStart(int index) {
     setState(() {
-      if (target != targetItem) {
-        target = targetItem;
-      }
+      final item = items.removeAt(index);
+      items.insert(1, item);
     });
   }
 
   @override
   Widget build(BuildContext context) {
+    final size = ScreenUtil();
+    double left =
+        (((size.screenWidth / 2) * animCtrl.value) + ((size.screenWidth / 2))) /
+            1.945;
+
     return Column(
       children: [
         Container(
-          height: 100.h,
+          height: 200.h,
           width: size.screenWidth,
           color: Colors.black,
           child: Stack(
@@ -108,6 +136,7 @@ class _ButtonsState extends State<Buttons> with TickerProviderStateMixin {
               Align(
                 alignment: Alignment.center,
                 child: GestureDetector(
+                  behavior: HitTestBehavior.translucent,
                   onTap: () {
                     if (animCtrl.isCompleted) {
                       animCtrl.reverse();
@@ -123,7 +152,7 @@ class _ButtonsState extends State<Buttons> with TickerProviderStateMixin {
                   ),
                 ),
               ),
-              AnimatedBuilder(
+              /*   AnimatedBuilder(
                 animation: animCtrl,
                 builder: (context, child) => Stack(
                   children: [
@@ -138,7 +167,9 @@ class _ButtonsState extends State<Buttons> with TickerProviderStateMixin {
                     ),
                     _ItemButton(
                       start: (details) => updateTarget(TargetEnum.green),
-                      update: (details) => _onGestureSlide(-details.delta.dx),
+                      update: (details) => _onGestureSlide(
+                        -details.delta.dx,
+                      ),
                       end: (details) {
                         _onGestureEnd(details.velocity, isSecond: false);
                       },
@@ -153,6 +184,36 @@ class _ButtonsState extends State<Buttons> with TickerProviderStateMixin {
                         return -1;
                       }
                     }),
+                ),
+              ),*/
+              AnimatedBuilder(
+                animation: animCtrl,
+                builder: (context, child) => Stack(
+                  children: List.generate(items.length, (index) {
+                    final item = items[index];
+                    return Positioned(
+                      left: item.target == TargetEnum.red
+                          ? left
+                          : (size.screenWidth / 1.945) - left,
+                      child: GestureDetector(
+                        onTap: () => _onDragStart(index),
+                        onHorizontalDragStart: (details) => _onDragStart(index),
+                        onHorizontalDragUpdate: (details) => _onGestureSlide(
+                          item.target == TargetEnum.red
+                              ? details.delta.dx
+                              : -details.delta.dx,
+                        ),
+                        onHorizontalDragEnd: (details) => _onGestureEnd(
+                            details.velocity,
+                            isSecond: item.target == TargetEnum.red),
+                        child: Container(
+                          width: (size.screenWidth / 2) - 50,
+                          height: 50,
+                          color: item.color,
+                        ),
+                      ),
+                    );
+                  }),
                 ),
               ),
             ],
@@ -182,9 +243,12 @@ class _ItemButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final size = ScreenUtil();
-    print(((size.screenWidth / 2) * value) + ((size.screenWidth / 2) / 2));
+    double left = ((size.screenWidth / 2) * value) + ((size.screenWidth / 2));
+    double screenWidthFraction = left / 1.94;
+    screenWidthFraction = screenWidthFraction.clamp(0.0, 240);
+    print(screenWidthFraction);
     return Positioned(
-      left: ((size.screenWidth / 2) * value) + ((size.screenWidth / 2)),
+      left: screenWidthFraction,
       child: GestureDetector(
         onHorizontalDragStart: start,
         onHorizontalDragUpdate: update,
