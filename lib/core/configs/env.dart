@@ -5,5 +5,5 @@ part 'env.g.dart';
 @Envied(path: '.env')
 final class Env {
   @EnviedField(varName: 'HTTP_ENDPOINT', obfuscate: true)
-  static final String gTranslateEndpoint = _Env.gTranslateEndpoint;
+  static final String httpEndpoint = _Env.httpEndpoint;
 }

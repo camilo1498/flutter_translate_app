@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:g_translate_v2/core/routing/app_navigator.dart';
 import 'package:g_translate_v2/core/routing/app_routes.dart';
+import 'package:g_translate_v2/features/home/pages/home_page.dart';
 import 'package:hive_local_storage/hive_local_storage.dart';
 
 void main() async {
@@ -63,15 +64,19 @@ class FlutterTranslateApp extends StatelessWidget {
       child: ScreenUtilInit(
         minTextAdapt: true,
         splitScreenMode: true,
+        ensureScreenSize: true,
         useInheritedMediaQuery: true,
+        designSize: const Size(1080, 1920),
         builder: (_, __) => MaterialApp(
           routes: AppRoutes.routes,
           title: 'Flutter translator',
+          //TODO initialRoute: , => create splash screen
+          initialRoute: HomePage.path,
           debugShowCheckedModeBanner: false,
           key: appNavigator.globalNavigatorKey,
           localizationsDelegates: const [
-            GlobalMaterialLocalizations.delegate,
             GlobalWidgetsLocalizations.delegate,
+            GlobalMaterialLocalizations.delegate,
             GlobalCupertinoLocalizations.delegate,
           ],
           theme: ThemeData(
@@ -81,7 +86,6 @@ class FlutterTranslateApp extends StatelessWidget {
           ),
 
           /// TODO onUnknownRoute (404) => create page
-          ///TODO initialRoute: , => create splash screen
         ),
       ),
     );
