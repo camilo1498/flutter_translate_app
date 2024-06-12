@@ -71,6 +71,7 @@ class FlutterTranslateApp extends StatelessWidget {
           routes: AppRoutes.routes,
           title: 'Flutter translator',
           //TODO initialRoute: , => create splash screen
+
           initialRoute: HomePage.path,
           debugShowCheckedModeBanner: false,
           key: appNavigator.globalNavigatorKey,

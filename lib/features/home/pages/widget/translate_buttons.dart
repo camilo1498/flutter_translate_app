@@ -3,7 +3,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter/physics.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:g_translate_v2/core/configs/app_colors.dart';
+import 'package:g_translate_v2/features/home/pages/widget/buttons_t.dart';
 
 enum ButtonOriginalPosition { right, left }
 
@@ -30,14 +30,13 @@ class Buttons extends StatefulWidget {
 }
 
 class _ButtonsState extends State<Buttons> with TickerProviderStateMixin {
-  late AnimationController _animCtrl;
+  late AnimationController btnTransitionAnimCtrl;
   late List<ItemModel> _items;
-  final List<LayerLink> _layerLinks = [];
 
   @override
   void initState() {
     super.initState();
-    _animCtrl = AnimationController(
+    btnTransitionAnimCtrl = AnimationController(
       duration: const Duration(milliseconds: 300),
       vsync: this,
       value: -1.0,
@@ -61,50 +60,48 @@ class _ButtonsState extends State<Buttons> with TickerProviderStateMixin {
         language: 'Español',
       ),
     ];
-
-    _layerLinks.addAll(List.generate(_items.length, (_) => LayerLink()));
   }
 
   @override
   void dispose() {
-    _animCtrl.dispose();
+    btnTransitionAnimCtrl.dispose();
     super.dispose();
   }
 
   void _onGestureSlide(double dx, int index) {
-    double newValue = _animCtrl.value +
+    double newValue = btnTransitionAnimCtrl.value +
         (index == 0 ? -dx : dx) / (ScreenUtil().screenWidth / 2 - 51).abs();
 
     if (newValue > -1.0 && newValue < 1.0) {
-      _animCtrl.value = newValue;
+      btnTransitionAnimCtrl.value = newValue;
     }
   }
 
   void _onGestureEnd(Velocity velocity, {bool isSecond = false}) {
-    if (_animCtrl.isAnimating) return;
+    if (btnTransitionAnimCtrl.isAnimating) return;
 
     double visualVelocity = velocity.pixelsPerSecond.dx /
         (ScreenUtil().screenWidth / 2) *
         (isSecond ? 1 : -1);
-    double maxD = _animCtrl.value + 1;
-    double minD = 1 - _animCtrl.value;
+    double maxD = btnTransitionAnimCtrl.value + 1;
+    double minD = 1 - btnTransitionAnimCtrl.value;
     double minDistance = min(maxD, minD);
 
     if (velocity.pixelsPerSecond.dx.abs() >= ScreenUtil().screenWidth / 2) {
-      _animCtrl.fling(velocity: visualVelocity);
+      btnTransitionAnimCtrl.fling(velocity: visualVelocity);
     } else {
       _flingPanelToPosition(minDistance == maxD ? -1.0 : 1.0, visualVelocity);
     }
   }
 
   void _flingPanelToPosition(double targetPos, double velocity) {
-    _animCtrl.animateWith(SpringSimulation(
+    btnTransitionAnimCtrl.animateWith(SpringSimulation(
       SpringDescription.withDampingRatio(
         mass: 1.0,
         stiffness: 100.0,
         ratio: 1.5,
       ),
-      _animCtrl.value,
+      btnTransitionAnimCtrl.value,
       targetPos,
       velocity * 0.1,
     ));
@@ -114,45 +111,6 @@ class _ButtonsState extends State<Buttons> with TickerProviderStateMixin {
     final item = _items.removeAt(index);
     _items.insert(1, item);
     setState(() {});
-  }
-
-  void _showOverlay(BuildContext context, int index) {
-    final item = _items[index];
-    final renderBox = context.findRenderObject() as RenderBox;
-    final overlayOffset = renderBox.localToGlobal(
-      const Offset(0.0, -55),
-    );
-
-    item.overlayEntry = OverlayEntry(
-      builder: (context) => Positioned(
-        left: overlayOffset.dx,
-        top: overlayOffset.dy,
-        child: Material(
-          color: Colors.transparent,
-          child: Container(
-            width: renderBox.size.width,
-            height: renderBox.size.height * 3,
-            padding: const EdgeInsets.all(8.0),
-            decoration: BoxDecoration(
-              color: AppColors.overlayBackgroundGray,
-              borderRadius: BorderRadius.circular(14),
-            ),
-            child: Text(
-              item.language,
-              style: const TextStyle(color: Colors.white),
-            ),
-          ),
-        ),
-      ),
-    );
-
-    Overlay.of(context).insert(item.overlayEntry!);
-  }
-
-  void _hideOverlay(int index) {
-    final item = _items[index];
-    item.overlayEntry?.remove();
-    item.overlayEntry = null;
   }
 
   @override
@@ -168,7 +126,9 @@ class _ButtonsState extends State<Buttons> with TickerProviderStateMixin {
           GestureDetector(
             behavior: HitTestBehavior.translucent,
             onTap: () {
-              _animCtrl.isCompleted ? _animCtrl.reverse() : _animCtrl.forward();
+              btnTransitionAnimCtrl.isCompleted
+                  ? btnTransitionAnimCtrl.reverse()
+                  : btnTransitionAnimCtrl.forward();
               setState(() {});
             },
             child: Container(
@@ -180,8 +140,9 @@ class _ButtonsState extends State<Buttons> with TickerProviderStateMixin {
           ...List.generate(_items.length, (index) {
             final item = _items[index];
 
-            double left =
-                (screenWidth / 2 * _animCtrl.value + screenWidth / 2) / 1.945;
+            double left = (screenWidth / 2 * btnTransitionAnimCtrl.value +
+                    screenWidth / 2) /
+                1.945;
 
             return Builder(
               builder: (BuildContext context) {
@@ -189,52 +150,20 @@ class _ButtonsState extends State<Buttons> with TickerProviderStateMixin {
                   left: item.position == ButtonOriginalPosition.left
                       ? left
                       : screenWidth / 1.945 - left,
-                  child: CompositedTransformTarget(
-                    link: _layerLinks[index],
-                    child: Transform.scale(
-                      scale: index == 1
-                          ? 1
-                          : 1 - 0.4 * (1 - _animCtrl.value.abs()),
-                      child: GestureDetector(
-                        behavior: HitTestBehavior.translucent,
-                        onTap: () {
-                          _onDragStart(index);
-                        },
-                        onLongPress: () {
-                          _showOverlay(context, index);
-                        },
-                        onLongPressUp: () {
-                          _hideOverlay(index);
-                        },
-                        onHorizontalDragStart: (_) => _onDragStart(index),
-                        onHorizontalDragUpdate: (details) => _onGestureSlide(
-                            item.position == ButtonOriginalPosition.left
-                                ? details.delta.dx
-                                : -details.delta.dx,
-                            index),
-                        onHorizontalDragEnd: (details) => _onGestureEnd(
-                            details.velocity,
-                            isSecond:
-                                item.position == ButtonOriginalPosition.left),
-                        child: Container(
-                          height: 55,
-                          alignment: Alignment.center,
-                          width: screenWidth / 2 - 50,
-                          decoration: BoxDecoration(
-                            color: AppColors.btnBlack,
-                            borderRadius: BorderRadius.circular(14),
-                          ),
-                          child: Text(
-                            item.language,
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontSize: 14,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
+                  child: ButtonsT(
+                    index: index,
+                    item: item,
+                    transitionValue: btnTransitionAnimCtrl.value,
+                    onDragStart: () => _onDragStart(index),
+                    onHorizontalDragStart: (_) => _onDragStart(index),
+                    onHorizontalDragUpdate: (details) => _onGestureSlide(
+                        item.position == ButtonOriginalPosition.left
+                            ? details.delta.dx
+                            : -details.delta.dx,
+                        index),
+                    onHorizontalDragEnd: (details) => _onGestureEnd(
+                        details.velocity,
+                        isSecond: item.position == ButtonOriginalPosition.left),
                   ),
                 );
               },
