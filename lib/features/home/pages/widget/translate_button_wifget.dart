@@ -1,42 +1,30 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:g_translate_v2/core/configs/app_colors.dart';
-import 'package:g_translate_v2/features/home/pages/widget/translate_buttons.dart';
+import 'package:g_translate_v2/features/home/models/translate_button_model.dart';
 
-class ButtonsT extends StatefulWidget {
-  const ButtonsT({
+class TranslateButtonWidget extends StatefulWidget {
+  const TranslateButtonWidget({
     super.key,
     required this.index,
     required this.item,
     required this.transitionValue,
-    required this.onDragStart,
-    required this.onHorizontalDragEnd,
-    required this.onHorizontalDragUpdate,
-    required this.onHorizontalDragStart,
   });
 
   final int index;
-  final ItemModel item;
+  final TranslateButtonModel item;
   final double transitionValue;
 
-  final VoidCallback onDragStart;
-  final void Function(DragEndDetails)? onHorizontalDragEnd;
-  final void Function(DragUpdateDetails)? onHorizontalDragUpdate;
-  final void Function(DragStartDetails)? onHorizontalDragStart;
-
   @override
-  State<ButtonsT> createState() => _ButtonsTState();
+  State<TranslateButtonWidget> createState() => _TranslateButtonWidgetState();
 }
 
 const itemHeight = 55.0;
 const menuItemsMaxScale = 1;
-const indicatorHeight = itemHeight * menuItemsMaxScale;
-const maxDistance = itemHeight / 2 + indicatorHeight / 2;
 const indicatorVPadding = -((itemHeight * menuItemsMaxScale - itemHeight) / 2);
-const maxStretchDistance = 200;
+
 const names = [
   'Inglés',
   'Español',
@@ -49,7 +37,7 @@ const names = [
   'Más idiomas',
 ];
 
-class _ButtonsTState extends State<ButtonsT>
+class _TranslateButtonWidgetState extends State<TranslateButtonWidget>
     with SingleTickerProviderStateMixin {
   ///||-- Variables --||///
   bool isButtonTap = false;
@@ -58,7 +46,7 @@ class _ButtonsTState extends State<ButtonsT>
 
   late final Animation<double> _overlayFadeAnimation;
 
-  ///||-- --||///
+  ///||-- Keys --||///
   final GlobalKey widgetKey = GlobalKey();
   final GlobalKey overlayKey = GlobalKey();
   final LayerLink _layerLinks = LayerLink();
@@ -122,9 +110,19 @@ class _ButtonsTState extends State<ButtonsT>
                   child: Stack(
                     clipBehavior: Clip.none,
                     children: [
-                      ActionMenuIndicator(
-                        width: size?.width,
-                        offset: indicatorOffset,
+                      AnimatedPositioned(
+                        duration: const Duration(milliseconds: 300),
+                        curve: Curves.linearToEaseOut,
+                        top: indicatorOffset + 4,
+                        left: 4,
+                        height: itemHeight,
+                        child: Container(
+                          width: size?.width,
+                          decoration: BoxDecoration(
+                            color: AppColors.btnBlue,
+                            borderRadius: BorderRadius.circular(15),
+                          ),
+                        ),
                       ),
                       Align(
                         alignment: Alignment.center,
@@ -132,11 +130,21 @@ class _ButtonsTState extends State<ButtonsT>
                           mainAxisSize: MainAxisSize.min,
                           children: List.generate(
                             names.length,
-                            (index) => ActionMenuListItem(
-                              label: names[index],
-                              index: index,
-                              scale: 1.0,
-                            ),
+                            (index) => Container(
+                                height: itemHeight,
+                                alignment: Alignment.center,
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(20),
+                                ),
+                                // color: Colors.blue,
+                                child: Text(
+                                  names[index],
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                )),
                           ),
                         ),
                       ),
@@ -182,12 +190,8 @@ class _ButtonsTState extends State<ButtonsT>
     });
   }
 
-  RenderBox? _getMenuRenderBox() {
-    return overlayKey.currentContext?.findRenderObject() as RenderBox?;
-  }
-
-  void _handlePointerMove(PointerMoveEvent event) {
-    RenderBox? box = _getMenuRenderBox();
+  void _handlePointerMove(LongPressMoveUpdateDetails event) {
+    final box = overlayKey.currentContext?.findRenderObject() as RenderBox?;
     final localPosition = event.localPosition;
     if (box != null) {
       final compositedPosition =
@@ -197,7 +201,6 @@ class _ButtonsTState extends State<ButtonsT>
 
       /// Handle indicator movement
       if (isInsideHeight) {
-        if (!showIndicator) setState(() => showIndicator = true);
         final realtimeIndicatorOffset =
             (compositedPosition.dy - (itemHeight * menuItemsMaxScale / 2))
                 .clamp(indicatorVPadding,
@@ -210,6 +213,7 @@ class _ButtonsTState extends State<ButtonsT>
     }
   }
 
+  /// widget
   @override
   Widget build(BuildContext context) {
     final double screenWidth = ScreenUtil().screenWidth;
@@ -223,132 +227,32 @@ class _ButtonsTState extends State<ButtonsT>
         scale: widget.index == 1
             ? 1
             : 1 - 0.35 * (1 - widget.transitionValue.abs()),
-        child: Listener(
+        child: GestureDetector(
           behavior: HitTestBehavior.translucent,
-          onPointerMove: _handlePointerMove,
-          child: GestureDetector(
-            behavior: HitTestBehavior.translucent,
-            onTap: widget.onDragStart,
-
-            ///
-            onLongPressStart: (details) => _handleLongPressStart(details),
-            onLongPressEnd: (details) => _handleLongPressEndOrCancel(),
-            onLongPressCancel: _handleLongPressEndOrCancel,
-            onLongPressDown: _handleLongPressDown,
-
-            ///
-            onHorizontalDragEnd: widget.onHorizontalDragEnd,
-            onHorizontalDragStart: widget.onHorizontalDragStart,
-            onHorizontalDragUpdate: widget.onHorizontalDragUpdate,
-            child: AnimatedContainer(
-              duration: const Duration(milliseconds: 200),
-              key: widgetKey,
-              height: 55,
-              alignment: Alignment.center,
-              width: screenWidth / 2 - 50,
-              decoration: BoxDecoration(
-                color: isButtonTap ? AppColors.btnBlue : AppColors.btnBlack,
-                borderRadius: BorderRadius.circular(14),
-              ),
-              child: Text(
-                widget.item.language,
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 14,
-                  fontWeight: FontWeight.bold,
-                ),
+          onLongPressDown: _handleLongPressDown,
+          onLongPressMoveUpdate: _handlePointerMove,
+          onLongPressCancel: _handleLongPressEndOrCancel,
+          onLongPressEnd: (details) => _handleLongPressEndOrCancel(),
+          onLongPressStart: (details) => _handleLongPressStart(details),
+          child: AnimatedContainer(
+            duration: const Duration(milliseconds: 200),
+            key: widgetKey,
+            height: 55,
+            alignment: Alignment.center,
+            width: screenWidth / 2 - 50,
+            decoration: BoxDecoration(
+              color: isButtonTap ? AppColors.btnBlue : AppColors.btnBlack,
+              borderRadius: BorderRadius.circular(14),
+            ),
+            child: Text(
+              widget.item.language,
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 14,
+                fontWeight: FontWeight.bold,
               ),
             ),
           ),
-        ),
-      ),
-    );
-  }
-}
-
-class ActionMenuButton extends StatelessWidget {
-  const ActionMenuButton({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        shape: BoxShape.circle,
-        color: Colors.white.withOpacity(0.7),
-        boxShadow: [
-          BoxShadow(
-            blurRadius: 10,
-            color: Colors.black.withOpacity(0.2),
-            offset: const Offset(0, 5),
-          ),
-        ],
-      ),
-      height: 60,
-      width: 60,
-      child: Icon(
-        CupertinoIcons.share_solid,
-        color: Colors.black.withOpacity(0.5),
-        size: 30,
-      ),
-    );
-  }
-}
-
-class ActionMenuListItem extends StatelessWidget {
-  const ActionMenuListItem({
-    super.key,
-    this.index = 0,
-    required this.label,
-    this.scale = 1.0,
-  });
-
-  final int index;
-  final String label;
-  final double scale;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-        height: itemHeight,
-        alignment: Alignment.center,
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(20),
-        ),
-        // color: Colors.blue,
-        child: Text(
-          label,
-          style: const TextStyle(
-            color: Colors.white,
-            fontSize: 14,
-            fontWeight: FontWeight.bold,
-          ),
-        ));
-  }
-}
-
-class ActionMenuIndicator extends StatelessWidget {
-  const ActionMenuIndicator({
-    super.key,
-    this.offset = 0,
-    required this.width,
-  });
-
-  final double offset;
-  final double? width;
-
-  @override
-  Widget build(BuildContext context) {
-    return AnimatedPositioned(
-      duration: const Duration(milliseconds: 300),
-      curve: Curves.linearToEaseOut,
-      top: offset + 4,
-      left: 4,
-      height: itemHeight,
-      child: Container(
-        width: width,
-        decoration: BoxDecoration(
-          color: AppColors.btnBlue,
-          borderRadius: BorderRadius.circular(15),
         ),
       ),
     );

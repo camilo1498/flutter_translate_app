@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:g_translate_v2/core/configs/app_colors.dart';
-import 'package:g_translate_v2/core/routing/app_navigator.dart';
 import 'package:g_translate_v2/core/widgets/draggable_panel.dart';
-import 'package:g_translate_v2/features/home/pages/widget/translate_buttons.dart';
+import 'package:g_translate_v2/features/home/pages/widget/select_language_section.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -28,7 +27,7 @@ class _HomePageState extends State<HomePage> {
           await panelCtrl.close();
           return;
         }
-        appNavigator.back();
+        //appNavigator.back();
       },
       child: Scaffold(
         backgroundColor: AppColors.backgroundGray,
@@ -47,7 +46,7 @@ class _HomePageState extends State<HomePage> {
                     padding: EdgeInsets.symmetric(horizontal: 22),
                     child: Column(
                       children: [
-                        Buttons(),
+                        SelectLanguageSection(),
                       ],
                     ),
                   ),
