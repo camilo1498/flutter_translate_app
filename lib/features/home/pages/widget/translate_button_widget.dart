@@ -1,11 +1,16 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:g_translate_v2/core/configs/app_colors.dart';
+import 'package:g_translate_v2/core/constants/languages.dart';
+import 'package:g_translate_v2/core/routing/app_navigator.dart';
+import 'package:g_translate_v2/features/home/logic/translate_button_controller_state.dart';
 import 'package:g_translate_v2/features/home/models/translate_button_model.dart';
+import 'package:g_translate_v2/features/language_selector/pages/language_selector_page.dart';
 
-class TranslateButtonWidget extends StatefulWidget {
+class TranslateButtonWidget extends ConsumerStatefulWidget {
   const TranslateButtonWidget({
     super.key,
     required this.index,
@@ -18,26 +23,20 @@ class TranslateButtonWidget extends StatefulWidget {
   final double transitionValue;
 
   @override
-  State<TranslateButtonWidget> createState() => _TranslateButtonWidgetState();
+  ConsumerState<TranslateButtonWidget> createState() =>
+      _TranslateButtonWidgetState();
 }
 
 const itemHeight = 55.0;
-const menuItemsMaxScale = 1;
-const indicatorVPadding = -((itemHeight * menuItemsMaxScale - itemHeight) / 2);
+const indicatorVPadding = -((itemHeight - itemHeight) / 2);
 
-const names = [
-  'Inglés',
-  'Español',
-  'Portugués',
-  'Francés',
-  'Japonés',
-  'Alemán',
-  'Ruso',
-  'Chino',
-  'Más idiomas',
-];
+final names = LanguagesList.languageList
+    .where(
+      (item) => ['es', 'en', 'more-lang'].contains(item.code),
+    )
+    .toList();
 
-class _TranslateButtonWidgetState extends State<TranslateButtonWidget>
+class _TranslateButtonWidgetState extends ConsumerState<TranslateButtonWidget>
     with SingleTickerProviderStateMixin {
   ///||-- Variables --||///
   bool isButtonTap = false;
@@ -138,7 +137,7 @@ class _TranslateButtonWidgetState extends State<TranslateButtonWidget>
                                 ),
                                 // color: Colors.blue,
                                 child: Text(
-                                  names[index],
+                                  names[index].name,
                                   style: const TextStyle(
                                     color: Colors.white,
                                     fontSize: 14,
@@ -175,6 +174,18 @@ class _TranslateButtonWidgetState extends State<TranslateButtonWidget>
     isButtonTap = false;
     _overlayAnimationController.reverse().then(
       (value) {
+        final index = (indicatorOffset / itemHeight).toInt();
+        if (index == names.length - 1) {
+          appNavigator.pushNamed(
+            context: context,
+            arguments: widget.item,
+            page: LanguageSelectorPage.path,
+          );
+        } else {
+          final ctrl = ref.read(translateButtonsController.notifier);
+          ctrl.updateLanguage(widget.item, names[index]);
+        }
+
         _overlayController.hide();
         indicatorOffset = 55;
         setState(() {});
@@ -190,6 +201,7 @@ class _TranslateButtonWidgetState extends State<TranslateButtonWidget>
     });
   }
 
+  double previousIndicatorOffset = -1.0;
   void _handlePointerMove(LongPressMoveUpdateDetails event) {
     final box = overlayKey.currentContext?.findRenderObject() as RenderBox?;
     final localPosition = event.localPosition;
@@ -202,13 +214,25 @@ class _TranslateButtonWidgetState extends State<TranslateButtonWidget>
       /// Handle indicator movement
       if (isInsideHeight) {
         final realtimeIndicatorOffset =
-            (compositedPosition.dy - (itemHeight * menuItemsMaxScale / 2))
-                .clamp(indicatorVPadding,
-                    (itemHeight * (names.length - 1)) + indicatorVPadding);
+            (compositedPosition.dy - (itemHeight / 2)).clamp(
+          indicatorVPadding,
+          (itemHeight * (names.length - 1)) + indicatorVPadding,
+        );
         final activeIndex = (realtimeIndicatorOffset / itemHeight).round();
+        final newIndicatorOffset =
+            (itemHeight * activeIndex) - indicatorVPadding;
+
         setState(() {
-          indicatorOffset = (itemHeight * activeIndex) - -indicatorVPadding;
+          indicatorOffset = newIndicatorOffset;
         });
+
+        if (newIndicatorOffset % 55 == 0 &&
+            newIndicatorOffset != previousIndicatorOffset) {
+          HapticFeedback.mediumImpact();
+          previousIndicatorOffset = newIndicatorOffset;
+        } else if (newIndicatorOffset % 55 != 0) {
+          previousIndicatorOffset = -1.0;
+        }
       }
     }
   }
@@ -231,7 +255,6 @@ class _TranslateButtonWidgetState extends State<TranslateButtonWidget>
           behavior: HitTestBehavior.translucent,
           onLongPressDown: _handleLongPressDown,
           onLongPressMoveUpdate: _handlePointerMove,
-          onLongPressCancel: _handleLongPressEndOrCancel,
           onLongPressEnd: (details) => _handleLongPressEndOrCancel(),
           onLongPressStart: (details) => _handleLongPressStart(details),
           child: AnimatedContainer(
@@ -245,7 +268,8 @@ class _TranslateButtonWidgetState extends State<TranslateButtonWidget>
               borderRadius: BorderRadius.circular(14),
             ),
             child: Text(
-              widget.item.language,
+              '${widget.item.value}\n${widget.item.language.name}',
+              textAlign: TextAlign.center,
               style: const TextStyle(
                 color: Colors.white,
                 fontSize: 14,

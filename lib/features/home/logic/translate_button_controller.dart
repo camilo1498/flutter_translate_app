@@ -4,6 +4,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/physics.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:g_translate_v2/core/constants/languages.dart';
+import 'package:g_translate_v2/core/models/language_model.dart';
 import 'package:g_translate_v2/features/home/logic/translate_button_controller_state.dart';
 import 'package:g_translate_v2/features/home/models/translate_button_model.dart';
 
@@ -26,57 +28,95 @@ class TranslateButtonController extends StateNotifier<TranslateButtonState> {
       upperBound: 1.0,
       lowerBound: -1.0,
     )..addListener(callback);
-    double left = ScreenUtil().screenWidth / 1.945;
     state = state.copyWith(
       items: [
         TranslateButtonModel(
           value: -1,
           originalPosition: ButtonOriginalPosition.left,
-          translationPosition: ButtonOriginalPosition.left,
-          language: 'Inglés',
+          source: ButtonTranslationSr.sl,
+          language: LanguagesList.languageList.firstWhere(
+            (item) => item.code == 'en',
+          ),
         ),
         TranslateButtonModel(
-          value: left,
+          value: 1.0,
           originalPosition: ButtonOriginalPosition.right,
-          translationPosition: ButtonOriginalPosition.right,
-          language: 'Español',
+          source: ButtonTranslationSr.tl,
+          language: LanguagesList.languageList.firstWhere(
+            (item) => item.code == 'es',
+          ),
         ),
       ],
     );
   }
 
-  ///
   void onGestureSlide(
     double dx,
     int index,
   ) {
+    final itemValue = state.items[index].value;
+
     double newValue = animCtrl.value +
         (index == 0 ? -dx : dx) / ((ScreenUtil().screenWidth / 2) - 80).abs();
 
-    if (newValue > -1.0 && newValue < 1.0 && animCtrl.value != newValue) {
+    if (itemValue != newValue) {
       animCtrl.value = newValue;
+
+      // Actualizar los valores de los ítems
+      state = state.copyWith(
+        items: state.items.map((item) {
+          if (item.originalPosition == ButtonOriginalPosition.left) {
+            return item.copyWith(value: newValue);
+          } else {
+            return item.copyWith(value: -newValue);
+          }
+        }).toList(),
+      );
     }
   }
 
   ///
-  void onGestureEnd(Velocity velocity, ButtonOriginalPosition position) {
-    /// TODO: fix de position => Left (+velocity) Right (-velocity)
-    double visualVelocity =
-        -velocity.pixelsPerSecond.dx / ((ScreenUtil().screenWidth / 2));
-    double maxD = animCtrl.value + 1;
-    double minD = 1 - animCtrl.value;
-    double minDistance = min(maxD, minD);
+  void onGestureEnd(Velocity velocity, TranslateButtonModel item) {
+    final screenWidth = (ScreenUtil().screenWidth / 2) - 80;
+    final double visualVelocity = (item.value > 0
+            ? velocity.pixelsPerSecond.dx
+            : -velocity.pixelsPerSecond.dx) /
+        screenWidth;
+    final double maxD = 1 + item.value;
+    final double minD = 1 - item.value;
+    final double minDistance = min(maxD, minD);
 
-    if (velocity.pixelsPerSecond.dx.abs() >= ((ScreenUtil().screenWidth / 2))) {
-      animCtrl.fling(
-        velocity: -visualVelocity,
-      );
-    } else {
-      _flingButtonToPosition(
-        minDistance == maxD ? -1.0 : 1.0,
-        visualVelocity,
-      );
+    if (item.value >= -1.0 && item.value <= 1.0) {
+      if (velocity.pixelsPerSecond.dx.abs() >= screenWidth) {
+        animCtrl.fling(velocity: visualVelocity);
+
+        final double newValue = animCtrl.value +
+            (item.value > 0
+                    ? velocity.pixelsPerSecond.dx
+                    : -velocity.pixelsPerSecond.dx) /
+                (screenWidth - 80).abs();
+        state = state.copyWith(
+          items: state.items.map((i) {
+            final value = i.originalPosition == ButtonOriginalPosition.left
+                ? newValue
+                : -newValue;
+            return i.copyWith(value: value);
+          }).toList(),
+        );
+      } else {
+        _flingButtonToPosition(
+            minDistance == maxD ? -1.0 : 1.0, -visualVelocity);
+      }
     }
+
+    state = state.copyWith(
+      items: state.items.map((i) {
+        final newValue = i.value > 0 ? 1.0 : -1.0;
+        final source =
+            i.value < 0 ? ButtonTranslationSr.sl : ButtonTranslationSr.tl;
+        return i.copyWith(value: newValue, source: source);
+      }).toList(),
+    );
   }
 
   ///
@@ -103,5 +143,21 @@ class TranslateButtonController extends StateNotifier<TranslateButtonState> {
     final items = state.items;
     final item = items.removeAt(index);
     items.insert(1, item);
+  }
+
+  void updateLanguage(
+      TranslateButtonModel selectedItem, LanguageModel newLanguage) {
+    final oldLanguage = selectedItem.language;
+
+    state = state.copyWith(
+      items: state.items.map((item) {
+        if (item == selectedItem) {
+          return item.copyWith(language: newLanguage);
+        } else if (item.language == newLanguage) {
+          return item.copyWith(language: oldLanguage);
+        }
+        return item;
+      }).toList(),
+    );
   }
 }

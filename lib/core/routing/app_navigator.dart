@@ -1,4 +1,5 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 
 /// get navigation
 AppNavigator get appNavigator => AppNavigator._instance;
@@ -20,10 +21,11 @@ class AppNavigator {
 
   ///
   Future<T?> pushNamed<T extends Object?>({
-    required String page,
     dynamic arguments,
+    required String page,
+    required BuildContext context,
   }) async =>
-      Navigator.of(globalNavigatorKey.currentContext!).pushNamed(
+      Navigator.of(context).pushNamed(
         page,
         arguments: arguments,
       );
@@ -31,6 +33,7 @@ class AppNavigator {
   ///
   void back<T extends Object?>({
     T? result,
+    required BuildContext context,
   }) =>
-      Navigator.of(globalNavigatorKey.currentContext!).canPop();
+      Navigator.of(context).pop();
 }

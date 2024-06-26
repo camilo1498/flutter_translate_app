@@ -1,5 +1,10 @@
 import 'dart:ui';
 
+import 'package:g_translate_v2/core/models/language_model.dart';
+
+///
+enum ButtonTranslationSr { tl, sl }
+
 ///
 enum ButtonOriginalPosition { right, left }
 
@@ -11,38 +16,38 @@ class TranslateButtonModel {
     required this.value,
     required this.language,
     required this.originalPosition,
-    required this.translationPosition,
+    required this.source,
   });
 
   ///
   final double value;
 
   ///
-  final String language;
+  final VoidCallback? onTap;
 
   ///
-  final VoidCallback? onTap;
+  final LanguageModel language;
+
+  ///
+  final ButtonTranslationSr source;
 
   ///
   final ButtonOriginalPosition originalPosition;
 
   ///
-  final ButtonOriginalPosition translationPosition;
-
-  ///
   TranslateButtonModel copyWith({
     double? value,
-    String? language,
     VoidCallback? onTap,
+    LanguageModel? language,
+    ButtonTranslationSr? source,
     ButtonOriginalPosition? originalPosition,
-    ButtonOriginalPosition? translationPosition,
   }) =>
       TranslateButtonModel(
         onTap: onTap ?? this.onTap,
         value: value ?? this.value,
+        source: source ?? this.source,
         language: language ?? this.language,
         originalPosition: originalPosition ?? this.originalPosition,
-        translationPosition: translationPosition ?? this.translationPosition,
       );
 
   ///
@@ -51,16 +56,16 @@ class TranslateButtonModel {
         onTap: json["onTap"],
         value: json["value"],
         language: json["language"],
+        source: json["translationPosition"],
         originalPosition: json["originalPosition"],
-        translationPosition: json["translationPosition"],
       );
 
   ///
   Map<String, dynamic> toMap() => {
         "onTap": onTap,
         "value": value,
-        "language": language,
+        "language": language.toMap(),
+        "translationPosition": source,
         "originalPosition": originalPosition,
-        "translationPosition": translationPosition,
       };
 }

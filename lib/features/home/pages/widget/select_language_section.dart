@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:g_translate_v2/features/home/logic/translate_button_controller_state.dart';
 import 'package:g_translate_v2/features/home/models/translate_button_model.dart';
-import 'package:g_translate_v2/features/home/pages/widget/translate_button_wifget.dart';
+import 'package:g_translate_v2/features/home/pages/widget/translate_button_widget.dart';
 
 class SelectLanguageSection extends ConsumerStatefulWidget {
   const SelectLanguageSection({super.key});
@@ -74,7 +74,6 @@ class _SelectLanguageSectionState extends ConsumerState<SelectLanguageSection>
               child: GestureDetector(
                 onTap: () {
                   print(item.toMap());
-                  ctrl.onDragStart(index);
                 },
                 onHorizontalDragStart: (_) => ctrl.onDragStart(index),
                 onHorizontalDragUpdate: (details) => ctrl.onGestureSlide(
@@ -85,7 +84,7 @@ class _SelectLanguageSectionState extends ConsumerState<SelectLanguageSection>
                 ),
                 onHorizontalDragEnd: (details) => ctrl.onGestureEnd(
                   details.velocity,
-                  item.originalPosition,
+                  item,
                 ),
                 child: TranslateButtonWidget(
                   index: index,

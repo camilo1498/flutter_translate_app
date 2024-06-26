@@ -3,7 +3,6 @@ import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:g_translate_v2/core/routing/app_navigator.dart';
 import 'package:g_translate_v2/core/routing/app_routes.dart';
 import 'package:g_translate_v2/features/home/pages/home_page.dart';
 import 'package:hive_local_storage/hive_local_storage.dart';
@@ -74,7 +73,6 @@ class FlutterTranslateApp extends StatelessWidget {
 
           initialRoute: HomePage.path,
           debugShowCheckedModeBanner: false,
-          key: appNavigator.globalNavigatorKey,
           localizationsDelegates: const [
             GlobalWidgetsLocalizations.delegate,
             GlobalMaterialLocalizations.delegate,
